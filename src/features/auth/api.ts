@@ -1,7 +1,6 @@
 import { apiClient } from '@/shared/api/client';
 import { ENDPOINTS } from '@/shared/api/endpoints';
 import { isUnauthorizedApiError } from '@/shared/api/error';
-import { unwrapApiData } from '@/shared/api/types';
 
 import { useAuthStore } from './authStore';
 import { getAccessToken, removeAuthTokens } from './storage';
@@ -41,9 +40,10 @@ export const setupAuthInterceptor = () => {
 export const socialLogin = async (
   body: SocialLoginRequest,
 ): Promise<SocialLoginResponse> => {
-  const { data } = await apiClient.post<
-    SocialLoginResponse | { data: SocialLoginResponse }
-  >(ENDPOINTS.auth.socialLogin, body);
+  const { data } = await apiClient.post<SocialLoginResponse>(
+    ENDPOINTS.auth.socialLogin,
+    body,
+  );
 
-  return unwrapApiData(data);
+  return data;
 };

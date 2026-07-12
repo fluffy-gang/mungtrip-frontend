@@ -40,11 +40,18 @@ export const borderWidth = {
 // 그림자는 Figma에서 관측한 표면과 핀을 기준으로 둔다.
 export const shadow = {
   smallOverlay: {
-    shadowColor: primitiveColors.gray[1000],
+    shadowColor: primitiveColors.black[0],
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.5,
     shadowRadius: 2,
     elevation: 2,
+  },
+  segmentSelected: {
+    shadowColor: primitiveColors.black[0],
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
   },
   mapPin: {
     shadowColor: primitiveColors.orange[500],
@@ -54,14 +61,14 @@ export const shadow = {
     elevation: 6,
   },
   floating: {
-    shadowColor: primitiveColors.gray[1000],
+    shadowColor: primitiveColors.black[0],
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.24,
     shadowRadius: 24,
     elevation: 8,
   },
   bottomSheet: {
-    shadowColor: primitiveColors.gray[1000],
+    shadowColor: primitiveColors.black[0],
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.12,
     shadowRadius: 12,

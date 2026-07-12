@@ -11,7 +11,8 @@ Figma 온보딩, 버튼, 프로필 설정, 지도, 장소 목록 화면에서 �
 
 공통 스타일 값은 `src/constants/tokens/`에 primitive token과 semantic token으로 나눈다. `src/constants/tokens/index.ts`는 공개 aggregate 진입점이고 `types.ts`는 타입 전용 진입점이다.
 
-- Primitive color는 `orange`, `gray`, `coolgray`, `blue` 색상군과 Figma에서 관측된 shade 값만 정의한다. 미관측 shade는 추정해서 채우지 않는다.
+- Primitive color는 `orange`, `gray`, `black`, `blue` 색상군과 Figma에서 관측된 shade 값만 정의한다. 미관측 shade는 추정해서 채우지 않는다.
+- `gray`는 Figma의 `colors.gray0`부터 `colors.gray900`까지의 scale을 따른다. 순수 검정은 gray scale에 섞지 않고 `black` primitive로 분리한다.
 - 이번 구현에서는 opacity shade 계층을 만들지 않는다. 반투명 효과는 shadow opacity처럼 해당 토큰의 속성으로만 표현한다.
 - 현재 제품 지원 범위는 light theme이며 앱 런타임도 light로 고정한다. Dark theme는 별도 디자인 확인 후 추가한다.
 - Figma에서 쓰는 폰트는 Pretendard와 Hakgyoansim Dunggeunmiso 두 가지뿐이므로 font token도 두 family만 노출한다.

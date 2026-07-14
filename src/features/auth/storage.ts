@@ -3,10 +3,10 @@ import * as SecureStore from 'expo-secure-store';
 const ACCESS_TOKEN_KEY = 'accessToken';
 const REFRESH_TOKEN_KEY = 'refreshToken';
 
-type AuthTokens = {
+interface AuthTokens {
   accessToken: string;
   refreshToken?: string;
-};
+}
 
 export const saveAccessToken = async (token: string) => {
   await SecureStore.setItemAsync(ACCESS_TOKEN_KEY, token);

@@ -6,20 +6,17 @@ export type AgreementType =
   | 'TELECOM'
   | 'MARKETING';
 
-export type Agreement = {
+export interface Agreement {
   type: AgreementType;
   agreed: boolean;
-};
+}
 
-export type GetAgreementsResponse = {
+export interface GetAgreementsResponse {
   agreements: Agreement[];
-};
+}
 
-export type SaveAgreementsRequest = {
-  agreements: {
-    type: AgreementType;
-    agreed: boolean;
-  }[];
-};
+export interface SaveAgreementsRequest {
+  agreements: Agreement[];
+}
 
 export type SaveAgreementsResponse = GetAgreementsResponse;

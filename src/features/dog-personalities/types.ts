@@ -1,5 +1,5 @@
-export type DogPersonality = {
+export interface DogPersonality {
   id: number;
   name: string;
   description?: string;
-};
+}

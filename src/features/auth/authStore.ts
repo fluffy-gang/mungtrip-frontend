@@ -2,14 +2,14 @@ import { create } from 'zustand';
 
 import type { User } from './types';
 
-type AuthState = {
+interface AuthState {
   isLoggedIn: boolean;
   accessToken: string | null;
   user: User | null;
 
   setLogin: (accessToken: string, user?: User) => void;
   setLogout: () => void;
-};
+}
 
 export const useAuthStore = create<AuthState>(set => ({
   isLoggedIn: false,

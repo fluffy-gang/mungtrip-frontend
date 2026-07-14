@@ -1,9 +1,13 @@
 import { isAxiosError } from 'axios';
 
-type ApiErrorBody = {
+interface ApiErrorDetails {
   message?: string;
-  error?: string | { message?: string };
-};
+}
+
+interface ApiErrorBody {
+  message?: string;
+  error?: string | ApiErrorDetails;
+}
 
 export class ApiError extends Error {
   readonly status?: number;

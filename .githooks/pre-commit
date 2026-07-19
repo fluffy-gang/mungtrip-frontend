@@ -1,0 +1,6 @@
+#!/bin/sh
+
+pnpm check:branch
+pnpm check:todos
+pnpm lint
+pnpm typecheck

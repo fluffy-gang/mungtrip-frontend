@@ -40,7 +40,11 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "check:branch": "node ./scripts/validate-branch-name.js",
+    "check:todos": "node ./scripts/check-todos.js",
+    "verify": "pnpm check:branch && pnpm check:todos && pnpm lint && pnpm typecheck",
+    "prepare": "node ./scripts/install-git-hooks.js"
   },
   "private": true,
   "packageManager": "pnpm@9.6.0"

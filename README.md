@@ -1,7 +1,5 @@
 # mungtrip-frontend
 
-Mungtrip React Native 앱 프론트엔드입니다. Expo 기반으로 시작했고, 패키지 매니저는 pnpm으로 고정합니다.
-
 ## 현재 스택
 
 - Expo SDK 57

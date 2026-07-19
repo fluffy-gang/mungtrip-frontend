@@ -1,3 +1,50 @@
-# Expo HAS CHANGED
+# Mungtrip Frontend 에이전트 가이드
 
-Read the exact versioned docs at https://docs.expo.dev/versions/v57.0.0/ before writing any code.
+## Expo SDK 57
+
+코드를 작성하기 전에 반드시 버전이 고정된 Expo 문서를 확인한다: https://docs.expo.dev/versions/v57.0.0/
+
+이 프로젝트는 Expo SDK 57, React Native 0.86, React 19.2.3, Expo Router를 사용한다. 내비게이션은 `expo-router` API를 우선 사용하고, SDK 57 문서에서 명시적으로 요구하지 않는 한 앱 코드에서 외부 `@react-navigation/*` 패키지를 직접 import하지 않는다.
+
+## 작업 흐름 규칙
+
+- 브랜치명은 `{태그}/{작업-제목}-#{이슈번호}` 형식을 사용한다. 예: `feat/auth-api-client-#1`
+- 커밋 메시지는 `[#{이슈번호}] {커밋 제목}` 형식을 사용한다.
+- 커밋 body는 선택 사항이며, 작성할 경우 대시(`-`)로 시작하는 list 형식을 사용한다.
+- 커밋 요청을 받으면 먼저 현재 브랜치명에서 이슈 번호를 추출한다. 이슈 번호가 없거나 불명확하면 커밋하지 말고 개발자에게 확인한다.
+- 구현 전에는 `src/components`, `src/hooks`, `src/constants`, 향후 추가될 `src/shared`, `src/features`의 기존 공통 코드를 먼저 확인한다.
+- 응집도는 높이고 결합도는 낮춘다. 동작이 재사용되거나 안정적인 책임 경계가 보이면 공통 모듈로 분리한다.
+- 현재 앱의 성숙도에 맞는 엔지니어링을 지향한다. 제품 형태가 충분히 드러나기 전에 과한 아키텍처 계층을 만들지 않는다.
+- 시니어 개발자처럼 정확성, 보안성, 성능, 유지보수성을 기준으로 판단하고 위험을 명확히 드러낸다.
+
+## 아키텍처 규칙
+
+- Expo Router 라우트 파일은 `src/app`에 둔다.
+- 재사용 가능한 UI 컴포넌트는 `src/components`에 둔다.
+- 공통 UI primitive는 `src/components/ui`에 둔다.
+- 여러 화면에서 사용하는 hook은 `src/hooks`에 둔다.
+- 디자인 토큰, 앱 상수, 플랫폼 안전 정적 설정은 `src/constants`에 둔다.
+- 기능이 단일 route를 넘어 커지면 `src/features/{feature}`를 만들고, 해당 기능의 UI, hook, domain helper를 함께 배치한다.
+- 공통 모듈에는 공개 동작, 제약, 플랫폼별 전제가 드러나도록 간결한 주석을 작성한다.
+- 공통 모듈로 만드는 편이 구현을 더 명확하게 한다면, 먼저 공통 모듈을 정의한 뒤 구현부에서 사용한다.
+
+## 문서화 규칙
+
+- 아키텍처, 보안, 성능, 의존성, 제품 tradeoff처럼 복잡한 의사결정이 발생하면 구현 전에 문서화 여부를 개발자에게 확인한다.
+- 승인된 의사결정 기록은 `docs/adr/` 아래의 경량 ADR로 남긴다.
+- ADR과 관련된 코드가 수정되면 같은 변경 안에서 ADR도 함께 업데이트한다.
+- 개발자가 best practice에 반하는 결정을 요청하면 이유를 확인하고, 해당 근거를 ADR 또는 PR 설명에 문서화한다.
+
+## 리뷰와 추적 규칙
+
+- Pull request와 issue는 `.github` 아래의 템플릿을 따른다.
+- 추후 개선점으로 남기는 작업은 반드시 추적 가능해야 한다. 형식은 `TODO(#123): 설명` 또는 `TODO(docs/adr/0001-title.md): 설명`을 사용한다.
+- 추적되지 않는 fixme 또는 hack marker를 추가하지 않는다. 커밋 전에 추적 가능한 deferred work로 바꾸거나 해결한다.
+
+## LLM 협업 규칙
+
+- 이 파일은 Codex, Claude, 기타 LLM 에이전트가 따르는 저장소의 단일 기준 문서다.
+- 큰 변경은 서로 간섭하지 않는 독립 범위로 나눈다.
+- explorer 역할의 에이전트는 코드와 문서를 조사하는 데 사용한다.
+- worker 역할의 에이전트는 명확히 할당된, 서로 겹치지 않는 파일 범위만 수정한다.
+- 에이전트는 사용자의 관련 없는 변경사항을 되돌리지 않는다. 작업과 무관한 dirty file은 그대로 둔다.

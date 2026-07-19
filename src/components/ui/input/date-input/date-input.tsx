@@ -3,22 +3,9 @@ import { useState } from 'react';
 import { Platform } from 'react-native';
 
 import { Field } from '../field';
-import { booleanKey, InputShell, type BooleanKey } from '../shared-styles';
-import type { DateInputProps, FieldState } from '../types';
+import { InputShell, resolveFieldState } from '../shared-styles';
+import type { DateInputProps } from '../types';
 import { CalendarIcon, CalendarIconTop, DateValueText } from './styles';
-
-const errorStateMap = {
-  false: undefined,
-  true: 'error',
-} as const satisfies Record<BooleanKey, FieldState | undefined>;
-
-const disabledStateMap = {
-  false: errorStateMap,
-  true: {
-    false: 'disabled',
-    true: 'disabled',
-  },
-} as const satisfies Record<BooleanKey, Record<BooleanKey, FieldState | undefined>>;
 
 function formatDate(value: Date | undefined) {
   if (!value) return undefined;
@@ -46,7 +33,7 @@ export function DateInput({
   value,
 }: DateInputProps) {
   const [visible, setVisible] = useState(false);
-  const resolvedState = disabledStateMap[booleanKey(disabled)][booleanKey(errorText)] ?? state;
+  const resolvedState = resolveFieldState({ disabled, errorText, state });
   const displayValue = formatDate(value);
 
   const handleChange = (event: DateTimePickerEvent, nextValue?: Date) => {

@@ -2,22 +2,9 @@ import { useState } from 'react';
 import { useTheme } from 'styled-components/native';
 
 import { Field } from '../field';
-import { booleanKey, InputShell, type BooleanKey } from '../shared-styles';
-import type { FieldState, TextInputFieldProps } from '../types';
+import { InputShell, resolveFieldState } from '../shared-styles';
+import type { TextInputFieldProps } from '../types';
 import { StyledTextInput } from './styles';
-
-const errorStateMap = {
-  false: undefined,
-  true: 'error',
-} as const satisfies Record<BooleanKey, FieldState | undefined>;
-
-const disabledStateMap = {
-  false: errorStateMap,
-  true: {
-    false: 'disabled',
-    true: 'disabled',
-  },
-} as const satisfies Record<BooleanKey, Record<BooleanKey, FieldState | undefined>>;
 
 export function TextInputField({
   disabled,
@@ -36,7 +23,7 @@ export function TextInputField({
 }: TextInputFieldProps) {
   const theme = useTheme();
   const [focused, setFocused] = useState(false);
-  const resolvedState = disabledStateMap[booleanKey(disabled)][booleanKey(errorText)] ?? state;
+  const resolvedState = resolveFieldState({ disabled, errorText, state });
 
   return (
     <Field

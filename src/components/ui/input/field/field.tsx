@@ -4,36 +4,33 @@ import {
   FieldLabelRow,
   FieldMessage,
   FieldRequiredMark,
-} from "./styles";
-import { booleanKey } from "../shared-styles";
-import type { FieldProps } from "../types";
-
-const messageStateMap = {
-  false: "default",
-  true: "error",
-} as const;
+} from './styles';
+import { resolveFieldState } from '../shared-styles';
+import type { FieldProps } from '../types';
 
 export function Field({
   children,
+  disabled,
   errorText,
   helperText,
   label,
   required,
+  state,
 }: FieldProps) {
   const message = errorText ?? helperText;
-  const messageState = messageStateMap[booleanKey(errorText)];
+  const resolvedState = resolveFieldState({ disabled, errorText, state });
 
   return (
     <FieldContainer>
       {label ? (
         <FieldLabelRow>
-          <FieldLabel>{label}</FieldLabel>
-          {required ? <FieldRequiredMark>*</FieldRequiredMark> : null}
+          <FieldLabel $state={resolvedState}>{label}</FieldLabel>
+          {required ? <FieldRequiredMark $state={resolvedState}>*</FieldRequiredMark> : null}
         </FieldLabelRow>
       ) : null}
       {children}
       {message ? (
-        <FieldMessage $state={messageState}>{message}</FieldMessage>
+        <FieldMessage $state={resolvedState}>{message}</FieldMessage>
       ) : null}
     </FieldContainer>
   );

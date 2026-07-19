@@ -33,6 +33,21 @@ const disabledOpacityMap = {
 
 export const booleanKey = (value?: boolean | string) => String(Boolean(value)) as BooleanKey;
 
+export function resolveFieldState({
+  disabled,
+  errorText,
+  state,
+}: {
+  disabled?: boolean;
+  errorText?: string;
+  state?: FieldState;
+}) {
+  if (disabled) return 'disabled';
+  if (errorText) return 'error';
+
+  return state ?? 'default';
+}
+
 export function getDisabledOpacity(disabled: boolean | undefined) {
   return disabledOpacityMap[booleanKey(disabled)];
 }

@@ -1,26 +1,28 @@
-## Summary
-
+## PR 요약
 - 
 
-## Related Issue
-
+## 관련 이슈
 - Closes #
 
-## Validation
+## 커밋별 내용
+- [`커밋 SHA`](커밋 링크) `[#이슈번호] 커밋 메시지`
+  - 변경 내용을 간단히 적습니다.
 
+## 주요 변경 파일
+- `파일 경로`: 변경 이유나 핵심 동작을 적습니다.
+
+## 검증
 - [ ] `pnpm lint`
 - [ ] `pnpm typecheck`
 - [ ] `pnpm check:todos`
-- [ ] Manual verification:
+- [ ] 수동 검증:
 
-## Documentation
+## 문서화
+- [ ] ADR 또는 문서 수정 불필요
+- [ ] ADR / 문서 수정:
 
-- [ ] No ADR or docs update needed
-- [ ] ADR/docs updated:
-
-## LLM Checklist
-
-- [ ] Existing shared modules were checked before adding new code
-- [ ] PR follows branch and commit conventions
-- [ ] Deferred work is traceable as `TODO(#123): description` or `TODO(docs/adr/0001-title.md): description`
-- [ ] Any best-practice exception is explained in this PR or an ADR
+## LLM 체크리스트
+- [ ] 공통 모듈을 추가하기 전에 기존 공통 코드를 확인했다.
+- [ ] 브랜치명과 커밋 규칙을 지켰다.
+- [ ] 미룬 작업은 `TODO(#123): 설명` 또는 `TODO(docs/adr/0001-title.md): 설명` 형식으로 추적 가능하다.
+- [ ] best-practice 예외가 있으면 PR 또는 ADR에 설명했다.

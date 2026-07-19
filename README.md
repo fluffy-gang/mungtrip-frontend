@@ -7,6 +7,7 @@
 - TypeScript strict mode
 - pnpm 9.6.0
 - expo-router
+- styled-components/native
 - ESLint
 - Development Build 예정
 - TanStack Query 예정
@@ -69,8 +70,10 @@ strict-peer-dependencies=false
 src/app/
   _layout.tsx
   index.tsx
-  explore.tsx
 ```
+
+공통 스타일은 `src/constants/tokens/`에 분리되어 있고, `src/constants/tokens/index.ts`가 공개 진입점입니다.
+`styled-components/native`는 루트에서 `ThemeProvider`로 `tokens`를 주입하는 방식으로 사용합니다.
 
 현재 주요 alias:
 

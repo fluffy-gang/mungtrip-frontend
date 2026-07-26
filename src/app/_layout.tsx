@@ -1,13 +1,29 @@
-import { Stack } from 'expo-router';
-import { ThemeProvider } from 'styled-components/native';
+import { DarkTheme, DefaultTheme, Stack, ThemeProvider as ExpoThemeProvider } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect } from 'react';
+import { useColorScheme } from 'react-native';
+import { ThemeProvider as StyledThemeProvider } from 'styled-components/native';
 
 import { tokens } from '@/constants/tokens';
+import { setupAuthInterceptor } from '@/features/auth/api';
+import { useAuth } from '@/features/auth/useAuth';
+
+SplashScreen.preventAutoHideAsync();
+setupAuthInterceptor();
 
 export default function RootLayout() {
-  // styled-components/native 프리미티브가 참조할 루트 테마 원본이다.
+  const colorScheme = useColorScheme();
+  const { initAuth } = useAuth();
+
+  useEffect(() => {
+    void initAuth();
+  }, [initAuth]);
+
   return (
-    <ThemeProvider theme={tokens}>
-      <Stack screenOptions={{ headerShown: false }} />
-    </ThemeProvider>
+    <ExpoThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <StyledThemeProvider theme={tokens}>
+        <Stack screenOptions={{ headerShown: false }} />
+      </StyledThemeProvider>
+    </ExpoThemeProvider>
   );
 }

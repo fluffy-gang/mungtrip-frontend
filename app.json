@@ -83,11 +83,19 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "bbe03cdd-0552-4bfb-8a1c-eb73a42b4caa"
+      }
+    },
+    "owner": "jeongjinho"
   }
 }

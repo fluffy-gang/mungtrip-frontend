@@ -4,7 +4,9 @@
   "version": "1.0.0",
   "dependencies": {
     "@expo/ui": "~57.0.3",
+    "@react-native-community/datetimepicker": "9.1.0",
     "axios": "^1.18.1",
+    "css-to-react-native": "^3.2.0",
     "expo": "~57.0.2",
     "expo-constants": "~57.0.3",
     "expo-device": "~57.0.0",
@@ -28,6 +30,7 @@
     "react-native-screens": "4.25.2",
     "react-native-web": "~0.21.0",
     "react-native-worklets": "0.10.0",
+    "styled-components": "^6.4.3",
     "zustand": "^5.0.14"
   },
   "devDependencies": {
@@ -42,7 +45,11 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "check:branch": "node ./scripts/validate-branch-name.js",
+    "check:todos": "node ./scripts/check-todos.js",
+    "verify": "pnpm check:branch && pnpm check:todos && pnpm lint && pnpm typecheck",
+    "prepare": "node ./scripts/install-git-hooks.js"
   },
   "private": true,
   "packageManager": "pnpm@9.6.0"

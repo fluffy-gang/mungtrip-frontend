@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "mungtripfrontend",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "light",
     "ios": {
       "icon": "./assets/expo.icon"
     },
@@ -25,6 +25,57 @@
     },
     "plugins": [
       "expo-router",
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/Pretendard-Regular.otf",
+            "./assets/fonts/Pretendard-Medium.otf",
+            "./assets/fonts/Pretendard-SemiBold.otf",
+            "./assets/fonts/Pretendard-Bold.otf",
+            "./assets/fonts/Hakgyoansim Dunggeunmiso OTF R.otf",
+            "./assets/fonts/Hakgyoansim Dunggeunmiso OTF B.otf"
+          ],
+          "android": {
+            "fonts": [
+              {
+                "fontFamily": "Pretendard",
+                "fontDefinitions": [
+                  {
+                    "path": "./assets/fonts/Pretendard-Regular.otf",
+                    "weight": 400
+                  },
+                  {
+                    "path": "./assets/fonts/Pretendard-Medium.otf",
+                    "weight": 500
+                  },
+                  {
+                    "path": "./assets/fonts/Pretendard-SemiBold.otf",
+                    "weight": 600
+                  },
+                  {
+                    "path": "./assets/fonts/Pretendard-Bold.otf",
+                    "weight": 700
+                  }
+                ]
+              },
+              {
+                "fontFamily": "Hakgyoansim Dunggeunmiso",
+                "fontDefinitions": [
+                  {
+                    "path": "./assets/fonts/Hakgyoansim Dunggeunmiso OTF R.otf",
+                    "weight": 400
+                  },
+                  {
+                    "path": "./assets/fonts/Hakgyoansim Dunggeunmiso OTF B.otf",
+                    "weight": 700
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ],
       [
         "expo-splash-screen",
         {

@@ -1,10 +1,13 @@
 import { Pressable } from 'react-native';
-import { styled, type DefaultTheme } from 'styled-components/native';
+import { styled } from 'styled-components/native';
 
 import { Text } from '@/components/ui/text';
-import type { SemanticColorName } from '@/constants/tokens';
 
-import { booleanKey, getDisabledOpacity, type BooleanKey } from '../shared-styles';
+import { booleanKey, getDisabledOpacity } from '../shared-styles';
+
+import type { DefaultTheme } from 'styled-components/native';
+import type { SemanticColorName } from '@/constants/tokens';
+import type { BooleanKey } from '../shared-styles';
 
 type TagChipVisualState = 'filled' | 'outlined' | 'selected';
 
@@ -88,4 +91,6 @@ export const TagText = styled(Text).attrs<{ $selected?: boolean }>(
     fontWeight: 'semibold',
     lineHeight: 20,
   }),
-)``;
+)`
+  padding-right: 1px;
+`;

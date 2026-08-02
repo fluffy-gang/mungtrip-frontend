@@ -1,4 +1,5 @@
 import { ToggleLabel, ToggleRow, ToggleThumb, ToggleTrack } from './styles';
+
 import type { ToggleInputProps } from '../types';
 
 export function ToggleInput({ disabled, label, onChange, value }: ToggleInputProps) {

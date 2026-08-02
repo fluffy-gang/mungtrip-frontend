@@ -1,10 +1,10 @@
-import {
-  CheckboxControl,
-  CheckboxLabel,
-  CheckboxMark,
-  CheckboxRow,
-} from "./styles";
-import type { CheckboxInputProps } from "../types";
+import { useTheme } from 'styled-components/native';
+
+import { Icon } from '@/components/ui/icon';
+
+import { CheckboxControl, CheckboxLabel, CheckboxRow } from './styles';
+
+import type { CheckboxInputProps } from '../types';
 
 export function CheckboxInput({
   disabled,
@@ -12,6 +12,8 @@ export function CheckboxInput({
   onChange,
   value,
 }: CheckboxInputProps) {
+  const theme = useTheme();
+
   return (
     <CheckboxRow
       $disabled={disabled}
@@ -21,7 +23,13 @@ export function CheckboxInput({
       onPress={() => onChange(!value)}
     >
       <CheckboxControl $selected={value}>
-        <CheckboxMark $selected={value}>✓</CheckboxMark>
+        {value ? (
+          <Icon
+            name="check"
+            size={16}
+            tintColor={theme.colors.semantic.light.onPrimary}
+          />
+        ) : null}
       </CheckboxControl>
       <CheckboxLabel>{label}</CheckboxLabel>
     </CheckboxRow>

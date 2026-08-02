@@ -1,0 +1,167 @@
+import { useRouter } from 'expo-router';
+import { useEffect, useRef, useState } from 'react';
+import { FlatList, Pressable, useWindowDimensions, View } from 'react-native';
+
+import { Button } from '@/components/ui/button';
+import { Text } from '@/components/ui/text';
+import {
+  BottomActions,
+  DogPlaceholder,
+  FadeSequence,
+  OnboardingPage,
+  ScreenTitle,
+  StepHeader,
+} from '@/features/onboarding/components';
+
+import { BREEDS } from '../../constants';
+import { useOnboarding } from '../../context';
+import { styles } from './style';
+
+import type { Href } from 'expo-router';
+
+const BREED_ITEM_WIDTH = 96;
+const BREED_ITEM_INTERVAL = 100;
+const LOOP_BREEDS = [...BREEDS, ...BREEDS, ...BREEDS];
+
+export function DogStepOneScreen() {
+  const router = useRouter();
+  const { width } = useWindowDimensions();
+  const { draft, loadPersonalities, setDraft } = useOnboarding();
+  const initialBreedId = draft.breedId ?? BREEDS.find((item) => item.name === draft.breed)?.id;
+  const initialIndex = BREEDS.length
+    + Math.max(BREEDS.findIndex((item) => item.id === initialBreedId), 0);
+  const listRef = useRef<FlatList<(typeof LOOP_BREEDS)[number]>>(null);
+  const [carouselWidth, setCarouselWidth] = useState(width);
+  const [selectedId, setSelectedId] = useState(initialBreedId ?? BREEDS[0].id);
+  const selectedBreed = BREEDS.find((item) => item.id === selectedId);
+
+  useEffect(() => {
+    void loadPersonalities();
+  }, [loadPersonalities]);
+
+  const goNext = (mode: 'selected' | 'manual' | 'skipped') => {
+    if (mode === 'selected' && selectedBreed) {
+      setDraft({
+        breed: selectedBreed.name,
+        breedId: selectedBreed.id,
+        breedInputMode: mode,
+        isDangerousDog: selectedBreed.isDangerousDog,
+        size: selectedBreed.defaultSize,
+      });
+    } else {
+      setDraft({ breed: '', breedId: undefined, breedInputMode: mode });
+    }
+    router.push('/onboarding/dog/step-2' as Href);
+  };
+
+  return (
+    <OnboardingPage>
+      <StepHeader current={1} onBack={() => router.back()} />
+      <View style={styles.stepTitle}>
+        <FadeSequence>
+          <ScreenTitle>우리 아이는{`\n`}어떤 친구인가요?</ScreenTitle>
+        </FadeSequence>
+      </View>
+      <FadeSequence delay={80} style={styles.breedSection}>
+        <View style={styles.breedPreview}>
+          <DogPlaceholder style={styles.breedPreviewImage} />
+        </View>
+        <FlatList
+          contentContainerStyle={[
+            styles.breedList,
+            { paddingHorizontal: Math.max((carouselWidth - BREED_ITEM_WIDTH) / 2, 0) },
+          ]}
+          data={LOOP_BREEDS}
+          decelerationRate="fast"
+          disableIntervalMomentum
+          getItemLayout={(_, index) => ({
+            index,
+            length: BREED_ITEM_INTERVAL,
+            offset: BREED_ITEM_INTERVAL * index,
+          })}
+          horizontal
+          initialScrollIndex={initialIndex}
+          key="breed-carousel-loop"
+          keyExtractor={(item, index) => `${item.id}-${index}`}
+          onLayout={(event) => setCarouselWidth(event.nativeEvent.layout.width)}
+          onMomentumScrollEnd={(event) => {
+            const index = Math.round(
+              event.nativeEvent.contentOffset.x / BREED_ITEM_INTERVAL,
+            );
+            const loopedIndex = index < BREEDS.length
+              ? index + BREEDS.length
+              : index >= BREEDS.length * 2
+                ? index - BREEDS.length
+                : index;
+
+            if (loopedIndex !== index) {
+              listRef.current?.scrollToIndex({ animated: false, index: loopedIndex });
+            }
+            setSelectedId(LOOP_BREEDS[loopedIndex].id);
+          }}
+          ref={listRef}
+          renderItem={({ index, item }) => {
+            const selected = item.id === selectedId;
+
+            return (
+              <Pressable
+                onPress={() => {
+                  setSelectedId(item.id);
+                  listRef.current?.scrollToIndex({ animated: true, index });
+                }}
+                style={styles.breedItem}
+              >
+                <View style={[styles.breedCard, selected && styles.breedCardSelected]}>
+                  <DogPlaceholder compact style={styles.breedThumbnail} />
+                </View>
+                <Text
+                  color={selected ? 'primary' : 'textSecondary'}
+                  fontFamily="rounded"
+                  fontSize={14}
+                  fontWeight={selected ? 'semibold' : 'regular'}
+                  lineHeight={20}
+                >
+                  {item.name}
+                </Text>
+              </Pressable>
+            );
+          }}
+          showsHorizontalScrollIndicator={false}
+          snapToInterval={BREED_ITEM_INTERVAL}
+          style={styles.breedCarousel}
+        />
+      </FadeSequence>
+      <View style={styles.spacer} />
+      <BottomActions>
+        <Button disabled={!selectedBreed} onPress={() => goNext('selected')}>
+          선택 했어요
+        </Button>
+        <View style={styles.horizontalButtons}>
+          <View style={styles.flex}>
+            <Button
+              fullWidth
+              labelStyle={styles.secondaryButtonLabel}
+              onPress={() => goNext('skipped')}
+              type="sub"
+            >
+              선택 안 할래요
+            </Button>
+          </View>
+          <View style={styles.flex}>
+            <Button
+              fullWidth
+              labelStyle={styles.secondaryButtonLabel}
+              onPress={() => goNext('manual')}
+              type="sub"
+            >
+              직접 입력할게요
+            </Button>
+          </View>
+        </View>
+        <Text color="textDisabled" fontSize={12} lineHeight={20} style={styles.centerText}>
+          없을 경우 직접 입력해주세요
+        </Text>
+      </BottomActions>
+    </OnboardingPage>
+  );
+}

@@ -8,7 +8,7 @@ import { tokens } from '@/constants/tokens';
 import { setupAuthInterceptor } from '@/features/auth/api';
 import { useAuth } from '@/features/auth/useAuth';
 
-SplashScreen.preventAutoHideAsync();
+void SplashScreen.preventAutoHideAsync();
 setupAuthInterceptor();
 
 export default function RootLayout() {
@@ -16,7 +16,21 @@ export default function RootLayout() {
   const { initAuth } = useAuth();
 
   useEffect(() => {
-    void initAuth();
+    let isMounted = true;
+
+    void initAuth()
+      .catch(error => {
+        console.warn('인증 초기화 중 문제가 발생했습니다.', error);
+      })
+      .finally(() => {
+        if (isMounted) {
+          void SplashScreen.hideAsync();
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, [initAuth]);
 
   return (

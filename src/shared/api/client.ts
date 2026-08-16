@@ -39,7 +39,30 @@ apiClient.interceptors.request.use(config => {
   return config;
 });
 
+interface ApiEnvelope {
+  code: string;
+  data: unknown;
+  message: string;
+}
+
+const isApiEnvelope = (value: unknown): value is ApiEnvelope => {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'code' in value &&
+    'data' in value
+  );
+};
+
 apiClient.interceptors.response.use(
-  response => response,
+  response => {
+    // 백엔드는 모든 응답을 { code, message, data } 봉투로 감싸서 내려준다.
+    // 호출부는 실제 payload(data)만 다루면 되도록 여기서 한 번에 벗겨낸다.
+    if (isApiEnvelope(response.data)) {
+      response.data = response.data.data;
+    }
+
+    return response;
+  },
   error => Promise.reject(toApiError(error)),
 );

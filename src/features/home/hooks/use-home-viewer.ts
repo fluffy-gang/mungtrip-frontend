@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useAuthStore } from '@/features/auth/authStore';
 import { getMyDogs } from '@/features/dogs/api';
+import { MOCK_DOGS } from '@/features/dogs/mock/dogs';
 import type { Dog } from '@/features/dogs/types';
 import type { DogSizeTagCode, HomeDogProfile, HomeViewer } from '../types';
 
@@ -26,6 +27,7 @@ const toHomeDogProfile = (dog: Dog): HomeDogProfile => ({
 
 export function useHomeViewer(): HomeViewer {
   const isLoggedIn = useAuthStore(state => state.isLoggedIn);
+  const isMockSession = useAuthStore(state => state.isMockSession);
   const [viewerDogs, setViewerDogs] = useState<HomeDogProfile[]>([]);
   const [selectedDogIds, setSelectedDogIds] = useState<number[]>([]);
 
@@ -33,6 +35,19 @@ export function useHomeViewer(): HomeViewer {
     let isMounted = true;
 
     if (!isLoggedIn) {
+      return;
+    }
+
+    // TODO(#11): 실제 로그인 화면(#9)이 머지되면 이 분기를 제거한다.
+    // 목로그인 상태에는 진짜 토큰이 없으니 실제 API를 아예 호출하지 않는다.
+    if (isMockSession) {
+      void Promise.resolve().then(() => {
+        if (!isMounted) return;
+
+        const nextDogs = MOCK_DOGS.map(toHomeDogProfile);
+        setViewerDogs(nextDogs);
+        setSelectedDogIds(nextDogs.map(dog => dog.id));
+      });
       return;
     }
 
@@ -64,7 +79,7 @@ export function useHomeViewer(): HomeViewer {
     return () => {
       isMounted = false;
     };
-  }, [isLoggedIn]);
+  }, [isLoggedIn, isMockSession]);
 
   const dogs = isLoggedIn ? viewerDogs : EMPTY_HOME_DOGS;
   const selectedDogs = useMemo(

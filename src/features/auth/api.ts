@@ -26,7 +26,9 @@ export const setupAuthInterceptor = () => {
     responseInterceptorId = apiClient.interceptors.response.use(
       response => response,
       async error => {
-        if (isUnauthorizedApiError(error)) {
+        // TODO(#11): 목로그인 세션은 실제 토큰이 없어 다른 화면의 진짜 API 호출이 401을
+        // 받을 수 있다. 그 401 때문에 목로그인이 풀리지 않도록 여기서 막아둔다.
+        if (isUnauthorizedApiError(error) && !useAuthStore.getState().isMockSession) {
           await removeAuthTokens();
           useAuthStore.getState().setLogout();
         }

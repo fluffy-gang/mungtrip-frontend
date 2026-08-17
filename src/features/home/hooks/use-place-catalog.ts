@@ -5,9 +5,10 @@ import {
   getPlaceTags,
   getPopularKeywords,
 } from '@/features/places/api';
+import { useAsyncEffect } from './use-async-effect';
+
 import type { PlaceCategory, PlaceTag } from '@/features/places/types';
 
-import { useAsyncEffect } from './use-async-effect';
 
 export function usePlaceCatalog(reloadKey: number) {
   const [categories, setCategories] = useState<PlaceCategory[]>([]);

@@ -1,10 +1,10 @@
 import { useState } from "react";
 
 import { getPlaces } from "@/features/places/api";
-import type { Place, PlaceCategory, PlaceTag } from "@/features/places/types";
-
-import type { MapBounds } from "../types";
 import { useAsyncEffect } from "./use-async-effect";
+
+import type { Place, PlaceCategory, PlaceTag } from "@/features/places/types";
+import type { MapBounds } from "../types";
 
 interface UseMapPlacesOptions {
   bounds: MapBounds;

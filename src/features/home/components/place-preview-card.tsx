@@ -1,11 +1,12 @@
 import { Pressable, View } from 'react-native';
 import { SymbolView } from 'expo-symbols';
 
-import type { Place } from '@/features/places/types';
-
 import { colors, styles } from '../styles';
-import type { HomeDogProfile } from '../types';
 import { PlaceListRow } from './place-list-row';
+
+import type { Place } from '@/features/places/types';
+import type { HomeDogProfile } from '../types';
+
 
 export function PlacePreviewCard({
   bottom,

@@ -1,10 +1,11 @@
 import { Pressable, Text, View } from 'react-native';
 import { SymbolView } from 'expo-symbols';
 
-import type { Course } from '@/features/courses/types';
 
 import { colors, styles } from '../styles';
 import { PlaceThumbnail } from './place-thumbnail';
+
+import type { Course } from '@/features/courses/types';
 
 export function RecommendedCourseCard({
   course,

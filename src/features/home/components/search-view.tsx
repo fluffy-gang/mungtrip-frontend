@@ -2,9 +2,10 @@ import { useMemo } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { SymbolView } from 'expo-symbols';
 
+import { styles } from '../styles';
+
 import type { Place } from '@/features/places/types';
 
-import { styles } from '../styles';
 
 interface SearchViewProps {
   insetsTop: number;

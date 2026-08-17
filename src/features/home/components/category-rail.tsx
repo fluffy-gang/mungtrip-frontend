@@ -2,9 +2,9 @@ import { Image } from "expo-image";
 import { SymbolView } from "expo-symbols";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
-import type { PlaceCategory } from "@/features/places/types";
-
 import { styles } from "../styles";
+
+import type { PlaceCategory } from "@/features/places/types";
 import type { HomeDogProfile } from "../types";
 
 interface CategoryRailProps {

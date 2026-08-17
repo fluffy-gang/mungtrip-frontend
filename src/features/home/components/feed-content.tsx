@@ -1,11 +1,12 @@
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
-import type { Course } from '@/features/courses/types';
-import type { Place } from '@/features/places/types';
 
 import { styles } from '../styles';
 import { PlaceCard } from './place-card';
 import { RecommendedCourseCard } from './recommended-course-card';
+
+import type { Place } from '@/features/places/types';
+import type { Course } from '@/features/courses/types';
 
 interface FeedContentProps {
   courses: Course[];

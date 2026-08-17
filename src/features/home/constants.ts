@@ -1,5 +1,4 @@
 import type { SymbolViewProps } from 'expo-symbols';
-
 import type { MapBounds, MapCamera } from './types';
 
 type PlaceCategorySymbol = SymbolViewProps['name'];

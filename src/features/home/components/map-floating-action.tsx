@@ -1,9 +1,10 @@
 import { Pressable, Text } from 'react-native';
 import { SymbolView } from 'expo-symbols';
 
+import { styles } from '../styles';
+
 import type { SymbolViewProps } from 'expo-symbols';
 
-import { styles } from '../styles';
 
 interface MapFloatingActionProps {
   bottom: number;

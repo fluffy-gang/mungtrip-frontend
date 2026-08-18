@@ -9,20 +9,24 @@ import { styles } from '../styles';
 interface SearchViewProps {
   insetsTop: number;
   onBack: () => void;
+  onRemoveRecentSearch: (keyword: string) => void;
   onSelectKeyword: (keyword: string) => void;
   places: Place[];
   popularKeywords: string[];
   query: string;
+  recentSearches: string[];
   setQuery: (value: string) => void;
 }
 
 export function SearchView({
   insetsTop,
   onBack,
+  onRemoveRecentSearch,
   onSelectKeyword,
   places,
   popularKeywords,
   query,
+  recentSearches,
   setQuery,
 }: SearchViewProps) {
   const suggestions = useMemo(() => {
@@ -61,6 +65,32 @@ export function SearchView({
         </View>
       </View>
 
+
+      {!query.trim() && recentSearches.length > 0 ? (
+        <View style={styles.searchSection}>
+          <Text style={styles.searchSectionTitle}>최근 검색</Text>
+          {recentSearches.map(keyword => (
+            <View key={keyword} style={styles.recentSearchRow}>
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => onSelectKeyword(keyword)}
+                style={styles.recentSearchButton}
+              >
+                <SymbolView name={{ android: 'history', ios: 'clock', web: 'history' }} size={18} tintColor="#8B95A1" />
+                <Text style={styles.suggestionText}>{keyword}</Text>
+              </Pressable>
+              <Pressable
+                accessibilityLabel={`${keyword} 최근 검색 삭제`}
+                accessibilityRole="button"
+                onPress={() => onRemoveRecentSearch(keyword)}
+                style={styles.recentSearchRemoveButton}
+              >
+                <SymbolView name={{ android: 'close', ios: 'xmark', web: 'close' }} size={16} tintColor="#8B95A1" />
+              </Pressable>
+            </View>
+          ))}
+        </View>
+      ) : null}
 
       <View style={styles.searchSection}>
         <Text style={styles.searchSectionTitle}>이번달 인기 장소</Text>

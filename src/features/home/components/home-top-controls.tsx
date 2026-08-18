@@ -7,6 +7,7 @@ import type { HomeDogProfile } from '../types';
 
 interface HomeTopControlsProps {
   activeDog: HomeDogProfile | null;
+  onAddDog: () => void;
   onOpenDogSelector: () => void;
   onOpenSearch: () => void;
   selectedDogs: HomeDogProfile[];
@@ -15,6 +16,7 @@ interface HomeTopControlsProps {
 
 export function HomeTopControls({
   activeDog,
+  onAddDog,
   onOpenDogSelector,
   onOpenSearch,
   selectedDogs,
@@ -25,38 +27,40 @@ export function HomeTopControls({
 
   return (
     <View style={[styles.topControls, { top }]}>
-      <Pressable
-        accessibilityRole="button"
-        onPress={onOpenDogSelector}
-        style={styles.dogSelector}
-      >
-        <View style={styles.dogAvatarStack}>
-          {visibleDogs.length === 0 ? (
-            <SymbolView
-              name={{ android: 'pets', ios: 'pawprint.fill', web: 'pets' }}
-              size={22}
-              tintColor="#6B7684"
-            />
+      {activeDog === null ? (
+        <Pressable
+          accessibilityRole="button"
+          onPress={onAddDog}
+          style={styles.dogSelectorEmpty}
+        >
+          <Text style={styles.dogSelectorAddText}>반려견 추가</Text>
+          <SymbolView name={{ android: 'add', ios: 'plus', web: 'add' }} size={14} tintColor="#FE6A20" />
+        </Pressable>
+      ) : (
+        <Pressable
+          accessibilityRole="button"
+          onPress={onOpenDogSelector}
+          style={styles.dogSelector}
+        >
+          <View style={styles.dogAvatarStack}>
+            {visibleDogs.slice(0, 2).map((dog, index) => (
+              <Image
+                key={dog.id}
+                contentFit="cover"
+                source={{ uri: dog.imageUrl }}
+                style={[
+                  styles.stackedDogAvatar,
+                  { marginLeft: index === 0 ? 0 : -10 },
+                ]}
+              />
+            ))}
+          </View>
+          {selectedDogs.length <= 1 ? (
+            <Text style={styles.dogSelectorText}>{activeDog.name}</Text>
           ) : null}
-          {visibleDogs.slice(0, 2).map((dog, index) => (
-            <Image
-              key={dog.id}
-              contentFit="cover"
-              source={{ uri: dog.imageUrl }}
-              style={[
-                styles.stackedDogAvatar,
-                { marginLeft: index === 0 ? 0 : -10 },
-              ]}
-            />
-          ))}
-        </View>
-        {selectedDogs.length <= 1 ? (
-          <Text style={styles.dogSelectorText}>
-            {activeDog?.name ?? '반려견 선택'}
-          </Text>
-        ) : null}
-        <SymbolView name={{ android: 'keyboard_arrow_down', ios: 'chevron.down', web: 'keyboard_arrow_down' }} size={16} tintColor="#6B7684" />
-      </Pressable>
+          <SymbolView name={{ android: 'keyboard_arrow_down', ios: 'chevron.down', web: 'keyboard_arrow_down' }} size={16} tintColor="#6B7684" />
+        </Pressable>
+      )}
       <Pressable
         accessibilityRole="button"
         onPress={onOpenSearch}

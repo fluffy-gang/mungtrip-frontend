@@ -45,5 +45,15 @@ export interface HomeData {
   popularKeywords: string[];
   recentlyVerified: Place[];
   tags: PlaceTag[];
-  topPlaces: Place[];
+  topCafePlaces: Place[];
+  topRestaurantPlaces: Place[];
+}
+
+export interface RecommendedCourse {
+  distanceLabel: string;
+  id: number;
+  imageUrl: string;
+  isLiked: boolean;
+  subtitle: string;
+  title: string;
 }

@@ -1,69 +1,58 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import { getRecentlyVerifiedPlaces, getTopPlaces } from '@/features/places/api';
 import type { Place, PlaceCategory, PlaceTag } from '@/features/places/types';
 
-import { DEFAULT_CATEGORY_CODE } from '../constants';
+import {
+  MOCK_RECENTLY_VERIFIED_PLACES,
+  MOCK_TOP_CAFE_PLACES,
+  MOCK_TOP_RESTAURANT_PLACES,
+} from '../mock/feed-places';
+import { useAsyncEffect } from './use-async-effect';
 
 interface UseHomeFeedOptions {
   categories: PlaceCategory[];
-  categoryCode: string | null;
   enabled: boolean;
   reloadKey: number;
   tags: PlaceTag[];
 }
 
 export function useHomeFeed(options: UseHomeFeedOptions) {
-  const { categories, categoryCode, enabled, reloadKey, tags } = options;
+  const { categories, enabled, reloadKey, tags } = options;
   const [recentlyVerified, setRecentlyVerified] = useState<Place[]>([]);
-  const [topPlaces, setTopPlaces] = useState<Place[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [hasError, setHasError] = useState(false);
-  const topCategoryCode = useMemo(
-    () =>
-      categoryCode && categories.some(category => category.code === categoryCode)
-        ? categoryCode
-        : (categories[0]?.code ?? DEFAULT_CATEGORY_CODE),
-    [categories, categoryCode],
-  );
+  const [topCafePlaces, setTopCafePlaces] = useState<Place[]>([]);
+  const [topRestaurantPlaces, setTopRestaurantPlaces] = useState<Place[]>([]);
 
-  useEffect(() => {
-    let isMounted = true;
-    if (!enabled) return;
-
-    const run = async () => {
-      await Promise.resolve();
-      if (!isMounted) return;
-
-      setLoading(true);
-      setHasError(false);
-
-      try {
-        const catalog = { categories, tags };
-        const [nextRecentlyVerified, nextTopPlaces] = await Promise.all([
+  const { hasError, loading } = useAsyncEffect(
+    async isMounted => {
+      const catalog = { categories, tags };
+      const [nextRecentlyVerified, nextTopCafePlaces, nextTopRestaurantPlaces] =
+        await Promise.all([
           getRecentlyVerifiedPlaces(10, catalog),
-          getTopPlaces(
-            { category: topCategoryCode, days: 30, limit: 10 },
-            catalog,
-          ),
+          getTopPlaces({ category: 'CAFE', days: 30, limit: 10 }, catalog),
+          getTopPlaces({ category: 'RESTAURANT', days: 30, limit: 10 }, catalog),
         ]);
 
-        if (isMounted) {
-          setRecentlyVerified(nextRecentlyVerified);
-          setTopPlaces(nextTopPlaces);
-        }
-      } catch {
-        if (isMounted) setHasError(true);
-      } finally {
-        if (isMounted) setLoading(false);
+      if (isMounted()) {
+        // TODO(#10): dev 서버에 인증 데이터가 시딩되면 목데이터 폴백을 제거한다.
+        setRecentlyVerified(
+          nextRecentlyVerified.length > 0
+            ? nextRecentlyVerified
+            : MOCK_RECENTLY_VERIFIED_PLACES,
+        );
+        setTopCafePlaces(
+          nextTopCafePlaces.length > 0 ? nextTopCafePlaces : MOCK_TOP_CAFE_PLACES,
+        );
+        setTopRestaurantPlaces(
+          nextTopRestaurantPlaces.length > 0
+            ? nextTopRestaurantPlaces
+            : MOCK_TOP_RESTAURANT_PLACES,
+        );
       }
-    };
+    },
+    [categories, enabled, reloadKey, tags],
+    enabled,
+  );
 
-    void run();
-    return () => {
-      isMounted = false;
-    };
-  }, [categories, enabled, reloadKey, tags, topCategoryCode]);
-
-  return { hasError, loading, recentlyVerified, topPlaces };
+  return { hasError, loading, recentlyVerified, topCafePlaces, topRestaurantPlaces };
 }

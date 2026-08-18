@@ -25,7 +25,6 @@ export function useHomeData(
   });
   const feed = useHomeFeed({
     categories: catalog.categories,
-    categoryCode: selectedCategoryCode,
     enabled: catalog.isLoaded,
     reloadKey,
     tags: catalog.tags,
@@ -51,6 +50,7 @@ export function useHomeData(
     searchPlaces: search.search,
     searchResults: search.results,
     tags: catalog.tags,
-    topPlaces: feed.topPlaces,
+    topCafePlaces: feed.topCafePlaces,
+    topRestaurantPlaces: feed.topRestaurantPlaces,
   };
 }

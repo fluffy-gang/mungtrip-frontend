@@ -57,6 +57,7 @@ export const PLACE_CATEGORY_META = {
 
 export const BOTTOM_TAB_HEIGHT = 56;
 export const MAP_COLLAPSED_SHEET_HEIGHT = 214;
+// 카테고리 칩(zIndex 20)이 항상 시트보다 위에 떠 있어 그 아래까지만 올라간다.
 export const MAP_EXPANDED_TOP_OFFSET = 104;
 export const MAP_FLOATING_ACTION_GAP = 10;
 export const MAP_HALF_SHEET_RATIO = 0.5;
@@ -64,7 +65,6 @@ export const MAP_BOUNDS_EPSILON = 0.00001;
 export const MAP_MAX_ZOOM = 18;
 export const MAP_MIN_ZOOM = 6;
 export const MAP_ZOOM_STEP = 1;
-export const DEFAULT_CATEGORY_CODE = 'RESTAURANT';
 export const JEJU_MAP_BOUNDS: MapBounds = {
   swLng: 126.1,
   swLat: 33.1,

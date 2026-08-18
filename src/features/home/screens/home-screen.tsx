@@ -1,4 +1,6 @@
-import { Platform, StatusBar, View } from 'react-native';
+import { StatusBar, View } from 'react-native';
+
+import { showComingSoon } from '@/shared/utils/show-coming-soon';
 
 import { BOTTOM_TAB_HEIGHT } from '../constants';
 import { CategoryRail } from '../components/category-rail';
@@ -13,6 +15,7 @@ import { SearchResultsPanel } from '../components/search-results-panel';
 import { SearchView } from '../components/search-view';
 import { useHomeScreen } from '../hooks/use-home-screen';
 import { styles } from '../styles';
+import { isNativeMapAvailable } from '../utils/native-modules';
 
 export function HomeScreen() {
   const home = useHomeScreen();
@@ -25,10 +28,12 @@ export function HomeScreen() {
         <SearchView
           insetsTop={home.insets.top}
           onBack={home.closeSearch}
+          onRemoveRecentSearch={home.removeRecentSearch}
           onSelectKeyword={home.submitSearch}
           places={home.places}
           popularKeywords={home.popularKeywords}
           query={home.query}
+          recentSearches={home.recentSearches}
           setQuery={home.setQuery}
         />
       ) : (
@@ -48,6 +53,7 @@ export function HomeScreen() {
           )}
           <HomeTopControls
             activeDog={home.homeViewer.activeDog}
+            onAddDog={showComingSoon}
             onOpenDogSelector={() => home.setIsDogSheetVisible(true)}
             onOpenSearch={home.openSearch}
             selectedDogs={home.homeViewer.selectedDogs}
@@ -64,7 +70,7 @@ export function HomeScreen() {
             onMoveToCurrentLocation={home.moveToCurrentLocation}
             onZoomIn={home.zoomIn}
             onZoomOut={home.zoomOut}
-            visible={Platform.OS !== 'web' && home.mode === 'map'}
+            visible={isNativeMapAvailable && home.mode === 'map'}
             zoomControlBottom={home.zoomControlBottom}
           />
           {home.mode === 'list' ? (
@@ -83,11 +89,10 @@ export function HomeScreen() {
                 icon={home.mapFloatingActionIcon}
                 onPress={home.handleMapFloatingAction}
                 text={home.mapFloatingActionText}
-                visible={!home.selectedPlace}
+                visible
               />
               <HomeMapSheet
                 bottom={bottomTabHeight}
-                categories={home.categories}
                 dogs={home.homeViewer.selectedDogs}
                 hasError={home.hasError}
                 height={home.mapSheetHeight}
@@ -95,17 +100,14 @@ export function HomeScreen() {
                 loading={home.loading}
                 onRetry={home.retry}
                 onSelectPlace={home.selectPlace}
-                onShowCategoryPlaces={home.showCategoryList}
+                onShowCategoryPlaces={home.showCategoryPlaces}
                 onShowMap={home.showMapView}
                 onShowRecommendedPlaces={home.showRecommendationList}
                 panHandlers={home.mapSheetPanHandlers}
                 places={home.filteredPlaces}
                 recentlyVerified={home.recentlyVerified}
-                selectedCategoryCode={home.activeCategoryCode}
-                selectedPlace={home.selectedPlace}
-                sheetLabel={home.sheetLabel}
-                sheetTitle={home.sheetTitle}
-                topPlaces={home.topPlaces}
+                topCafePlaces={home.topCafePlaces}
+                topRestaurantPlaces={home.topRestaurantPlaces}
               />
             </>
           )}

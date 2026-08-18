@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import {
   ActivityIndicator,
   type GestureResponderHandlers,
@@ -6,18 +7,22 @@ import {
   Text,
   View,
 } from 'react-native';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
 
-import type { Place, PlaceCategory } from '@/features/places/types';
+import type { Place } from '@/features/places/types';
 
 import { colors, styles } from '../styles';
 import type { HomeDogProfile } from '../types';
-import { CompactPlacePreview } from './compact-place-preview';
 import { FeedContent } from './feed-content';
 import { PlaceList } from './place-list';
 
 interface HomeMapSheetProps {
   bottom: number;
-  categories: PlaceCategory[];
   dogs: HomeDogProfile[];
   hasError: boolean;
   height: number;
@@ -25,22 +30,18 @@ interface HomeMapSheetProps {
   loading: boolean;
   onRetry: () => void;
   onSelectPlace: (place: Place) => void;
-  onShowCategoryPlaces: () => void;
+  onShowCategoryPlaces: (categoryCode: string) => void;
   onShowMap: () => void;
   onShowRecommendedPlaces: () => void;
   panHandlers: GestureResponderHandlers;
   places: Place[];
   recentlyVerified: Place[];
-  selectedCategoryCode: string | null;
-  selectedPlace: Place | null;
-  sheetLabel: string;
-  sheetTitle: string;
-  topPlaces: Place[];
+  topCafePlaces: Place[];
+  topRestaurantPlaces: Place[];
 }
 
 export function HomeMapSheet({
   bottom,
-  categories,
   dogs,
   hasError,
   height,
@@ -54,27 +55,32 @@ export function HomeMapSheet({
   panHandlers,
   places,
   recentlyVerified,
-  selectedCategoryCode,
-  selectedPlace,
-  sheetLabel,
-  sheetTitle,
-  topPlaces,
+  topCafePlaces,
+  topRestaurantPlaces,
 }: HomeMapSheetProps) {
-  const renderHeader = () => (
-    <View style={styles.sheetHeader}>
-      <View>
-        <Text style={styles.sheetLabel}>{sheetLabel}</Text>
-        <Text style={styles.sheetTitle}>{sheetTitle}</Text>
-      </View>
-      {loading ? <ActivityIndicator color={colors.primary} /> : null}
-    </View>
-  );
+  const animatedHeight = useSharedValue(height);
+
+  useEffect(() => {
+    animatedHeight.value = withTiming(height, {
+      duration: 280,
+      easing: Easing.out(Easing.cubic),
+    });
+  }, [animatedHeight, height]);
+
+  const sheetHeightStyle = useAnimatedStyle(() => ({
+    height: animatedHeight.value,
+  }));
 
   return (
-    <View style={[styles.mapBottomSheet, { bottom, height }]}>
+    <Animated.View style={[styles.mapBottomSheet, { bottom }, sheetHeightStyle]}>
       <View style={styles.sheetDragArea} {...panHandlers}>
         <View style={styles.sheetHandle} />
       </View>
+      {loading ? (
+        <View style={styles.sheetLoadingRow}>
+          <ActivityIndicator color={colors.primary} />
+        </View>
+      ) : null}
       {hasError ? (
         <View style={styles.emptyList}>
           <Text style={styles.emptyListTitle}>장소 정보를 불러오지 못했어요</Text>
@@ -89,15 +95,6 @@ export function HomeMapSheet({
             <Text style={styles.retryButtonText}>다시 시도</Text>
           </Pressable>
         </View>
-      ) : selectedPlace ? (
-        <>
-          {renderHeader()}
-          <CompactPlacePreview
-            dogs={dogs}
-            onSelectPlace={onSelectPlace}
-            places={[selectedPlace]}
-          />
-        </>
       ) : isPlaceList ? (
         <PlaceList
           dogs={dogs}
@@ -113,16 +110,15 @@ export function HomeMapSheet({
           style={styles.mapSheetFeedScroll}
         >
           <FeedContent
-            categories={categories}
             onSelectPlace={onSelectPlace}
             onShowCategoryPlaces={onShowCategoryPlaces}
             onShowRecommendedPlaces={onShowRecommendedPlaces}
             recentlyVerified={recentlyVerified}
-            selectedCategoryCode={selectedCategoryCode}
-            topPlaces={topPlaces}
+            topCafePlaces={topCafePlaces}
+            topRestaurantPlaces={topRestaurantPlaces}
           />
         </ScrollView>
       )}
-    </View>
+    </Animated.View>
   );
 }

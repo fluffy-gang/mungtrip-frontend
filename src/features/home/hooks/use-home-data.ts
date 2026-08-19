@@ -1,14 +1,13 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState } from "react";
 
-import { JEJU_MAP_BOUNDS } from '../constants';
-import type { MapBounds } from '../types';
-import { useHomeFeed } from './use-home-feed';
-import { useMapPlaces } from './use-map-places';
-import { usePlaceCatalog } from './use-place-catalog';
-import { usePlaceSearch } from './use-place-search';
+import { JEJU_MAP_BOUNDS } from "../constants";
+import type { MapBounds } from "../types";
+import { useHomeFeed } from "./use-home-feed";
+import { useMapPlaces } from "./use-map-places";
+import { usePlaceCatalog } from "./use-place-catalog";
+import { usePlaceSearch } from "./use-place-search";
 
 export function useHomeData(
-  selectedCategoryCode: string | null = null,
   mapBounds: MapBounds = JEJU_MAP_BOUNDS,
   dogIds: number[] = [],
 ) {
@@ -17,7 +16,6 @@ export function useHomeData(
   const mapPlaces = useMapPlaces({
     bounds: mapBounds,
     categories: catalog.categories,
-    categoryCode: selectedCategoryCode,
     dogIds,
     enabled: catalog.isLoaded,
     reloadKey,
@@ -35,16 +33,19 @@ export function useHomeData(
     tags: catalog.tags,
   });
   const retry = useCallback(() => {
-    setReloadKey(currentKey => currentKey + 1);
+    setReloadKey((currentKey) => currentKey + 1);
   }, []);
 
   return {
     categories: catalog.categories,
     clearSearchResults: search.clear,
     courses: feed.courses,
-    hasError: catalog.hasError || mapPlaces.hasError || feed.hasError,
-    loading: catalog.loading || mapPlaces.loading || feed.loading,
+
+    feedHasError: catalog.hasError || feed.hasError,
+    feedLoading: catalog.loading || feed.loading,
     places: mapPlaces.places,
+    placesHasError: catalog.hasError || mapPlaces.hasError,
+    placesLoading: catalog.loading || mapPlaces.loading,
     popularKeywords: catalog.popularKeywords,
     recentlyVerified: feed.recentlyVerified,
     retry,

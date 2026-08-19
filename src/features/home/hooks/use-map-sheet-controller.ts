@@ -46,9 +46,7 @@ export function useMapSheetController({
       : '장소 리스트 보기';
   const floatingActionIcon = isExpanded
     ? { android: 'map', ios: 'map', web: 'map' } as const
-    : isPlaceList
-      ? { android: 'dashboard', ios: 'square.grid.2x2', web: 'dashboard' } as const
-      : { android: 'list', ios: 'list.bullet', web: 'list' } as const;
+    : { android: 'swap_horiz', ios: 'arrow.left.arrow.right', web: 'swap_horiz' } as const;
 
   const collapse = useCallback(() => {
     setLevel('collapsed');

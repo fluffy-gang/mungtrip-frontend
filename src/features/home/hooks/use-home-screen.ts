@@ -55,9 +55,11 @@ export function useHomeScreen() {
     categories,
     clearSearchResults,
     courses,
-    hasError,
-    loading,
+    feedHasError,
+    feedLoading,
     places,
+    placesHasError,
+    placesLoading,
     popularKeywords,
     recentlyVerified,
     retry,
@@ -65,7 +67,7 @@ export function useHomeScreen() {
     searchResults,
     topCafePlaces,
     topRestaurantPlaces,
-  } = useHomeData(selectedCategoryCode, mapBounds, homeViewer.dogIds);
+  } = useHomeData(mapBounds, homeViewer.dogIds);
 
   const handleLocated = useCallback(() => {
     mapSheet.showMap();
@@ -140,6 +142,7 @@ export function useHomeScreen() {
       const isSameCategory = selectedCategoryCode === category.code;
       const nextCategoryCode = isSameCategory ? null : category.code;
 
+      setSelectedPlace(null);
       setSelectedCategoryCode(nextCategoryCode);
 
       if (isSearchList) {
@@ -233,21 +236,33 @@ export function useHomeScreen() {
     },
     [router],
   );
+  const previewPlace = useCallback(
+    (place: Place) => {
+      setSelectedPlace(place);
+      mapSheet.showMap();
+      setMode('map');
+    },
+    [mapSheet],
+  );
+  const closeSelectedPlace = useCallback(() => {
+    setSelectedPlace(null);
+  }, []);
 
   return {
     activeCategoryCode,
     categories,
     closeSearch,
+    closeSelectedPlace,
     courses,
+    feedHasError,
+    feedLoading,
     filteredPlaces,
     floatingActionBottom: mapSheet.floatingActionBottom,
-    hasError,
     headerHeight,
     homeViewer,
     insets,
     isDogSheetVisible,
     isMapSheetPlaceList: mapSheet.isPlaceList,
-    loading,
     mapCamera,
     mapPlaces,
     mapFloatingActionIcon: mapSheet.floatingActionIcon,
@@ -259,7 +274,10 @@ export function useHomeScreen() {
     myLocationButtonBottom: mapSheet.myLocationButtonBottom,
     openSearch,
     places,
+    placesHasError,
+    placesLoading,
     popularKeywords,
+    previewPlace,
     query,
     recentSearches,
     recentlyVerified,

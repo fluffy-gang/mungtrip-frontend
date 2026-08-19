@@ -11,6 +11,7 @@ import { HomeTopControls } from '../components/home-top-controls';
 import { MapCanvas } from '../components/map-canvas';
 import { MapFloatingAction } from '../components/map-floating-action';
 import { MapOverlayControls } from '../components/map-overlay-controls';
+import { PlacePreviewCard } from '../components/place-preview-card';
 import { SearchView } from '../components/search-view';
 import { useHomeScreen } from '../hooks/use-home-screen';
 import { styles } from '../styles';
@@ -54,7 +55,7 @@ export function HomeScreen() {
           <View style={styles.mapArea}>
             <MapCanvas
               mapCamera={home.mapCamera}
-              onSelectPlace={home.selectPlace}
+              onSelectPlace={home.previewPlace}
               places={home.mapPlaces}
               selectedCategory={home.selectedCategory}
               selectedPlaceId={home.selectedPlace?.id}
@@ -76,27 +77,37 @@ export function HomeScreen() {
               icon={home.mapFloatingActionIcon}
               onPress={home.handleMapFloatingAction}
               text={home.mapFloatingActionText}
-              visible
+              visible={!home.selectedPlace}
             />
-            <HomeMapSheet
-              bottom={bottomTabHeight}
-              courses={home.courses}
-              dogs={home.homeViewer.selectedDogs}
-              hasError={home.hasError}
-              height={home.mapSheetHeight}
-              isPlaceList={home.isMapSheetPlaceList}
-              loading={home.loading}
-              onRetry={home.retry}
-              onSelectPlace={home.selectPlace}
-              onShowCategoryPlaces={home.showCategoryPlaces}
-              onShowMap={home.showMapView}
-              onShowRecommendedPlaces={home.showRecommendationList}
-              panHandlers={home.mapSheetPanHandlers}
-              places={home.filteredPlaces}
-              recentlyVerified={home.recentlyVerified}
-              topCafePlaces={home.topCafePlaces}
-              topRestaurantPlaces={home.topRestaurantPlaces}
-            />
+            {home.selectedPlace ? (
+              <PlacePreviewCard
+                bottom={bottomTabHeight + 12}
+                dogs={home.homeViewer.selectedDogs}
+                onClose={home.closeSelectedPlace}
+                onSelectPlace={home.selectPlace}
+                place={home.selectedPlace}
+              />
+            ) : (
+              <HomeMapSheet
+                bottom={bottomTabHeight}
+                courses={home.courses}
+                dogs={home.homeViewer.selectedDogs}
+                hasError={home.isMapSheetPlaceList ? home.placesHasError : home.feedHasError}
+                height={home.mapSheetHeight}
+                isPlaceList={home.isMapSheetPlaceList}
+                loading={home.isMapSheetPlaceList ? home.placesLoading : home.feedLoading}
+                onRetry={home.retry}
+                onSelectPlace={home.selectPlace}
+                onShowCategoryPlaces={home.showCategoryPlaces}
+                onShowMap={home.showMapView}
+                onShowRecommendedPlaces={home.showRecommendationList}
+                panHandlers={home.mapSheetPanHandlers}
+                places={home.filteredPlaces}
+                recentlyVerified={home.recentlyVerified}
+                topCafePlaces={home.topCafePlaces}
+                topRestaurantPlaces={home.topRestaurantPlaces}
+              />
+            )}
           </View>
           <HomeBottomTabs
             height={bottomTabHeight}

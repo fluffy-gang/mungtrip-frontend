@@ -5,11 +5,6 @@ import type { Course } from '@/features/courses/types';
 import { getRecentlyVerifiedPlaces, getTopPlaces } from '@/features/places/api';
 import type { Place, PlaceCategory, PlaceTag } from '@/features/places/types';
 
-import {
-  MOCK_RECENTLY_VERIFIED_PLACES,
-  MOCK_TOP_CAFE_PLACES,
-  MOCK_TOP_RESTAURANT_PLACES,
-} from '../mock/feed-places';
 import { useAsyncEffect } from './use-async-effect';
 
 interface UseHomeFeedOptions {
@@ -38,21 +33,10 @@ export function useHomeFeed(options: UseHomeFeedOptions) {
         ]);
 
       if (isMounted()) {
-        // TODO(#10): dev 서버에 인증 데이터가 시딩되면 목데이터 폴백을 제거한다.
         setCourses(nextCourses);
-        setRecentlyVerified(
-          nextRecentlyVerified.length > 0
-            ? nextRecentlyVerified
-            : MOCK_RECENTLY_VERIFIED_PLACES,
-        );
-        setTopCafePlaces(
-          nextTopCafePlaces.length > 0 ? nextTopCafePlaces : MOCK_TOP_CAFE_PLACES,
-        );
-        setTopRestaurantPlaces(
-          nextTopRestaurantPlaces.length > 0
-            ? nextTopRestaurantPlaces
-            : MOCK_TOP_RESTAURANT_PLACES,
-        );
+        setRecentlyVerified(nextRecentlyVerified);
+        setTopCafePlaces(nextTopCafePlaces);
+        setTopRestaurantPlaces(nextTopRestaurantPlaces);
       }
     },
     [categories, enabled, reloadKey, tags],

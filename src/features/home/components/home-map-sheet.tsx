@@ -96,13 +96,16 @@ export function HomeMapSheet({
           </Pressable>
         </View>
       ) : isPlaceList ? (
-        <PlaceList
-          dogs={dogs}
-          places={places}
-          onSelectPlace={onSelectPlace}
-          onShowMap={onShowMap}
-          showMapSwitchButton={false}
-        />
+        <>
+          <Text style={styles.placeListCount}>{places.length}개 장소</Text>
+          <PlaceList
+            dogs={dogs}
+            places={places}
+            onSelectPlace={onSelectPlace}
+            onShowMap={onShowMap}
+            showMapSwitchButton={false}
+          />
+        </>
       ) : (
         <ScrollView
           contentContainerStyle={styles.mapSheetFeedContent}

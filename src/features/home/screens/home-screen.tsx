@@ -11,7 +11,6 @@ import { HomeTopControls } from '../components/home-top-controls';
 import { MapCanvas } from '../components/map-canvas';
 import { MapFloatingAction } from '../components/map-floating-action';
 import { MapOverlayControls } from '../components/map-overlay-controls';
-import { SearchResultsPanel } from '../components/search-results-panel';
 import { SearchView } from '../components/search-view';
 import { useHomeScreen } from '../hooks/use-home-screen';
 import { styles } from '../styles';
@@ -38,7 +37,21 @@ export function HomeScreen() {
         />
       ) : (
         <>
-          {home.mode === 'list' ? null : (
+          <View style={[styles.headerBar, { paddingTop: home.insets.top + 8 }]}>
+            <HomeTopControls
+              activeDog={home.homeViewer.activeDog}
+              onAddDog={showComingSoon}
+              onOpenDogSelector={() => home.setIsDogSheetVisible(true)}
+              onOpenSearch={home.openSearch}
+              selectedDogs={home.homeViewer.selectedDogs}
+            />
+            <CategoryRail
+              activeCategoryCode={home.activeCategoryCode}
+              categories={home.categories}
+              onSelectCategory={home.selectCategory}
+            />
+          </View>
+          <View style={styles.mapArea}>
             <MapCanvas
               mapCamera={home.mapCamera}
               onSelectPlace={home.selectPlace}
@@ -50,67 +63,40 @@ export function HomeScreen() {
               userCoordinate={home.userCoordinate}
               userProfileImageUrl={home.homeViewer.activeDog?.imageUrl}
             />
-          )}
-          <HomeTopControls
-            activeDog={home.homeViewer.activeDog}
-            onAddDog={showComingSoon}
-            onOpenDogSelector={() => home.setIsDogSheetVisible(true)}
-            onOpenSearch={home.openSearch}
-            selectedDogs={home.homeViewer.selectedDogs}
-            top={home.insets.top + 8}
-          />
-          <CategoryRail
-            activeCategoryCode={home.activeCategoryCode}
-            categories={home.categories}
-            onSelectCategory={home.selectCategory}
-            top={home.insets.top + 58}
-          />
-          <MapOverlayControls
-            myLocationButtonBottom={home.myLocationButtonBottom}
-            onMoveToCurrentLocation={home.moveToCurrentLocation}
-            onZoomIn={home.zoomIn}
-            onZoomOut={home.zoomOut}
-            visible={isNativeMapAvailable && home.mode === 'map'}
-            zoomControlBottom={home.zoomControlBottom}
-          />
-          {home.mode === 'list' ? (
-            <SearchResultsPanel
+            <MapOverlayControls
+              myLocationButtonBottom={home.myLocationButtonBottom}
+              onMoveToCurrentLocation={home.moveToCurrentLocation}
+              onZoomIn={home.zoomIn}
+              onZoomOut={home.zoomOut}
+              visible={isNativeMapAvailable}
+              zoomControlBottom={home.zoomControlBottom}
+            />
+            <MapFloatingAction
+              bottom={home.floatingActionBottom}
+              icon={home.mapFloatingActionIcon}
+              onPress={home.handleMapFloatingAction}
+              text={home.mapFloatingActionText}
+              visible
+            />
+            <HomeMapSheet
               bottom={bottomTabHeight}
               dogs={home.homeViewer.selectedDogs}
-              places={home.filteredPlaces}
+              hasError={home.hasError}
+              height={home.mapSheetHeight}
+              isPlaceList={home.isMapSheetPlaceList}
+              loading={home.loading}
+              onRetry={home.retry}
               onSelectPlace={home.selectPlace}
+              onShowCategoryPlaces={home.showCategoryPlaces}
               onShowMap={home.showMapView}
-              top={home.insets.top + 104}
+              onShowRecommendedPlaces={home.showRecommendationList}
+              panHandlers={home.mapSheetPanHandlers}
+              places={home.filteredPlaces}
+              recentlyVerified={home.recentlyVerified}
+              topCafePlaces={home.topCafePlaces}
+              topRestaurantPlaces={home.topRestaurantPlaces}
             />
-          ) : (
-            <>
-              <MapFloatingAction
-                bottom={home.floatingActionBottom}
-                icon={home.mapFloatingActionIcon}
-                onPress={home.handleMapFloatingAction}
-                text={home.mapFloatingActionText}
-                visible
-              />
-              <HomeMapSheet
-                bottom={bottomTabHeight}
-                dogs={home.homeViewer.selectedDogs}
-                hasError={home.hasError}
-                height={home.mapSheetHeight}
-                isPlaceList={home.isMapSheetPlaceList}
-                loading={home.loading}
-                onRetry={home.retry}
-                onSelectPlace={home.selectPlace}
-                onShowCategoryPlaces={home.showCategoryPlaces}
-                onShowMap={home.showMapView}
-                onShowRecommendedPlaces={home.showRecommendationList}
-                panHandlers={home.mapSheetPanHandlers}
-                places={home.filteredPlaces}
-                recentlyVerified={home.recentlyVerified}
-                topCafePlaces={home.topCafePlaces}
-                topRestaurantPlaces={home.topRestaurantPlaces}
-              />
-            </>
-          )}
+          </View>
           <HomeBottomTabs
             height={bottomTabHeight}
             onOpenSearch={home.openSearch}

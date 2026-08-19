@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { Place, PlaceCategory } from '@/features/places/types';
 
 import {
+  HEADER_CONTENT_HEIGHT,
   JEJU_MAP_BOUNDS,
   MAP_BOUNDS_EPSILON,
   MAP_MAX_ZOOM,
@@ -37,10 +38,10 @@ export function useHomeScreen() {
   const [query, setQuery] = useState('');
   const [listSource, setListSource] =
     useState<PlaceListSource>('recommendation');
+  const headerHeight = insets.top + HEADER_CONTENT_HEIGHT;
   const mapSheet = useMapSheetController({
+    areaHeight: windowHeight - headerHeight,
     bottomInset: insets.bottom,
-    topInset: insets.top,
-    windowHeight,
   });
   const [mapBounds, setMapBounds] = useState<MapBounds>(JEJU_MAP_BOUNDS);
   const [isDogSheetVisible, setIsDogSheetVisible] = useState(false);
@@ -93,8 +94,7 @@ export function useHomeScreen() {
     [activeCategoryCode, categories],
   );
   const trimmedQuery = query.trim();
-  const isSearchList =
-    mode === 'list' && listSource === 'search' && Boolean(trimmedQuery);
+  const isSearchList = listSource === 'search' && Boolean(trimmedQuery);
   const filterCategory = query.trim() ? undefined : selectedCategory;
   const filteredPlaces = useMemo(() => {
     if (isSearchList && searchResults) {
@@ -163,11 +163,12 @@ export function useHomeScreen() {
       setQuery(nextKeyword);
       setSelectedPlace(null);
       setListSource('search');
-      setMode('list');
+      mapSheet.showPlacesCollapsed();
+      setMode('map');
       addRecentSearch(nextKeyword);
       void searchPlaces({ keyword: nextKeyword });
     },
-    [addRecentSearch, searchPlaces],
+    [addRecentSearch, mapSheet, searchPlaces],
   );
   const showCategoryPlaces = useCallback(
     (categoryCode: string) => {
@@ -206,7 +207,12 @@ export function useHomeScreen() {
     setMode('search');
   }, []);
   const handleMapFloatingAction = useCallback(() => {
-    mapSheet.toggleContent();
+    if (mapSheet.isExpanded) {
+      mapSheet.showMap();
+    } else {
+      mapSheet.toggleContent();
+    }
+
     setSelectedPlace(null);
     setMode('map');
   }, [mapSheet]);
@@ -234,6 +240,7 @@ export function useHomeScreen() {
     filteredPlaces,
     floatingActionBottom: mapSheet.floatingActionBottom,
     hasError,
+    headerHeight,
     homeViewer,
     insets,
     isDogSheetVisible,

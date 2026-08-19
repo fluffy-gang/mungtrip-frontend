@@ -4,41 +4,31 @@ import { PanResponder } from 'react-native';
 import {
   BOTTOM_TAB_HEIGHT,
   MAP_COLLAPSED_SHEET_HEIGHT,
-  MAP_EXPANDED_TOP_OFFSET,
+  MAP_EXPANDED_TOP_GAP,
   MAP_FLOATING_ACTION_GAP,
-  MAP_HALF_SHEET_RATIO,
 } from '../constants';
 import type { MapSheetContent, MapSheetLevel } from '../types';
 
 interface UseMapSheetControllerOptions {
+  /** 헤더(검색바+카테고리)를 제외한, 지도 영역이 실제로 차지하는 높이. */
+  areaHeight: number;
   bottomInset: number;
-  topInset: number;
-  windowHeight: number;
 }
 
 export function useMapSheetController({
+  areaHeight,
   bottomInset,
-  topInset,
-  windowHeight,
 }: UseMapSheetControllerOptions) {
   const [content, setContent] = useState<MapSheetContent>('content');
   const [level, setLevel] = useState<MapSheetLevel>('collapsed');
   const sheetBottomOffset = bottomInset + BOTTOM_TAB_HEIGHT;
   const expandedHeight = Math.max(
     MAP_COLLAPSED_SHEET_HEIGHT,
-    windowHeight - sheetBottomOffset - (topInset + MAP_EXPANDED_TOP_OFFSET),
-  );
-  const halfHeight = Math.min(
-    expandedHeight,
-    Math.max(
-      MAP_COLLAPSED_SHEET_HEIGHT,
-      Math.round(windowHeight * MAP_HALF_SHEET_RATIO),
-    ),
+    areaHeight - sheetBottomOffset - MAP_EXPANDED_TOP_GAP,
   );
   const height = {
     collapsed: MAP_COLLAPSED_SHEET_HEIGHT,
     expanded: expandedHeight,
-    half: halfHeight,
   }[level];
   const isExpanded = level === 'expanded';
   const isPlaceList = content === 'places';
@@ -49,38 +39,22 @@ export function useMapSheetController({
   const myLocationButtonBottom =
     bottomInset + BOTTOM_TAB_HEIGHT + height + MAP_FLOATING_ACTION_GAP;
   const zoomControlBottom = myLocationButtonBottom + 52;
-  const floatingActionText = isPlaceList
-    ? '콘텐츠 보기'
-    : '장소 리스트 보기';
-  const floatingActionIcon = isPlaceList
-    ? { android: 'dashboard', ios: 'square.grid.2x2', web: 'dashboard' } as const
-    : { android: 'list', ios: 'list.bullet', web: 'list' } as const;
+  const floatingActionText = isExpanded
+    ? '지도보기'
+    : isPlaceList
+      ? '콘텐츠 피드 보기'
+      : '장소 리스트 보기';
+  const floatingActionIcon = isExpanded
+    ? { android: 'map', ios: 'map', web: 'map' } as const
+    : isPlaceList
+      ? { android: 'dashboard', ios: 'square.grid.2x2', web: 'dashboard' } as const
+      : { android: 'list', ios: 'list.bullet', web: 'list' } as const;
 
   const collapse = useCallback(() => {
-    setLevel(currentLevel => {
-      if (currentLevel === 'expanded') {
-        return 'half';
-      }
-
-      if (currentLevel === 'half') {
-        return 'collapsed';
-      }
-
-      return currentLevel;
-    });
+    setLevel('collapsed');
   }, []);
   const expand = useCallback(() => {
-    setLevel(currentLevel => {
-      if (currentLevel === 'collapsed') {
-        return 'half';
-      }
-
-      if (currentLevel === 'half') {
-        return 'expanded';
-      }
-
-      return currentLevel;
-    });
+    setLevel('expanded');
   }, []);
   const panHandlers = useMemo(
     () =>
@@ -102,6 +76,7 @@ export function useMapSheetController({
     [collapse, expand],
   );
   const showMap = useCallback(() => {
+    setContent('content');
     setLevel('collapsed');
   }, []);
   const showContentCollapsed = useCallback(() => {

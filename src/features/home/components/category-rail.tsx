@@ -8,21 +8,19 @@ interface CategoryRailProps {
   activeCategoryCode: string | null;
   categories: PlaceCategory[];
   onSelectCategory: (category: PlaceCategory) => void;
-  top: number;
 }
 
 export function CategoryRail({
   activeCategoryCode,
   categories,
   onSelectCategory,
-  top,
 }: CategoryRailProps) {
   return (
     <ScrollView
       contentContainerStyle={styles.categoryRailContent}
       horizontal
       showsHorizontalScrollIndicator={false}
-      style={[styles.categoryRail, { top }]}
+      style={styles.categoryRail}
     >
       {categories.map((category) => (
         <Pressable

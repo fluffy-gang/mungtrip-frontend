@@ -1,9 +1,9 @@
 import type { Place, PlaceCategory, PlaceTag } from '@/features/places/types';
 
-export type HomeMode = 'map' | 'search' | 'list';
+export type HomeMode = 'map' | 'search';
 export type MapSheetContent = 'content' | 'places';
 export type PlaceListSource = 'category' | 'recommendation' | 'search';
-export type MapSheetLevel = 'collapsed' | 'expanded' | 'half';
+export type MapSheetLevel = 'collapsed' | 'expanded';
 export type DogSizeTagCode = 'SMALL_DOG' | 'MEDIUM_DOG' | 'LARGE_DOG';
 export interface MapCamera {
   latitude: number;

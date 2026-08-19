@@ -25,14 +25,20 @@ export const styles = StyleSheet.create({
     flex: 1,
     overflow: 'hidden',
   },
+  headerBar: {
+    backgroundColor: colors.surface,
+    paddingBottom: spacing[8],
+    zIndex: 20,
+  },
+  mapArea: {
+    flex: 1,
+    position: 'relative',
+  },
   topControls: {
     alignItems: 'center',
     flexDirection: 'row',
     gap: spacing[8],
-    left: spacing[16],
-    position: 'absolute',
-    right: spacing[16],
-    zIndex: 20,
+    paddingHorizontal: spacing[16],
   },
   dogSelector: {
     alignItems: 'center',
@@ -81,10 +87,8 @@ export const styles = StyleSheet.create({
   },
   searchPlaceholder: text(12, 'medium', 'textPlaceholder'),
   categoryRail: {
-    left: 0,
-    position: 'absolute',
-    right: 0,
-    zIndex: 20,
+    height: 34,
+    marginTop: spacing[12],
   },
   categoryRailContent: {
     paddingLeft: spacing[16],
@@ -215,15 +219,6 @@ export const styles = StyleSheet.create({
     zIndex: 18,
   },
   mapFloatingActionText: text(12, 'semibold', 'textSecondary'),
-  listContentPanel: {
-    backgroundColor: colors.surface,
-    left: 0,
-    paddingHorizontal: spacing[16],
-    paddingTop: spacing[16],
-    position: 'absolute',
-    right: 0,
-    zIndex: 15,
-  },
   sheetHandle: {
     alignSelf: 'center',
     backgroundColor: colors.surfaceMuted,
@@ -239,6 +234,10 @@ export const styles = StyleSheet.create({
   },
   sheetLoadingRow: {
     alignItems: 'center',
+    marginBottom: spacing[8],
+  },
+  placeListCount: {
+    ...text(12, 'bold', 'textSecondary'),
     marginBottom: spacing[8],
   },
   horizontalCardRail: {

@@ -11,7 +11,6 @@ interface HomeTopControlsProps {
   onOpenDogSelector: () => void;
   onOpenSearch: () => void;
   selectedDogs: HomeDogProfile[];
-  top: number;
 }
 
 export function HomeTopControls({
@@ -20,13 +19,12 @@ export function HomeTopControls({
   onOpenDogSelector,
   onOpenSearch,
   selectedDogs,
-  top,
 }: HomeTopControlsProps) {
   const visibleDogs =
     selectedDogs.length > 0 ? selectedDogs : activeDog ? [activeDog] : [];
 
   return (
-    <View style={[styles.topControls, { top }]}>
+    <View style={styles.topControls}>
       {activeDog === null ? (
         <Pressable
           accessibilityRole="button"

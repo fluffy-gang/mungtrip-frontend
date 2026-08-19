@@ -41,6 +41,7 @@ export function useHomeData(
   return {
     categories: catalog.categories,
     clearSearchResults: search.clear,
+    courses: feed.courses,
     hasError: catalog.hasError || mapPlaces.hasError || feed.hasError,
     loading: catalog.loading || mapPlaces.loading || feed.loading,
     places: mapPlaces.places,

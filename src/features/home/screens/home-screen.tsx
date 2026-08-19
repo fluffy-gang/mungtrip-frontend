@@ -80,6 +80,7 @@ export function HomeScreen() {
             />
             <HomeMapSheet
               bottom={bottomTabHeight}
+              courses={home.courses}
               dogs={home.homeViewer.selectedDogs}
               hasError={home.hasError}
               height={home.mapSheetHeight}

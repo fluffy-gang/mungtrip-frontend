@@ -1,3 +1,4 @@
+import type { Course } from '@/features/courses/types';
 import type { Place, PlaceCategory, PlaceTag } from '@/features/places/types';
 
 export type HomeMode = 'map' | 'search';
@@ -41,19 +42,11 @@ export interface HomeViewer {
 
 export interface HomeData {
   categories: PlaceCategory[];
+  courses: Course[];
   places: Place[];
   popularKeywords: string[];
   recentlyVerified: Place[];
   tags: PlaceTag[];
   topCafePlaces: Place[];
   topRestaurantPlaces: Place[];
-}
-
-export interface RecommendedCourse {
-  distanceLabel: string;
-  id: number;
-  imageUrl: string;
-  isLiked: boolean;
-  subtitle: string;
-  title: string;
 }

@@ -14,6 +14,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
+import type { Course } from '@/features/courses/types';
 import type { Place } from '@/features/places/types';
 
 import { colors, styles } from '../styles';
@@ -23,6 +24,7 @@ import { PlaceList } from './place-list';
 
 interface HomeMapSheetProps {
   bottom: number;
+  courses: Course[];
   dogs: HomeDogProfile[];
   hasError: boolean;
   height: number;
@@ -42,6 +44,7 @@ interface HomeMapSheetProps {
 
 export function HomeMapSheet({
   bottom,
+  courses,
   dogs,
   hasError,
   height,
@@ -113,6 +116,7 @@ export function HomeMapSheet({
           style={styles.mapSheetFeedScroll}
         >
           <FeedContent
+            courses={courses}
             onSelectPlace={onSelectPlace}
             onShowCategoryPlaces={onShowCategoryPlaces}
             onShowRecommendedPlaces={onShowRecommendedPlaces}

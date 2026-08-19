@@ -2,7 +2,8 @@ import { Pressable, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 import { SymbolView } from 'expo-symbols';
 
-import type { RecommendedCourse } from '../types';
+import type { Course } from '@/features/courses/types';
+
 import { colors, styles } from '../styles';
 import { getImageSource } from '../utils/place-utils';
 
@@ -10,8 +11,8 @@ export function RecommendedCourseCard({
   course,
   onPress,
 }: {
-  course: RecommendedCourse;
-  onPress?: (course: RecommendedCourse) => void;
+  course: Course;
+  onPress?: (course: Course) => void;
 }) {
   return (
     <Pressable
@@ -20,9 +21,11 @@ export function RecommendedCourseCard({
       style={styles.courseCardRoot}
     >
       <View style={styles.courseCardImageFrame}>
-        <Image source={getImageSource(course.imageUrl)} style={styles.courseCardImage} />
+        <Image source={getImageSource(course.thumbnailUrl)} style={styles.courseCardImage} />
         <View style={styles.courseCardBadge}>
-          <Text style={styles.courseCardBadgeText}>{course.distanceLabel}</Text>
+          <Text style={styles.courseCardBadgeText}>
+            {course.placeCount}곳 · {course.totalDistanceKm}km
+          </Text>
         </View>
         <View style={styles.courseCardLikeBadge}>
           <SymbolView
@@ -36,7 +39,7 @@ export function RecommendedCourseCard({
             {course.title}
           </Text>
           <Text numberOfLines={1} style={styles.courseCardSubtitle}>
-            {course.subtitle}
+            {course.region}
           </Text>
           <View style={styles.courseCardFooter}>
             <View style={styles.courseCardTripButton}>

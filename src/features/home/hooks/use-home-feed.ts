@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import { getCourses } from '@/features/courses/api';
+import type { Course } from '@/features/courses/types';
 import { getRecentlyVerifiedPlaces, getTopPlaces } from '@/features/places/api';
 import type { Place, PlaceCategory, PlaceTag } from '@/features/places/types';
 
@@ -19,6 +21,7 @@ interface UseHomeFeedOptions {
 
 export function useHomeFeed(options: UseHomeFeedOptions) {
   const { categories, enabled, reloadKey, tags } = options;
+  const [courses, setCourses] = useState<Course[]>([]);
   const [recentlyVerified, setRecentlyVerified] = useState<Place[]>([]);
   const [topCafePlaces, setTopCafePlaces] = useState<Place[]>([]);
   const [topRestaurantPlaces, setTopRestaurantPlaces] = useState<Place[]>([]);
@@ -26,8 +29,9 @@ export function useHomeFeed(options: UseHomeFeedOptions) {
   const { hasError, loading } = useAsyncEffect(
     async isMounted => {
       const catalog = { categories, tags };
-      const [nextRecentlyVerified, nextTopCafePlaces, nextTopRestaurantPlaces] =
+      const [nextCourses, nextRecentlyVerified, nextTopCafePlaces, nextTopRestaurantPlaces] =
         await Promise.all([
+          getCourses(10),
           getRecentlyVerifiedPlaces(10, catalog),
           getTopPlaces({ category: 'CAFE', days: 30, limit: 10 }, catalog),
           getTopPlaces({ category: 'RESTAURANT', days: 30, limit: 10 }, catalog),
@@ -35,6 +39,7 @@ export function useHomeFeed(options: UseHomeFeedOptions) {
 
       if (isMounted()) {
         // TODO(#10): dev 서버에 인증 데이터가 시딩되면 목데이터 폴백을 제거한다.
+        setCourses(nextCourses);
         setRecentlyVerified(
           nextRecentlyVerified.length > 0
             ? nextRecentlyVerified
@@ -54,5 +59,5 @@ export function useHomeFeed(options: UseHomeFeedOptions) {
     enabled,
   );
 
-  return { hasError, loading, recentlyVerified, topCafePlaces, topRestaurantPlaces };
+  return { courses, hasError, loading, recentlyVerified, topCafePlaces, topRestaurantPlaces };
 }

@@ -1,13 +1,14 @@
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
+import type { Course } from '@/features/courses/types';
 import type { Place } from '@/features/places/types';
 
-import { MOCK_RECOMMENDED_COURSES } from '../mock/recommended-courses';
 import { styles } from '../styles';
 import { PlaceCard } from './place-card';
 import { RecommendedCourseCard } from './recommended-course-card';
 
 interface FeedContentProps {
+  courses: Course[];
   onSelectPlace?: (place: Place) => void;
   onShowCategoryPlaces: (categoryCode: string) => void;
   onShowRecommendedPlaces: () => void;
@@ -17,6 +18,7 @@ interface FeedContentProps {
 }
 
 export function FeedContent({
+  courses,
   onSelectPlace,
   onShowCategoryPlaces,
   onShowRecommendedPlaces,
@@ -35,7 +37,7 @@ export function FeedContent({
           showsHorizontalScrollIndicator={false}
           style={styles.horizontalCardRail}
         >
-          {MOCK_RECOMMENDED_COURSES.map(course => (
+          {courses.map(course => (
             <RecommendedCourseCard key={course.id} course={course} />
           ))}
         </ScrollView>

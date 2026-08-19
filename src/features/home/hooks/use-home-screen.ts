@@ -54,6 +54,7 @@ export function useHomeScreen() {
   const {
     categories,
     clearSearchResults,
+    courses,
     hasError,
     loading,
     places,
@@ -237,6 +238,7 @@ export function useHomeScreen() {
     activeCategoryCode,
     categories,
     closeSearch,
+    courses,
     filteredPlaces,
     floatingActionBottom: mapSheet.floatingActionBottom,
     hasError,

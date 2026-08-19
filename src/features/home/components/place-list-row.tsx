@@ -6,7 +6,8 @@ import type { Place } from '@/features/places/types';
 
 import { styles } from '../styles';
 import type { HomeDogProfile } from '../types';
-import { getImageSource, getVerifiedDiffDays } from '../utils/place-utils';
+import { getVerifiedDiffDays } from '../utils/place-utils';
+import { PlaceThumbnail } from './place-thumbnail';
 
 const DOG_SIZE_TAG_CODES = new Set(['SMALL_DOG', 'MEDIUM_DOG', 'LARGE_DOG']);
 
@@ -68,7 +69,7 @@ export function PlaceListRow({
       style={[styles.placeRow, compact && styles.placeRowCompact]}
     >
       <View style={styles.placeRowImageFrame}>
-        <Image source={getImageSource(place.imageUrl)} style={styles.placeRowImage} />
+        <PlaceThumbnail imageUrl={place.imageUrl} style={styles.placeRowImage} />
         <View style={styles.placeLikeBadge}>
           <SymbolView
             name={{ android: 'favorite', ios: place.isLiked ? 'heart.fill' : 'heart', web: 'favorite' }}

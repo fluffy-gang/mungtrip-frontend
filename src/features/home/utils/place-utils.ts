@@ -27,10 +27,6 @@ export const filterPlaces = (
   });
 };
 
-export const getImageSource = (imageUrl?: string) => {
-  return imageUrl ? { uri: imageUrl } : undefined;
-};
-
 export const hasPlaceCoordinate = (
   place: Place,
 ): place is Place & { latitude: number; longitude: number } => {

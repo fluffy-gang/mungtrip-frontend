@@ -39,17 +39,15 @@ export function HomeScreen() {
       ) : (
         <>
           <View style={[styles.headerBar, { paddingTop: home.insets.top + 8 }]}>
-            <HomeTopControls
-              activeDog={home.homeViewer.activeDog}
-              onAddDog={showComingSoon}
-              onOpenDogSelector={() => home.setIsDogSheetVisible(true)}
-              onOpenSearch={home.openSearch}
-              selectedDogs={home.homeViewer.selectedDogs}
-            />
+            <HomeTopControls onOpenSearch={home.openSearch} />
             <CategoryRail
               activeCategoryCode={home.activeCategoryCode}
+              activeDog={home.homeViewer.activeDog}
               categories={home.categories}
+              onAddDog={showComingSoon}
+              onOpenDogSelector={() => home.setIsDogSheetVisible(true)}
               onSelectCategory={home.selectCategory}
+              selectedDogs={home.homeViewer.selectedDogs}
             />
           </View>
           <View style={styles.mapArea}>

@@ -1,6 +1,6 @@
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
-import { useWindowDimensions } from 'react-native';
+import { BackHandler, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { Place, PlaceCategory } from '@/features/places/types';
@@ -76,13 +76,6 @@ export function useHomeScreen() {
 
   const { mapCamera, moveToCurrentLocation, setMapCamera, userCoordinate } =
     useCurrentLocation({ onLocated: handleLocated });
-  const updateMapBounds = useCallback((nextBounds: MapBounds) => {
-    setMapBounds(currentBounds =>
-      areMapBoundsEqual(currentBounds, nextBounds)
-        ? currentBounds
-        : nextBounds,
-    );
-  }, []);
 
   const activeCategoryCode =
     selectedCategoryCode &&
@@ -98,6 +91,26 @@ export function useHomeScreen() {
   );
   const trimmedQuery = query.trim();
   const isSearchList = listSource === 'search' && Boolean(trimmedQuery);
+  const updateMapBounds = useCallback(
+    (nextBounds: MapBounds) => {
+      setMapBounds(currentBounds => {
+        if (areMapBoundsEqual(currentBounds, nextBounds)) {
+          return currentBounds;
+        }
+
+        // 사용자가 지도를 직접 움직이면 이전 검색 결과 고정을 풀고
+        // 다시 위치 기준 목록을 보여준다.
+        if (isSearchList) {
+          setQuery('');
+          clearSearchResults();
+          setListSource('recommendation');
+        }
+
+        return nextBounds;
+      });
+    },
+    [clearSearchResults, isSearchList],
+  );
   const filterCategory = query.trim() ? undefined : selectedCategory;
   const filteredPlaces = useMemo(() => {
     if (isSearchList && searchResults) {
@@ -228,7 +241,9 @@ export function useHomeScreen() {
   }, [clearSearchResults]);
   const selectPlace = useCallback(
     (place: Place) => {
-      setSelectedPlace(place);
+      // 상세로 바로 이동하는 흐름이라 미리보기 카드(selectedPlace)를 거치지 않는다.
+      // 여기서 selectedPlace를 세팅하면 전환되는 한 프레임 동안 바텀시트가
+      // PlacePreviewCard로 바뀌었다 사라지는 깜빡임이 생긴다.
       router.push({
         params: { id: String(place.id) },
         pathname: '/places/[id]',
@@ -247,6 +262,33 @@ export function useHomeScreen() {
   const closeSelectedPlace = useCallback(() => {
     setSelectedPlace(null);
   }, []);
+
+  // 안드로이드 하드웨어 뒤로가기가 검색/장소 미리보기 오버레이를 건너뛰고
+  // 바로 앱을 종료시키지 않도록, 열려있는 오버레이부터 닫는다.
+  // 홈 화면이 포커스된 동안에만 등록해야, 상세 화면으로 push된 뒤에도
+  // 백그라운드의 홈 리스너가 뒤로가기를 가로채 스택 pop을 막는 것을 방지한다.
+  useFocusEffect(
+    useCallback(() => {
+      if (mode !== 'search' && !selectedPlace) {
+        return;
+      }
+
+      const subscription = BackHandler.addEventListener(
+        'hardwareBackPress',
+        () => {
+          if (mode === 'search') {
+            closeSearch();
+          } else {
+            closeSelectedPlace();
+          }
+
+          return true;
+        },
+      );
+
+      return () => subscription.remove();
+    }, [mode, selectedPlace, closeSearch, closeSelectedPlace]),
+  );
 
   return {
     activeCategoryCode,

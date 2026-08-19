@@ -1,11 +1,11 @@
 import { Pressable, Text, View } from 'react-native';
-import { Image } from 'expo-image';
 import { SymbolView } from 'expo-symbols';
 
 import type { Place } from '@/features/places/types';
 
 import { colors, styles } from '../styles';
-import { getImageSource, getVerifiedDiffDays } from '../utils/place-utils';
+import { getVerifiedDiffDays } from '../utils/place-utils';
+import { PlaceThumbnail } from './place-thumbnail';
 
 const getBadgeLabel = (place: Place): string | null => {
   if (place.rank !== undefined) {
@@ -41,7 +41,7 @@ export function PlaceCard({
       style={styles.placeCardRoot}
     >
       <View style={styles.placeCardImageFrame}>
-        <Image source={getImageSource(place.imageUrl)} style={styles.placeCardImage} />
+        <PlaceThumbnail imageUrl={place.imageUrl} style={styles.placeCardImage} />
         {badgeLabel ? (
           <View style={styles.placeCardBadge}>
             <Text style={styles.placeCardBadgeText}>{badgeLabel}</Text>

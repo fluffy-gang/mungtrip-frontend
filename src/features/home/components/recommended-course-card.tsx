@@ -1,11 +1,10 @@
 import { Pressable, Text, View } from 'react-native';
-import { Image } from 'expo-image';
 import { SymbolView } from 'expo-symbols';
 
 import type { Course } from '@/features/courses/types';
 
 import { colors, styles } from '../styles';
-import { getImageSource } from '../utils/place-utils';
+import { PlaceThumbnail } from './place-thumbnail';
 
 export function RecommendedCourseCard({
   course,
@@ -21,7 +20,7 @@ export function RecommendedCourseCard({
       style={styles.courseCardRoot}
     >
       <View style={styles.courseCardImageFrame}>
-        <Image source={getImageSource(course.thumbnailUrl)} style={styles.courseCardImage} />
+        <PlaceThumbnail imageUrl={course.thumbnailUrl} style={styles.courseCardImage} />
         <View style={styles.courseCardBadge}>
           <Text style={styles.courseCardBadgeText}>
             {course.placeCount}곳 · {course.totalDistanceKm}km

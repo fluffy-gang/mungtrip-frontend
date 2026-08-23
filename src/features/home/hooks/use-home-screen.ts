@@ -1,10 +1,12 @@
+import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
-import { useWindowDimensions } from 'react-native';
+import { BackHandler, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { Place, PlaceCategory } from '@/features/places/types';
 
 import {
+  HEADER_CONTENT_HEIGHT,
   JEJU_MAP_BOUNDS,
   MAP_BOUNDS_EPSILON,
   MAP_MAX_ZOOM,
@@ -17,6 +19,7 @@ import { useCurrentLocation } from './use-current-location';
 import { useHomeData } from './use-home-data';
 import { useHomeViewer } from './use-home-viewer';
 import { useMapSheetController } from './use-map-sheet-controller';
+import { useRecentSearches } from './use-recent-searches';
 
 const areMapBoundsEqual = (firstBounds: MapBounds, secondBounds: MapBounds) => {
   return (
@@ -29,15 +32,16 @@ const areMapBoundsEqual = (firstBounds: MapBounds, secondBounds: MapBounds) => {
 
 export function useHomeScreen() {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const { height: windowHeight } = useWindowDimensions();
   const [mode, setMode] = useState<HomeMode>('map');
   const [query, setQuery] = useState('');
   const [listSource, setListSource] =
     useState<PlaceListSource>('recommendation');
+  const headerHeight = insets.top + HEADER_CONTENT_HEIGHT;
   const mapSheet = useMapSheetController({
+    areaHeight: windowHeight - headerHeight,
     bottomInset: insets.bottom,
-    topInset: insets.top,
-    windowHeight,
   });
   const [mapBounds, setMapBounds] = useState<MapBounds>(JEJU_MAP_BOUNDS);
   const [isDogSheetVisible, setIsDogSheetVisible] = useState(false);
@@ -45,23 +49,25 @@ export function useHomeScreen() {
   const [selectedCategoryCode, setSelectedCategoryCode] =
     useState<string | null>(null);
   const homeViewer = useHomeViewer();
-  const apiDogIds = useMemo(
-    () => (homeViewer.isLoggedIn ? homeViewer.dogIds : []),
-    [homeViewer.dogIds, homeViewer.isLoggedIn],
-  );
+  const { addRecentSearch, recentSearches, removeRecentSearch } =
+    useRecentSearches();
   const {
     categories,
     clearSearchResults,
-    hasError,
-    loading,
+    courses,
+    feedHasError,
+    feedLoading,
     places,
+    placesHasError,
+    placesLoading,
     popularKeywords,
     recentlyVerified,
     retry,
     searchPlaces,
     searchResults,
-    topPlaces,
-  } = useHomeData(selectedCategoryCode, mapBounds, apiDogIds);
+    topCafePlaces,
+    topRestaurantPlaces,
+  } = useHomeData(mapBounds, homeViewer.dogIds);
 
   const handleLocated = useCallback(() => {
     mapSheet.showMap();
@@ -70,13 +76,6 @@ export function useHomeScreen() {
 
   const { mapCamera, moveToCurrentLocation, setMapCamera, userCoordinate } =
     useCurrentLocation({ onLocated: handleLocated });
-  const updateMapBounds = useCallback((nextBounds: MapBounds) => {
-    setMapBounds(currentBounds =>
-      areMapBoundsEqual(currentBounds, nextBounds)
-        ? currentBounds
-        : nextBounds,
-    );
-  }, []);
 
   const activeCategoryCode =
     selectedCategoryCode &&
@@ -91,12 +90,33 @@ export function useHomeScreen() {
     [activeCategoryCode, categories],
   );
   const trimmedQuery = query.trim();
-  const isSearchList =
-    mode === 'list' && listSource === 'search' && Boolean(trimmedQuery);
+  const isSearchList = listSource === 'search' && Boolean(trimmedQuery);
+  const updateMapBounds = useCallback(
+    (nextBounds: MapBounds) => {
+      setMapBounds(currentBounds => {
+        if (areMapBoundsEqual(currentBounds, nextBounds)) {
+          return currentBounds;
+        }
+
+        // 사용자가 지도를 직접 움직이면 이전 검색 결과 고정을 풀고
+        // 다시 위치 기준 목록을 보여준다.
+        if (isSearchList) {
+          setQuery('');
+          clearSearchResults();
+          setListSource('recommendation');
+        }
+
+        return nextBounds;
+      });
+    },
+    [clearSearchResults, isSearchList],
+  );
   const filterCategory = query.trim() ? undefined : selectedCategory;
   const filteredPlaces = useMemo(() => {
     if (isSearchList && searchResults) {
-      return searchResults;
+      return selectedCategory
+        ? searchResults.filter(place => place.category === selectedCategory.code)
+        : searchResults;
     }
 
     return filterPlaces(
@@ -104,7 +124,7 @@ export function useHomeScreen() {
       query,
       mode === 'search' ? undefined : filterCategory,
     );
-  }, [filterCategory, isSearchList, mode, places, query, searchResults]);
+  }, [filterCategory, isSearchList, mode, places, query, searchResults, selectedCategory]);
   const mapPlaces = useMemo(() => {
     if (!selectedPlace || places.some(place => place.id === selectedPlace.id)) {
       return places;
@@ -112,28 +132,6 @@ export function useHomeScreen() {
 
     return [selectedPlace, ...places];
   }, [places, selectedPlace]);
-  const isCategoryMap =
-    mode === 'map' && listSource === 'category' && Boolean(selectedCategory);
-  const sheetTitle = (() => {
-    if (mode === 'map' && selectedPlace) {
-      return selectedPlace.name;
-    }
-
-    if (mode === 'list' && listSource === 'category') {
-      return selectedCategory ? `${selectedCategory.name} 리스트` : '장소 리스트';
-    }
-
-    if (isCategoryMap) {
-      return `${selectedCategory?.name ?? '장소'} 지도 보기`;
-    }
-
-    return '제주 지역별 추천 코스';
-  })();
-  const sheetLabel =
-    mode === 'map' && selectedPlace
-      ? `${selectedPlace.categoryName} · ${selectedPlace.address}`
-      : `${filteredPlaces.length}개 장소`;
-
   const updateMapZoom = useCallback(
     (zoomDelta: number) => {
       setMapCamera(currentCamera => ({
@@ -155,20 +153,25 @@ export function useHomeScreen() {
   const selectCategory = useCallback(
     (category: PlaceCategory) => {
       const isSameCategory = selectedCategoryCode === category.code;
+      const nextCategoryCode = isSameCategory ? null : category.code;
 
-      setQuery('');
-      clearSearchResults();
       setSelectedPlace(null);
-      setListSource(isSameCategory ? 'recommendation' : 'category');
-      setSelectedCategoryCode(isSameCategory ? null : category.code);
-      if (isSameCategory) {
-        mapSheet.showContentCollapsed();
-      } else {
+      setSelectedCategoryCode(nextCategoryCode);
+
+      if (isSearchList) {
+        // 검색 중에는 검색어/결과를 유지한 채 카테고리로만 좁힌다.
+        return;
+      }
+
+      setListSource(nextCategoryCode ? 'category' : 'recommendation');
+
+      // 콘텐츠(피드) 화면에서 고른 경우에만 필터링된 리스트로 전환한다.
+      // 이미 리스트 화면이면(선택이든 해제든) 화면 전환 없이 필터만 바뀐다.
+      if (!mapSheet.isPlaceList) {
         mapSheet.showPlacesCollapsed();
       }
-      setMode('map');
     },
-    [clearSearchResults, mapSheet, selectedCategoryCode],
+    [isSearchList, mapSheet, selectedCategoryCode],
   );
   const submitSearch = useCallback(
     (nextQuery: string) => {
@@ -177,19 +180,25 @@ export function useHomeScreen() {
       setQuery(nextKeyword);
       setSelectedPlace(null);
       setListSource('search');
-      setMode('list');
+      mapSheet.showPlacesCollapsed();
+      setMode('map');
+      addRecentSearch(nextKeyword);
       void searchPlaces({ keyword: nextKeyword });
     },
-    [searchPlaces],
+    [addRecentSearch, mapSheet, searchPlaces],
   );
-  const showCategoryList = useCallback(() => {
-    setQuery('');
-    clearSearchResults();
-    setSelectedPlace(null);
-    setListSource('category');
-    mapSheet.showPlacesExpanded();
-    setMode('map');
-  }, [clearSearchResults, mapSheet]);
+  const showCategoryPlaces = useCallback(
+    (categoryCode: string) => {
+      setQuery('');
+      clearSearchResults();
+      setSelectedPlace(null);
+      setSelectedCategoryCode(categoryCode);
+      setListSource('category');
+      mapSheet.showPlacesExpanded();
+      setMode('map');
+    },
+    [clearSearchResults, mapSheet],
+  );
   const showRecommendationList = useCallback(() => {
     setQuery('');
     clearSearchResults();
@@ -215,7 +224,12 @@ export function useHomeScreen() {
     setMode('search');
   }, []);
   const handleMapFloatingAction = useCallback(() => {
-    mapSheet.toggleContent();
+    if (mapSheet.isExpanded) {
+      mapSheet.showMap();
+    } else {
+      mapSheet.toggleContent();
+    }
+
     setSelectedPlace(null);
     setMode('map');
   }, [mapSheet]);
@@ -227,27 +241,70 @@ export function useHomeScreen() {
   }, [clearSearchResults]);
   const selectPlace = useCallback(
     (place: Place) => {
-      setQuery('');
-      clearSearchResults();
+      // 상세로 바로 이동하는 흐름이라 미리보기 카드(selectedPlace)를 거치지 않는다.
+      // 여기서 selectedPlace를 세팅하면 전환되는 한 프레임 동안 바텀시트가
+      // PlacePreviewCard로 바뀌었다 사라지는 깜빡임이 생긴다.
+      router.push({
+        params: { id: String(place.id) },
+        pathname: '/places/[id]',
+      });
+    },
+    [router],
+  );
+  const previewPlace = useCallback(
+    (place: Place) => {
       setSelectedPlace(place);
       mapSheet.showMap();
       setMode('map');
     },
-    [clearSearchResults, mapSheet],
+    [mapSheet],
+  );
+  const closeSelectedPlace = useCallback(() => {
+    setSelectedPlace(null);
+  }, []);
+
+  // 안드로이드 하드웨어 뒤로가기가 검색/장소 미리보기 오버레이를 건너뛰고
+  // 바로 앱을 종료시키지 않도록, 열려있는 오버레이부터 닫는다.
+  // 홈 화면이 포커스된 동안에만 등록해야, 상세 화면으로 push된 뒤에도
+  // 백그라운드의 홈 리스너가 뒤로가기를 가로채 스택 pop을 막는 것을 방지한다.
+  useFocusEffect(
+    useCallback(() => {
+      if (mode !== 'search' && !selectedPlace) {
+        return;
+      }
+
+      const subscription = BackHandler.addEventListener(
+        'hardwareBackPress',
+        () => {
+          if (mode === 'search') {
+            closeSearch();
+          } else {
+            closeSelectedPlace();
+          }
+
+          return true;
+        },
+      );
+
+      return () => subscription.remove();
+    }, [mode, selectedPlace, closeSearch, closeSelectedPlace]),
   );
 
   return {
     activeCategoryCode,
     categories,
     closeSearch,
+    closeSelectedPlace,
+    courses,
+    feedHasError,
+    feedLoading,
     filteredPlaces,
     floatingActionBottom: mapSheet.floatingActionBottom,
-    hasError,
+    headerHeight,
     homeViewer,
     insets,
     isDogSheetVisible,
     isMapSheetPlaceList: mapSheet.isPlaceList,
-    loading,
     mapCamera,
     mapPlaces,
     mapFloatingActionIcon: mapSheet.floatingActionIcon,
@@ -259,9 +316,14 @@ export function useHomeScreen() {
     myLocationButtonBottom: mapSheet.myLocationButtonBottom,
     openSearch,
     places,
+    placesHasError,
+    placesLoading,
     popularKeywords,
+    previewPlace,
     query,
+    recentSearches,
     recentlyVerified,
+    removeRecentSearch,
     retry,
     selectCategory,
     selectPlace,
@@ -270,14 +332,13 @@ export function useHomeScreen() {
     setIsDogSheetVisible,
     setMapCamera,
     setQuery,
-    sheetLabel,
-    sheetTitle,
-    showCategoryList,
+    showCategoryPlaces,
     showHomeFeed,
     showMapView,
     showRecommendationList,
     submitSearch,
-    topPlaces,
+    topCafePlaces,
+    topRestaurantPlaces,
     updateMapBounds,
     userCoordinate,
     zoomControlBottom: mapSheet.zoomControlBottom,

@@ -27,12 +27,25 @@ export const filterPlaces = (
   });
 };
 
-export const getImageSource = (imageUrl?: string) => {
-  return imageUrl ? { uri: imageUrl } : undefined;
-};
-
 export const hasPlaceCoordinate = (
   place: Place,
 ): place is Place & { latitude: number; longitude: number } => {
   return place.latitude !== undefined && place.longitude !== undefined;
+};
+
+export const getVerifiedDiffDays = (lastVerifiedAt?: string): number | null => {
+  if (!lastVerifiedAt) {
+    return null;
+  }
+
+  const verifiedAt = new Date(lastVerifiedAt);
+
+  if (Number.isNaN(verifiedAt.getTime())) {
+    return null;
+  }
+
+  return Math.max(
+    0,
+    Math.floor((Date.now() - verifiedAt.getTime()) / (1000 * 60 * 60 * 24)),
+  );
 };

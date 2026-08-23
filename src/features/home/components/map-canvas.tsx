@@ -1,17 +1,17 @@
-import { useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { Image } from 'expo-image';
-import { SymbolView } from 'expo-symbols';
+import { Image } from "expo-image";
+import { SymbolView } from "expo-symbols";
+import { useMemo } from "react";
+import { StyleSheet, Text, View } from "react-native";
 
-import type { Place, PlaceCategory } from '@/features/places/types';
+import type { Place, PlaceCategory } from "@/features/places/types";
 
-import { JEJU_MAP_CAMERA } from '../constants';
-import { styles as homeStyles } from '../styles';
-import type { LocationCoordinate, MapBounds, MapCamera } from '../types';
-import { toMapBounds } from '../utils/map-utils';
-import { loadNativeMapModule } from '../utils/native-modules';
-import { hasPlaceCoordinate } from '../utils/place-utils';
-import { PlaceMarker } from './place-marker';
+import { JEJU_MAP_CAMERA } from "../constants";
+import { styles as homeStyles } from "../styles";
+import type { LocationCoordinate, MapBounds, MapCamera } from "../types";
+import { toMapBounds } from "../utils/map-utils";
+import { loadNativeMapModule } from "../utils/native-modules";
+import { hasPlaceCoordinate } from "../utils/place-utils";
+import { PlaceMarker } from "./place-marker";
 
 const nativeMapModule = loadNativeMapModule();
 
@@ -61,7 +61,7 @@ export function MapCanvas({
           logoAlign="BottomLeft"
           logoMargin={{ bottom: 12, left: 12 }}
           mapType="Basic"
-          onCameraIdle={nextCamera => {
+          onCameraIdle={(nextCamera) => {
             setMapCamera({
               latitude: nextCamera.latitude,
               longitude: nextCamera.longitude,
@@ -71,16 +71,22 @@ export function MapCanvas({
           }}
           style={styles.map}
         >
-          {visiblePins.map(place => (
-            <PlaceMarker
-              key={`${place.id}-${place.id === selectedPlaceId ? 'selected' : 'default'}`}
-              MarkerOverlay={NaverMapMarkerOverlay}
-              onSelect={onSelectPlace}
-              place={place}
-              selectedCategory={selectedCategory}
-              selectedPlaceId={selectedPlaceId}
-            />
-          ))}
+          {visiblePins.map((place) => {
+            const isSelected = place.id === selectedPlaceId;
+            const isCategoryMatch =
+              !selectedCategory || place.category === selectedCategory.code;
+
+            return (
+              <PlaceMarker
+                key={`${place.id}-${isSelected ? "selected" : "default"}-${isCategoryMatch ? "match" : "dim"}`}
+                MarkerOverlay={NaverMapMarkerOverlay}
+                onSelect={onSelectPlace}
+                place={place}
+                selectedCategory={selectedCategory}
+                selectedPlaceId={selectedPlaceId}
+              />
+            );
+          })}
           {userCoordinate && userProfileImageUrl ? (
             <NaverMapMarkerOverlay
               anchor={{ x: 0.5, y: 0.5 }}
@@ -107,7 +113,7 @@ export function MapCanvas({
   return (
     <View style={[homeStyles.mapLayer, styles.unavailableMap]}>
       <SymbolView
-        name={{ android: 'map', ios: 'map.fill', web: 'map' }}
+        name={{ android: "map", ios: "map.fill", web: "map" }}
         size={32}
         tintColor="#8B95A1"
       />
@@ -121,20 +127,20 @@ const styles = StyleSheet.create({
   map: {
     bottom: 0,
     left: 0,
-    position: 'absolute',
+    position: "absolute",
     right: 0,
     top: 0,
   },
   unavailableMap: {
-    alignItems: 'center',
-    backgroundColor: '#F2F4F6',
-    justifyContent: 'center',
+    alignItems: "center",
+    backgroundColor: "#F2F4F6",
+    justifyContent: "center",
     padding: 24,
   },
   unavailableText: {
-    color: '#6B7684',
+    color: "#6B7684",
     fontSize: 14,
     marginTop: 10,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });

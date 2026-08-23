@@ -24,6 +24,11 @@ export const ENDPOINTS = {
     recentlyVerified: `${API_PREFIX}/places/recently-verified`,
     topPlaces: `${API_PREFIX}/places/top`,
   },
+  courses: {
+    list: `${API_PREFIX}/courses`,
+    detail: (courseId: number) => `${API_PREFIX}/courses/${courseId}`,
+    like: (courseId: number) => `${API_PREFIX}/courses/${courseId}/like`,
+  },
   admin: {
     places: `${API_PREFIX}/admin/places`,
     syncTourApi: `${API_PREFIX}/admin/sync/tour-api`,

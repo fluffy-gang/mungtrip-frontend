@@ -1,37 +1,51 @@
 import { Pressable, ScrollView, Text, View } from 'react-native';
 
-import type { Place, PlaceCategory } from '@/features/places/types';
+import type { Course } from '@/features/courses/types';
+import type { Place } from '@/features/places/types';
 
 import { styles } from '../styles';
 import { PlaceCard } from './place-card';
+import { RecommendedCourseCard } from './recommended-course-card';
 
 interface FeedContentProps {
-  categories: PlaceCategory[];
+  courses: Course[];
   onSelectPlace?: (place: Place) => void;
-  onShowCategoryPlaces: () => void;
+  onShowCategoryPlaces: (categoryCode: string) => void;
   onShowRecommendedPlaces: () => void;
   recentlyVerified: Place[];
-  selectedCategoryCode: string | null;
-  topPlaces: Place[];
+  topCafePlaces: Place[];
+  topRestaurantPlaces: Place[];
 }
 
 export function FeedContent({
-  categories,
+  courses,
   onSelectPlace,
   onShowCategoryPlaces,
   onShowRecommendedPlaces,
   recentlyVerified,
-  selectedCategoryCode,
-  topPlaces,
+  topCafePlaces,
+  topRestaurantPlaces,
 }: FeedContentProps) {
-  const selectedCategory = categories.find(
-    category => category.code === selectedCategoryCode,
-  );
   return (
     <>
       <View style={styles.feedSection}>
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>최근 검증되어 안심할 장소</Text>
+          <Text style={styles.sectionTitle}>제주 지역별 추천 코스</Text>
+        </View>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.horizontalCardRail}
+        >
+          {courses.map(course => (
+            <RecommendedCourseCard key={course.id} course={course} />
+          ))}
+        </ScrollView>
+      </View>
+
+      <View style={styles.feedSection}>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>최근 견주들이 인증한 곳</Text>
           <Pressable
             accessibilityRole="button"
             onPress={onShowRecommendedPlaces}
@@ -53,12 +67,10 @@ export function FeedContent({
 
       <View style={styles.feedSection}>
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>
-            {selectedCategory?.name ?? '카테고리'} 인기 장소
-          </Text>
+          <Text style={styles.sectionTitle}>사람들이 많이 찾는 카페</Text>
           <Pressable
             accessibilityRole="button"
-            onPress={onShowCategoryPlaces}
+            onPress={() => onShowCategoryPlaces('CAFE')}
             style={styles.moreButton}
           >
             <Text style={styles.moreText}>지도에서 보기</Text>
@@ -69,7 +81,29 @@ export function FeedContent({
           showsHorizontalScrollIndicator={false}
           style={styles.horizontalCardRail}
         >
-          {topPlaces.slice(0, 4).map(place => (
+          {topCafePlaces.slice(0, 4).map(place => (
+            <PlaceCard key={place.id} onPress={onSelectPlace} place={place} />
+          ))}
+        </ScrollView>
+      </View>
+
+      <View style={styles.feedSection}>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>사람들이 많이 찾는 맛집</Text>
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => onShowCategoryPlaces('RESTAURANT')}
+            style={styles.moreButton}
+          >
+            <Text style={styles.moreText}>지도에서 보기</Text>
+          </Pressable>
+        </View>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.horizontalCardRail}
+        >
+          {topRestaurantPlaces.slice(0, 4).map(place => (
             <PlaceCard key={place.id} onPress={onSelectPlace} place={place} />
           ))}
         </ScrollView>

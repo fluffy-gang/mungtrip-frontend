@@ -9,22 +9,49 @@ import { styles } from '../styles';
 interface SearchViewProps {
   insetsTop: number;
   onBack: () => void;
+  onRemoveRecentSearch: (keyword: string) => void;
   onSelectKeyword: (keyword: string) => void;
   places: Place[];
   popularKeywords: string[];
   query: string;
+  recentSearches: string[];
   setQuery: (value: string) => void;
 }
 
 export function SearchView({
   insetsTop,
   onBack,
+  onRemoveRecentSearch,
   onSelectKeyword,
   places,
   popularKeywords,
   query,
+  recentSearches,
   setQuery,
 }: SearchViewProps) {
+  const renderHighlightedName = (name: string) => {
+    const trimmedQuery = query.trim();
+    const matchIndex = trimmedQuery
+      ? name.toLowerCase().indexOf(trimmedQuery.toLowerCase())
+      : -1;
+
+    if (matchIndex === -1) {
+      return <Text style={styles.suggestionText}>{name}</Text>;
+    }
+
+    const before = name.slice(0, matchIndex);
+    const match = name.slice(matchIndex, matchIndex + trimmedQuery.length);
+    const after = name.slice(matchIndex + trimmedQuery.length);
+
+    return (
+      <Text style={styles.suggestionText}>
+        {before}
+        <Text style={styles.suggestionHighlightText}>{match}</Text>
+        {after}
+      </Text>
+    );
+  };
+
   const suggestions = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
 
@@ -62,6 +89,32 @@ export function SearchView({
       </View>
 
 
+      {!query.trim() && recentSearches.length > 0 ? (
+        <View style={styles.searchSection}>
+          <Text style={styles.searchSectionTitle}>최근 검색</Text>
+          <View style={styles.keywordWrap}>
+            {recentSearches.map(keyword => (
+              <Pressable
+                key={keyword}
+                accessibilityRole="button"
+                onPress={() => onSelectKeyword(keyword)}
+                style={styles.recentSearchPill}
+              >
+                <Text style={styles.recentSearchPillText}>{keyword}</Text>
+                <Pressable
+                  accessibilityLabel={`${keyword} 최근 검색 삭제`}
+                  accessibilityRole="button"
+                  onPress={() => onRemoveRecentSearch(keyword)}
+                  style={styles.recentSearchRemoveButton}
+                >
+                  <SymbolView name={{ android: 'close', ios: 'xmark', web: 'close' }} size={14} tintColor="#8B95A1" />
+                </Pressable>
+              </Pressable>
+            ))}
+          </View>
+        </View>
+      ) : null}
+
       <View style={styles.searchSection}>
         <Text style={styles.searchSectionTitle}>이번달 인기 장소</Text>
         <View style={styles.keywordWrap}>
@@ -89,7 +142,7 @@ export function SearchView({
               style={styles.suggestionRow}
             >
               <SymbolView name={{ android: 'search', ios: 'magnifyingglass', web: 'search' }} size={18} tintColor="#8B95A1" />
-              <Text style={styles.suggestionText}>{place.name}</Text>
+              {renderHighlightedName(place.name)}
             </Pressable>
           ))}
         </View>

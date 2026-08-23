@@ -6,7 +6,8 @@ import type { Place } from '@/features/places/types';
 
 import { styles } from '../styles';
 import type { HomeDogProfile } from '../types';
-import { getImageSource } from '../utils/place-utils';
+import { getVerifiedDiffDays } from '../utils/place-utils';
+import { PlaceThumbnail } from './place-thumbnail';
 
 const DOG_SIZE_TAG_CODES = new Set(['SMALL_DOG', 'MEDIUM_DOG', 'LARGE_DOG']);
 
@@ -31,27 +32,12 @@ const getCompatibleDogs = (
   });
 };
 
-const getRelativeVerifiedTime = (lastVerifiedAt?: string): string | null => {
-  if (!lastVerifiedAt) {
+const formatRelativeVerifiedTime = (diffDays: number | null): string | null => {
+  if (diffDays === null) {
     return null;
   }
 
-  const verifiedAt = new Date(lastVerifiedAt);
-
-  if (Number.isNaN(verifiedAt.getTime())) {
-    return null;
-  }
-
-  const diffDays = Math.max(
-    0,
-    Math.floor((Date.now() - verifiedAt.getTime()) / (1000 * 60 * 60 * 24)),
-  );
-
-  if (diffDays === 0) {
-    return '오늘';
-  }
-
-  return `${diffDays}일전`;
+  return diffDays === 0 ? '오늘' : `${diffDays}일전`;
 };
 
 export function PlaceListRow({
@@ -67,7 +53,9 @@ export function PlaceListRow({
 }) {
   const compatibleDogs = getCompatibleDogs(place, dogs);
   const displayTags = place.tags.slice(0, compact ? 2 : 3);
-  const relativeVerifiedTime = getRelativeVerifiedTime(place.lastVerifiedAt);
+  const relativeVerifiedTime = formatRelativeVerifiedTime(
+    getVerifiedDiffDays(place.lastVerifiedAt),
+  );
   const userVerifiedText = place.verifiedCount
     ? `유저인증 ${place.verifiedCount}${
         relativeVerifiedTime ? ` · ${relativeVerifiedTime}` : ''
@@ -81,7 +69,7 @@ export function PlaceListRow({
       style={[styles.placeRow, compact && styles.placeRowCompact]}
     >
       <View style={styles.placeRowImageFrame}>
-        <Image source={getImageSource(place.imageUrl)} style={styles.placeRowImage} />
+        <PlaceThumbnail imageUrl={place.imageUrl} style={styles.placeRowImage} />
         <View style={styles.placeLikeBadge}>
           <SymbolView
             name={{ android: 'favorite', ios: place.isLiked ? 'heart.fill' : 'heart', web: 'favorite' }}

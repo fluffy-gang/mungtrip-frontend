@@ -1,69 +1,47 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 
+import { getCourses } from '@/features/courses/api';
+import type { Course } from '@/features/courses/types';
 import { getRecentlyVerifiedPlaces, getTopPlaces } from '@/features/places/api';
 import type { Place, PlaceCategory, PlaceTag } from '@/features/places/types';
 
-import { DEFAULT_CATEGORY_CODE } from '../constants';
+import { useAsyncEffect } from './use-async-effect';
 
 interface UseHomeFeedOptions {
   categories: PlaceCategory[];
-  categoryCode: string | null;
   enabled: boolean;
   reloadKey: number;
   tags: PlaceTag[];
 }
 
 export function useHomeFeed(options: UseHomeFeedOptions) {
-  const { categories, categoryCode, enabled, reloadKey, tags } = options;
+  const { categories, enabled, reloadKey, tags } = options;
+  const [courses, setCourses] = useState<Course[]>([]);
   const [recentlyVerified, setRecentlyVerified] = useState<Place[]>([]);
-  const [topPlaces, setTopPlaces] = useState<Place[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [hasError, setHasError] = useState(false);
-  const topCategoryCode = useMemo(
-    () =>
-      categoryCode && categories.some(category => category.code === categoryCode)
-        ? categoryCode
-        : (categories[0]?.code ?? DEFAULT_CATEGORY_CODE),
-    [categories, categoryCode],
-  );
+  const [topCafePlaces, setTopCafePlaces] = useState<Place[]>([]);
+  const [topRestaurantPlaces, setTopRestaurantPlaces] = useState<Place[]>([]);
 
-  useEffect(() => {
-    let isMounted = true;
-    if (!enabled) return;
-
-    const run = async () => {
-      await Promise.resolve();
-      if (!isMounted) return;
-
-      setLoading(true);
-      setHasError(false);
-
-      try {
-        const catalog = { categories, tags };
-        const [nextRecentlyVerified, nextTopPlaces] = await Promise.all([
+  const { hasError, loading } = useAsyncEffect(
+    async isMounted => {
+      const catalog = { categories, tags };
+      const [nextCourses, nextRecentlyVerified, nextTopCafePlaces, nextTopRestaurantPlaces] =
+        await Promise.all([
+          getCourses(10),
           getRecentlyVerifiedPlaces(10, catalog),
-          getTopPlaces(
-            { category: topCategoryCode, days: 30, limit: 10 },
-            catalog,
-          ),
+          getTopPlaces({ category: 'CAFE', days: 30, limit: 10 }, catalog),
+          getTopPlaces({ category: 'RESTAURANT', days: 30, limit: 10 }, catalog),
         ]);
 
-        if (isMounted) {
-          setRecentlyVerified(nextRecentlyVerified);
-          setTopPlaces(nextTopPlaces);
-        }
-      } catch {
-        if (isMounted) setHasError(true);
-      } finally {
-        if (isMounted) setLoading(false);
+      if (isMounted()) {
+        setCourses(nextCourses);
+        setRecentlyVerified(nextRecentlyVerified);
+        setTopCafePlaces(nextTopCafePlaces);
+        setTopRestaurantPlaces(nextTopRestaurantPlaces);
       }
-    };
+    },
+    [categories, enabled, reloadKey, tags],
+    enabled,
+  );
 
-    void run();
-    return () => {
-      isMounted = false;
-    };
-  }, [categories, enabled, reloadKey, tags, topCategoryCode]);
-
-  return { hasError, loading, recentlyVerified, topPlaces };
+  return { courses, hasError, loading, recentlyVerified, topCafePlaces, topRestaurantPlaces };
 }

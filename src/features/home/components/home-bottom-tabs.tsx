@@ -40,7 +40,7 @@ export function HomeBottomTabs({
       </Pressable>
       <Pressable accessibilityRole="button" style={styles.tabButton}>
         <SymbolView name={{ android: 'favorite', ios: 'heart', web: 'favorite' }} size={22} tintColor="#8B95A1" />
-        <Text style={styles.tabLabel}>저장</Text>
+        <Text style={styles.tabLabel}>찜</Text>
       </Pressable>
       <Pressable accessibilityRole="button" style={styles.tabButton}>
         <SymbolView name={{ android: 'person', ios: 'person.crop.circle', web: 'person' }} size={22} tintColor="#8B95A1" />

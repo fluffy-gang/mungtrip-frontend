@@ -1,5 +1,5 @@
-import { Screen } from '@/components/ui/screen';
+import { HomeScreen as MungtripHomeScreen } from '@/features/home/screens/home-screen';
 
-export default function HomeScreen() {
-  return <Screen />;
+export default function IndexScreen() {
+  return <MungtripHomeScreen />;
 }

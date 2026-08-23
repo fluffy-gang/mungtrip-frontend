@@ -5,12 +5,14 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "mungtripfrontend",
+    "scheme": "mungtrip",
     "userInterfaceStyle": "light",
     "ios": {
+      "bundleIdentifier": "com.mungtrip.app",
       "icon": "./assets/expo.icon"
     },
     "android": {
+      "package": "com.mungtrip.app",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -84,7 +86,16 @@
           "imageWidth": 76
         }
       ],
-      "expo-secure-store"
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "현재 위치를 기준으로 가까운 반려동물 동반 장소를 보여드릴게요."
+        }
+      ],
+      "expo-secure-store",
+      "expo-image",
+      "expo-status-bar",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,

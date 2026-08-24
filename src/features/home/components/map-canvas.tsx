@@ -1,7 +1,7 @@
 import { Image } from "expo-image";
 import { SymbolView } from "expo-symbols";
 import { useMemo } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Platform, StyleSheet, Text, View } from "react-native";
 
 
 import { JEJU_MAP_CAMERA } from "../constants";
@@ -79,7 +79,8 @@ export function MapCanvas({
 
             return (
               <PlaceMarker
-                key={`${place.id}-${isSelected ? "selected" : "default"}-${isCategoryMatch ? "match" : "dim"}`}
+                // Android tracks updates; replacing a selected marker recycles its active bitmap.
+                key={Platform.OS === 'ios' ? `${place.id}-${isSelected ? "selected" : "default"}-${isCategoryMatch ? "match" : "dim"}` : place.id}
                 MarkerOverlay={NaverMapMarkerOverlay}
                 onSelect={onSelectPlace}
                 place={place}

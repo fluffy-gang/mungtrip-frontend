@@ -2,57 +2,79 @@ import type { SymbolViewProps } from 'expo-symbols';
 import type { MapBounds, MapCamera } from './types';
 
 type PlaceCategorySymbol = SymbolViewProps['name'];
+type LocalMapIcon = number;
+
+interface ImageCategoryMeta {
+  readonly kind: 'image';
+  readonly icon: LocalMapIcon;
+  readonly rotate?: number;
+}
+
+interface FallbackCategoryMeta {
+  readonly kind: 'fallback';
+  readonly symbol: PlaceCategorySymbol;
+}
 
 export const PLACE_CATEGORY_META = {
   RESTAURANT: {
-    color: '#D97706',
-    symbol: { android: 'restaurant', ios: 'fork.knife', web: 'restaurant' },
+    kind: 'image',
+    icon: require('./assets/map-icons/restaurant.webp'),
   },
   CAFE: {
-    color: '#8B5E34',
-    symbol: { android: 'local_cafe', ios: 'cup.and.saucer.fill', web: 'local_cafe' },
+    kind: 'image',
+    icon: require('./assets/map-icons/cafe.webp'),
   },
   ATTRACTION: {
-    color: '#2E7D32',
-    symbol: { android: 'park', ios: 'tree.fill', web: 'park' },
+    kind: 'image',
+    icon: require('./assets/map-icons/attraction.webp'),
   },
   ACCOMMODATION: {
-    color: '#4F46E5',
-    symbol: { android: 'hotel', ios: 'bed.double.fill', web: 'hotel' },
+    kind: 'image',
+    icon: require('./assets/map-icons/accommodation.webp'),
   },
   HOSPITAL: {
-    color: '#0EA5E9',
-    symbol: { android: 'local_hospital', ios: 'cross.case.fill', web: 'local_hospital' },
+    kind: 'image',
+    icon: require('./assets/map-icons/hospital.svg'),
   },
   ACTIVITY: {
-    color: '#16A34A',
-    symbol: { android: 'directions_run', ios: 'figure.run', web: 'directions_run' },
+    kind: 'image',
+    icon: require('./assets/map-icons/activity.webp'),
   },
   GROOMING: {
-    color: '#DB2777',
-    symbol: { android: 'content_cut', ios: 'scissors', web: 'content_cut' },
+    kind: 'image',
+    icon: require('./assets/map-icons/grooming.webp'),
+    rotate: -90,
   },
   CARE: {
-    color: '#F97316',
-    symbol: { android: 'favorite', ios: 'heart.fill', web: 'favorite' },
+    kind: 'image',
+    icon: require('./assets/map-icons/care.webp'),
   },
   SHOPPING: {
-    color: '#7C3AED',
-    symbol: { android: 'shopping_bag', ios: 'bag.fill', web: 'shopping_bag' },
+    kind: 'image',
+    icon: require('./assets/map-icons/shopping.webp'),
   },
   TRAINING: {
-    color: '#EA580C',
-    symbol: { android: 'school', ios: 'graduationcap.fill', web: 'school' },
+    kind: 'image',
+    icon: require('./assets/map-icons/training.webp'),
   },
   FACILITY: {
-    color: '#64748B',
-    symbol: { android: 'build', ios: 'wrench.and.screwdriver.fill', web: 'build' },
+    kind: 'image',
+    icon: require('./assets/map-icons/facility.webp'),
   },
   DEFAULT: {
-    color: '#FF6A21',
-    symbol: { android: 'pets', ios: 'pawprint.fill', web: 'pets' },
+    kind: 'fallback',
+    symbol: { android: 'pets', ios: 'pawprint.fill', web: 'pets' } as PlaceCategorySymbol,
   },
-} satisfies Record<string, { color: string; symbol: PlaceCategorySymbol }>;
+} as const satisfies Record<string, ImageCategoryMeta | FallbackCategoryMeta>;
+
+export type PlaceCategoryMeta = ImageCategoryMeta | FallbackCategoryMeta;
+
+export function getPlaceCategoryMeta(category: string): PlaceCategoryMeta {
+  if (Object.prototype.hasOwnProperty.call(PLACE_CATEGORY_META, category)) {
+    return PLACE_CATEGORY_META[category as keyof typeof PLACE_CATEGORY_META];
+  }
+  return PLACE_CATEGORY_META.DEFAULT;
+}
 
 export const BOTTOM_TAB_HEIGHT = 56;
 export const MAP_COLLAPSED_SHEET_HEIGHT = 214;

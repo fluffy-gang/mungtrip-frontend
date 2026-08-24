@@ -34,11 +34,16 @@ const React = {
   createElement: (type, props, ...children) => ({ type, props: { ...props, children: children.length === 1 ? children[0] : children } }),
   useState: (initial) => [initial, () => {}],
   useEffect: (effect) => effect(),
+  useMemo: (factory) => factory(),
 };
 const componentStubs = {
   'expo-image': { Image: 'Image', useImage: () => { imageLoadCount += 1; return imageState; } },
   'expo-symbols': { SymbolView: 'SymbolView' },
-  'react-native': { View: 'View' },
+  'react-native': { View: 'View', Platform: { OS: 'ios' }, StyleSheet: { create: value => value } },
+  '../utils/map-utils': { toMapBounds: value => value },
+  '../utils/native-modules': { loadNativeMapModule: () => ({ NaverMapView: 'Map', NaverMapMarkerOverlay: 'MarkerOverlay' }) },
+  '../utils/place-utils': { hasPlaceCoordinate: value => Number.isFinite(value.latitude) && Number.isFinite(value.longitude) },
+  './place-marker': { PlaceMarker: 'PlaceMarker' },
   '@/features/places/types': {},
 };
 const moduleCache = new Map();
@@ -180,4 +185,22 @@ imageState = null;
 const failure = renderMarker();
 assert.equal(failure.child.type, 'SymbolView');
 assert.equal(failure.child.props.name.ios, 'pawprint.fill');
+// Android's native marker recycles its bitmap when the top custom view unmounts.
+// Image readiness and styling must update that view without replacing its identity.
+componentStubs['react-native'].Platform.OS = 'android';
+const androidPending = renderMarker();
+imageState = { width: 20, height: 20, uri: 'prepared://restaurant' };
+const androidReady = renderMarker();
+assert.equal(androidPending.bubble.props.key, androidReady.bubble.props.key);
+assert.equal(androidReady.child.type, 'Image');
+for (const overrides of [{ selectedPlaceId: place.id }, { selectedCategory: { code: 'CAFE' } }, { selectedCategory: { code: 'RESTAURANT' } }]) {
+  assert.equal(renderMarker(overrides).bubble.props.key, androidReady.bubble.props.key);
+}
+const { MapCanvas } = loadModule(path.join(root, 'src/features/home/components/map-canvas.tsx'));
+const markerKey = (overrides = {}) => MapCanvas({ places: [place], mapCamera: {}, userCoordinate: null, ...overrides }).props.children.props.children[0][0].props.key;
+const stableKey = markerKey();
+assert.equal(markerKey({ selectedPlaceId: place.id }), stableKey);
+assert.equal(markerKey({ selectedCategory: { code: 'CAFE' } }), stableKey);
+componentStubs['react-native'].Platform.OS = 'ios';
+assert.notEqual(markerKey({ selectedPlaceId: place.id }), markerKey());
 console.log(`map icon verification passed (${categories.length} categories, fallback, states, identity/anchor/caption/z-index contracts)`);

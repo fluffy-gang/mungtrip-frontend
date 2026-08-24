@@ -1,6 +1,6 @@
 import { Image, useImage } from 'expo-image';
 import { SymbolView } from 'expo-symbols';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import { getPlaceCategoryMeta, PLACE_CATEGORY_META } from '../constants';
 import { styles } from '../styles';
@@ -60,9 +60,9 @@ function MarkerBody({ MarkerOverlay, onSelect, place, selectedCategory, selected
       width={42}
       zIndex={zIndex}
     >
-      {/* Naver iOS snapshots this top child once; keying readiness remounts only the body, not its loader. */}
+      {/* iOS snapshots on mount. Android tracks this view; remounting recycles an in-use map bitmap. */}
       <View
-        key={bubbleKey}
+        key={Platform.OS === 'ios' ? bubbleKey : 'marker-body'}
         collapsable={false}
         style={[
           styles.placeMarkerBubble,

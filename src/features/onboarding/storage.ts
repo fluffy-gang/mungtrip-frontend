@@ -1,49 +1,16 @@
 import * as Crypto from 'expo-crypto';
 import * as SecureStore from 'expo-secure-store';
 
-import type { AuthSession } from './types';
-
-const SESSION_KEY = 'mungtrip.auth.session';
 const DEVICE_ID_KEY = 'mungtrip.device.id';
 
-async function getItem(key: string) {
-  return SecureStore.getItemAsync(key);
-}
-
-async function setItem(key: string, value: string) {
-  await SecureStore.setItemAsync(key, value);
-}
-
-async function deleteItem(key: string) {
-  await SecureStore.deleteItemAsync(key);
-}
-
-export async function getStoredSession() {
-  const value = await getItem(SESSION_KEY);
-  if (!value) return null;
-
-  try {
-    return JSON.parse(value) as AuthSession;
-  } catch {
-    await deleteItem(SESSION_KEY);
-    return null;
-  }
-}
-
-export function saveSession(session: AuthSession) {
-  return setItem(SESSION_KEY, JSON.stringify(session));
-}
-
-export function clearSession() {
-  return deleteItem(SESSION_KEY);
-}
-
 export async function getDeviceId() {
-  const stored = await getItem(DEVICE_ID_KEY);
+  const stored = await SecureStore.getItemAsync(DEVICE_ID_KEY);
+
   if (stored) return stored;
 
   const created = Crypto.randomUUID();
-  await setItem(DEVICE_ID_KEY, created);
+  await SecureStore.setItemAsync(DEVICE_ID_KEY, created);
+
   return created;
 }
 
@@ -52,9 +19,11 @@ function skipKey(userId: number) {
 }
 
 export async function getDogRegistrationSkipped(userId: number) {
-  return (await getItem(skipKey(userId))) === 'true';
+  return (await SecureStore.getItemAsync(skipKey(userId))) === 'true';
 }
 
 export function setDogRegistrationSkipped(userId: number, skipped: boolean) {
-  return skipped ? setItem(skipKey(userId), 'true') : deleteItem(skipKey(userId));
+  return skipped
+    ? SecureStore.setItemAsync(skipKey(userId), 'true')
+    : SecureStore.deleteItemAsync(skipKey(userId));
 }

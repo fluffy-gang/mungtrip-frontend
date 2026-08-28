@@ -1,12 +1,13 @@
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 
+import { useAuth } from '@/features/auth/useAuth';
+import { getAuthSession } from '@/features/auth/storage';
 import {
   createDog,
   fromWireSize,
   getDogs,
   getPersonalities,
   getUserAgreements,
-  socialLogin,
   toWireSize,
   updateDog,
   uploadDogProfile,
@@ -16,14 +17,12 @@ import { getProviderToken } from '../social';
 import {
   getDeviceId,
   getDogRegistrationSkipped,
-  getStoredSession,
-  saveSession,
   setDogRegistrationSkipped,
 } from '../storage';
 
 import type { OnboardingContextValue, OnboardingProviderProps } from './type';
+import type { AuthSession } from '@/features/auth/types';
 import type {
-  AuthSession,
   BootstrapStatus,
   Dog,
   LoginProvider,
@@ -34,6 +33,7 @@ import type {
 const OnboardingContext = createContext<OnboardingContextValue | null>(null);
 
 export function OnboardingProvider({ children }: OnboardingProviderProps) {
+  const { handleSocialLogin, initAuth } = useAuth();
   const [status, setStatus] = useState<BootstrapStatus>('initializing');
   const [session, setSession] = useState<AuthSession | null>(null);
   const [dogs, setDogs] = useState<Dog[]>([]);
@@ -57,7 +57,7 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
 
   const bootstrap = useCallback(async () => {
     setStatus('initializing');
-    const stored = await getStoredSession();
+    const stored = await initAuth();
     if (!stored) {
       setSession(null);
       setStatus('anonymous');
@@ -68,7 +68,7 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
     try {
       return await resolveStatus(stored);
     } catch {
-      const retainedSession = await getStoredSession();
+      const retainedSession = await getAuthSession();
       if (!retainedSession) {
         setSession(null);
         setStatus('anonymous');
@@ -77,20 +77,23 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
       setStatus('bootstrapError');
       return 'bootstrapError' as const;
     }
-  }, [resolveStatus]);
+  }, [initAuth, resolveStatus]);
 
   const login = useCallback(
     async (provider: LoginProvider) => {
       const providerToken = await getProviderToken(provider);
       const deviceId = await getDeviceId();
-      const response = await socialLogin(provider, providerToken, deviceId);
+      const response = await handleSocialLogin({
+        deviceId,
+        provider,
+        providerToken,
+      });
       const nextSession: AuthSession = {
         accessToken: response.accessToken,
         provider: response.provider,
         refreshToken: response.refreshToken,
         userId: response.userId,
       };
-      await saveSession(nextSession);
       setSession(nextSession);
       try {
         return await resolveStatus(nextSession);
@@ -99,7 +102,7 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
         throw error;
       }
     },
-    [resolveStatus],
+    [handleSocialLogin, resolveStatus],
   );
 
   const setDraft = useCallback((patch: Partial<OnboardingDraft>) => {

@@ -4,7 +4,6 @@ import {
   hasRequiredAgreements,
   saveMyAgreements,
 } from '@/features/agreements/api';
-import { socialLogin as socialLoginRequest } from '@/features/auth/api';
 import { getAccessToken } from '@/features/auth/storage';
 import {
   createDog as createDogRequest,
@@ -23,17 +22,8 @@ import type {
   AgreementState,
   DogSize,
   DogSizeWire,
-  LoginProvider,
   OnboardingStatus,
 } from './types';
-
-export async function socialLogin(
-  provider: LoginProvider,
-  providerToken: string,
-  deviceId: string,
-) {
-  return socialLoginRequest({ deviceId, provider, providerToken });
-}
 
 export async function getAgreementDefinitions(): Promise<AgreementDefinition[]> {
   const data = await getAgreementDefinitionsRequest();

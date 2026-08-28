@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
+import type { AuthSession } from '@/features/auth/types';
 import type {
-  AuthSession,
   BootstrapStatus,
   Dog,
   LoginProvider,

@@ -12,23 +12,6 @@ export type AgreementType =
   | 'TELECOM'
   | 'MARKETING';
 
-export interface ApiResponse<T> {
-  code: string;
-  data: T;
-  message: string;
-}
-
-export interface AuthSession {
-  accessToken: string;
-  provider: LoginProvider;
-  refreshToken: string;
-  userId: number;
-}
-
-export interface LoginResponse extends AuthSession {
-  isNewUser: boolean;
-}
-
 export interface AgreementDefinition {
   name: string;
   required: boolean;

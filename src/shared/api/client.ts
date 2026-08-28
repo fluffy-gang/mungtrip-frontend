@@ -4,6 +4,14 @@ import { ApiError, toApiError } from '@/shared/api/error';
 import { isApiEnvelope } from '@/shared/api/types';
 import { ENV } from '@/shared/config/env';
 
+type ResponseErrorHandler = (error: unknown) => Promise<unknown>;
+
+let responseErrorHandler: ResponseErrorHandler | null = null;
+
+export const setResponseErrorHandler = (handler: ResponseErrorHandler) => {
+  responseErrorHandler = handler;
+};
+
 const serializeParams = (params: Record<string, unknown>): string => {
   return Object.entries(params)
     .filter(([, value]) => value !== undefined && value !== null)
@@ -48,5 +56,13 @@ apiClient.interceptors.response.use(
 
     return response;
   },
-  error => Promise.reject(toApiError(error)),
+  async error => {
+    if (!responseErrorHandler) throw toApiError(error);
+
+    try {
+      return await responseErrorHandler(error);
+    } catch (handledError) {
+      throw toApiError(handledError);
+    }
+  },
 );

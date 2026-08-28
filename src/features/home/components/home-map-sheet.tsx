@@ -3,7 +3,6 @@ import {
   ActivityIndicator,
   type GestureResponderHandlers,
   Pressable,
-  ScrollView,
   Text,
   View,
 } from 'react-native';
@@ -14,52 +13,34 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import type { Course } from '@/features/courses/types';
 import type { Place } from '@/features/places/types';
 
+import type { PlaceExplorationStatus } from '../hooks/use-place-exploration';
 import { colors, styles } from '../styles';
-import type { HomeDogProfile } from '../types';
-import { FeedContent } from './feed-content';
 import { PlaceList } from './place-list';
 
 interface HomeMapSheetProps {
-  bottom: number;
-  courses: Course[];
-  dogs: HomeDogProfile[];
-  hasError: boolean;
   height: number;
-  isPlaceList: boolean;
-  loading: boolean;
+  onResetConditions: () => void;
   onRetry: () => void;
   onSelectPlace: (place: Place) => void;
-  onShowCategoryPlaces: (categoryCode: string) => void;
   onShowMap: () => void;
-  onShowRecommendedPlaces: () => void;
   panHandlers: GestureResponderHandlers;
   places: Place[];
-  recentlyVerified: Place[];
-  topCafePlaces: Place[];
-  topRestaurantPlaces: Place[];
+  selectedPlaceId?: number;
+  status: PlaceExplorationStatus;
 }
 
 export function HomeMapSheet({
-  bottom,
-  courses,
-  dogs,
-  hasError,
   height,
-  isPlaceList,
-  loading,
+  onResetConditions,
   onRetry,
   onSelectPlace,
-  onShowCategoryPlaces,
   onShowMap,
-  onShowRecommendedPlaces,
   panHandlers,
   places,
-  recentlyVerified,
-  topCafePlaces,
-  topRestaurantPlaces,
+  selectedPlaceId,
+  status,
 }: HomeMapSheetProps) {
   const animatedHeight = useSharedValue(height);
 
@@ -75,16 +56,20 @@ export function HomeMapSheet({
   }));
 
   return (
-    <Animated.View style={[styles.mapBottomSheet, { bottom }, sheetHeightStyle]}>
+    <Animated.View style={[styles.mapBottomSheet, sheetHeightStyle]}>
       <View style={styles.sheetDragArea} {...panHandlers}>
         <View style={styles.sheetHandle} />
       </View>
-      {loading ? (
-        <View style={styles.sheetLoadingRow}>
+      {status === 'initial-loading' || status === 'refreshing' ? (
+        <View accessibilityLiveRegion="polite" style={styles.emptyList}>
           <ActivityIndicator color={colors.primary} />
+          <Text style={styles.emptyListText}>
+            {status === 'initial-loading'
+              ? '장소를 불러오는 중이에요'
+              : '새 조건으로 다시 조회하는 중이에요'}
+          </Text>
         </View>
-      ) : null}
-      {hasError ? (
+      ) : status === 'error' ? (
         <View style={styles.emptyList}>
           <Text style={styles.emptyListTitle}>장소 정보를 불러오지 못했어요</Text>
           <Text style={styles.emptyListText}>
@@ -98,33 +83,34 @@ export function HomeMapSheet({
             <Text style={styles.retryButtonText}>다시 시도</Text>
           </Pressable>
         </View>
-      ) : isPlaceList ? (
+      ) : status === 'empty' ? (
+        <View accessibilityLiveRegion="polite" style={styles.emptyList}>
+          <Text style={styles.placeListCount}>총 0곳</Text>
+          <Text style={styles.emptyListTitle}>현재 조건에 맞는 장소가 없어요</Text>
+          <Text style={styles.emptyListText}>
+            조건을 초기화한 뒤 다시 찾아보세요.
+          </Text>
+          <Pressable
+            accessibilityRole="button"
+            onPress={onResetConditions}
+            style={styles.retryButton}
+          >
+            <Text style={styles.retryButtonText}>조건 초기화</Text>
+          </Pressable>
+        </View>
+      ) : (
         <>
-          <Text style={styles.placeListCount}>{places.length}개 장소</Text>
+          <Text accessibilityLiveRegion="polite" style={styles.placeListCount}>
+            총 {places.length}곳
+          </Text>
           <PlaceList
-            dogs={dogs}
             places={places}
             onSelectPlace={onSelectPlace}
             onShowMap={onShowMap}
+            selectedPlaceId={selectedPlaceId}
             showMapSwitchButton={false}
           />
         </>
-      ) : (
-        <ScrollView
-          contentContainerStyle={styles.mapSheetFeedContent}
-          showsVerticalScrollIndicator={false}
-          style={styles.mapSheetFeedScroll}
-        >
-          <FeedContent
-            courses={courses}
-            onSelectPlace={onSelectPlace}
-            onShowCategoryPlaces={onShowCategoryPlaces}
-            onShowRecommendedPlaces={onShowRecommendedPlaces}
-            recentlyVerified={recentlyVerified}
-            topCafePlaces={topCafePlaces}
-            topRestaurantPlaces={topRestaurantPlaces}
-          />
-        </ScrollView>
       )}
     </Animated.View>
   );

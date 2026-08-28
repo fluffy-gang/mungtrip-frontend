@@ -4,8 +4,6 @@ import { SymbolView } from 'expo-symbols';
 import { styles } from '../styles';
 
 interface MapOverlayControlsProps {
-  myLocationButtonBottom: number;
-  onMoveToCurrentLocation: () => void;
   onZoomIn: () => void;
   onZoomOut: () => void;
   visible: boolean;
@@ -13,8 +11,6 @@ interface MapOverlayControlsProps {
 }
 
 export function MapOverlayControls({
-  myLocationButtonBottom,
-  onMoveToCurrentLocation,
   onZoomIn,
   onZoomOut,
   visible,
@@ -45,14 +41,6 @@ export function MapOverlayControls({
           <SymbolView name={{ android: 'zoom_out', ios: 'minus.magnifyingglass', web: 'zoom_out' }} size={20} tintColor="#4E5968" />
         </Pressable>
       </View>
-      <Pressable
-        accessibilityLabel="내 위치로 이동"
-        accessibilityRole="button"
-        onPress={onMoveToCurrentLocation}
-        style={[styles.myLocationButton, { bottom: myLocationButtonBottom }]}
-      >
-        <SymbolView name={{ android: 'my_location', ios: 'location.fill', web: 'my_location' }} size={20} tintColor="#4E5968" />
-      </Pressable>
     </>
   );
 }

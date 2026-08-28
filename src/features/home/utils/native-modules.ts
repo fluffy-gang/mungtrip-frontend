@@ -1,4 +1,4 @@
-import type { LocationModule, NativeMapModule } from '../types';
+import type { NativeMapModule } from '../types';
 
 /**
  * 네이버 지도 네이티브 모듈은 Expo Go에서 사용할 수 없고, 개발 빌드에서도
@@ -23,14 +23,4 @@ export const isNativeMapAvailable = nativeMapModuleInstance !== null;
 
 export function loadNativeMapModule(): NativeMapModule | null {
   return nativeMapModuleInstance;
-}
-
-/** expo-location은 네이티브 모듈이라 Expo Go 등 미지원 환경에서는 require가 던진다. */
-export function loadLocationModule(): LocationModule | null {
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    return require('expo-location') as LocationModule;
-  } catch {
-    return null;
-  }
 }

@@ -1,0 +1,858 @@
+{
+  "schemaVersion": 1,
+  "sourceDirectory": "/Users/yeodahui/Downloads/Dogs",
+  "convertedDirectory": "assets/dog-presets/webp",
+  "assetCount": 25,
+  "assets": [
+    {
+      "originalFilename": {
+        "display": "강아지등록.png",
+        "normalizedNfc": "강아지등록.png"
+      },
+      "breedId": null,
+      "role": "hero",
+      "source": {
+        "bytes": 155554,
+        "dimensions": {
+          "width": 1125,
+          "height": 768
+        },
+        "sha256": "b989e033d64ecdd8aa71c629164c18f49a6c09a3cea9905014c847b8a7c3f6ef",
+        "mime": "image/png",
+        "hasAlpha": true,
+        "hasTransparency": false
+      },
+      "converted": {
+        "filename": "강아지등록.webp",
+        "bytes": 16052,
+        "dimensions": {
+          "width": 1125,
+          "height": 768
+        },
+        "sha256": "b29eba95b1ee462196602d8e8d7d7d71f9cf75e54281d4caff25bf7e1bea3ad5",
+        "mime": "image/webp",
+        "hasAlpha": false,
+        "hasTransparency": false
+      },
+      "uploadStatus": "not-uploaded",
+      "objectKey": null,
+      "publicUrl": null
+    },
+    {
+      "originalFilename": {
+        "display": "골든 리트리버.png",
+        "normalizedNfc": "골든 리트리버.png"
+      },
+      "breedId": "golden-retriever",
+      "role": "cover",
+      "source": {
+        "bytes": 33750,
+        "dimensions": {
+          "width": 288,
+          "height": 200
+        },
+        "sha256": "766f1cbe473a19cefdcc5110005ab6fa9c74e8afc7411512f5c2861793c62e2a",
+        "mime": "image/png",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "converted": {
+        "filename": "골든 리트리버.webp",
+        "bytes": 7448,
+        "dimensions": {
+          "width": 288,
+          "height": 200
+        },
+        "sha256": "6f1b57cc79efc31b70acb5395bd11f967572834cf5392820f16c2a7cd250ef7c",
+        "mime": "image/webp",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "uploadStatus": "not-uploaded",
+      "objectKey": null,
+      "publicUrl": null
+    },
+    {
+      "originalFilename": {
+        "display": "골든 리트리버-1.png",
+        "normalizedNfc": "골든 리트리버-1.png"
+      },
+      "breedId": "golden-retriever",
+      "role": "profile",
+      "source": {
+        "bytes": 9475,
+        "dimensions": {
+          "width": 80,
+          "height": 80
+        },
+        "sha256": "5ad213b1b51653a4dc5e31b25d9f9d2822b1bb2866135ff7d6b018eee5cad852",
+        "mime": "image/png",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "converted": {
+        "filename": "골든 리트리버-1.webp",
+        "bytes": 2284,
+        "dimensions": {
+          "width": 80,
+          "height": 80
+        },
+        "sha256": "894337cd101530cf10676fcec2c5920cd7fdec07cefe993700399e0d2abf9b22",
+        "mime": "image/webp",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "uploadStatus": "not-uploaded",
+      "objectKey": null,
+      "publicUrl": null
+    },
+    {
+      "originalFilename": {
+        "display": "그레이하운드.png",
+        "normalizedNfc": "그레이하운드.png"
+      },
+      "breedId": "greyhound",
+      "role": "cover",
+      "source": {
+        "bytes": 17056,
+        "dimensions": {
+          "width": 288,
+          "height": 200
+        },
+        "sha256": "f4d7498cd935044a237934f39cbbfe87188e39dc5aa6194d9c94d9f8521e8ff1",
+        "mime": "image/png",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "converted": {
+        "filename": "그레이하운드.webp",
+        "bytes": 4680,
+        "dimensions": {
+          "width": 288,
+          "height": 200
+        },
+        "sha256": "7d351b15ea497271b57a641bfb91d7843e3e6035cd30055d786dbfa9a6ef3482",
+        "mime": "image/webp",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "uploadStatus": "not-uploaded",
+      "objectKey": null,
+      "publicUrl": null
+    },
+    {
+      "originalFilename": {
+        "display": "그레이하운드-1.png",
+        "normalizedNfc": "그레이하운드-1.png"
+      },
+      "breedId": "greyhound",
+      "role": "profile",
+      "source": {
+        "bytes": 6097,
+        "dimensions": {
+          "width": 80,
+          "height": 80
+        },
+        "sha256": "bde121acf517c3cb56fd1afe8455b6c770aba26b989b5143cdeae332d697114e",
+        "mime": "image/png",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "converted": {
+        "filename": "그레이하운드-1.webp",
+        "bytes": 1660,
+        "dimensions": {
+          "width": 80,
+          "height": 80
+        },
+        "sha256": "9eaa5485669231f2a9984a69cd30c9acf42b51d922911245af42c76f42cac733",
+        "mime": "image/webp",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "uploadStatus": "not-uploaded",
+      "objectKey": null,
+      "publicUrl": null
+    },
+    {
+      "originalFilename": {
+        "display": "말티즈.png",
+        "normalizedNfc": "말티즈.png"
+      },
+      "breedId": "maltese",
+      "role": "cover",
+      "source": {
+        "bytes": 24237,
+        "dimensions": {
+          "width": 288,
+          "height": 200
+        },
+        "sha256": "59c3cfb1ff438f8097f94a0d9c343aed02768d3a5eda742688f7a7503f2f90da",
+        "mime": "image/png",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "converted": {
+        "filename": "말티즈.webp",
+        "bytes": 5172,
+        "dimensions": {
+          "width": 288,
+          "height": 200
+        },
+        "sha256": "6b81090c1816ad7baceead99d8cb69f442e662bf3607d321cd68b81ed03e2ae6",
+        "mime": "image/webp",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "uploadStatus": "not-uploaded",
+      "objectKey": null,
+      "publicUrl": null
+    },
+    {
+      "originalFilename": {
+        "display": "말티즈-1.png",
+        "normalizedNfc": "말티즈-1.png"
+      },
+      "breedId": "maltese",
+      "role": "profile",
+      "source": {
+        "bytes": 7353,
+        "dimensions": {
+          "width": 80,
+          "height": 80
+        },
+        "sha256": "db087f19030b8758c5dec7e482db685fcfe040035ed7f4e1a25b73631b030267",
+        "mime": "image/png",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "converted": {
+        "filename": "말티즈-1.webp",
+        "bytes": 1540,
+        "dimensions": {
+          "width": 80,
+          "height": 80
+        },
+        "sha256": "dac614846a8d4313835c8a55528259bd3fafb50fb762a00bba31c8f07a571262",
+        "mime": "image/webp",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "uploadStatus": "not-uploaded",
+      "objectKey": null,
+      "publicUrl": null
+    },
+    {
+      "originalFilename": {
+        "display": "보더콜리.png",
+        "normalizedNfc": "보더콜리.png"
+      },
+      "breedId": "border-collie",
+      "role": "cover",
+      "source": {
+        "bytes": 29061,
+        "dimensions": {
+          "width": 288,
+          "height": 200
+        },
+        "sha256": "2b90e11a72dcc6186c44173dd4ed6c4db1146883c634c4615635beedb01e45f7",
+        "mime": "image/png",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "converted": {
+        "filename": "보더콜리.webp",
+        "bytes": 6508,
+        "dimensions": {
+          "width": 288,
+          "height": 200
+        },
+        "sha256": "fddb08b5405f903af1f1f0fe7f453652dc44033d6a0fe779fb9595216a239b23",
+        "mime": "image/webp",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "uploadStatus": "not-uploaded",
+      "objectKey": null,
+      "publicUrl": null
+    },
+    {
+      "originalFilename": {
+        "display": "보더콜리-1.png",
+        "normalizedNfc": "보더콜리-1.png"
+      },
+      "breedId": "border-collie",
+      "role": "profile",
+      "source": {
+        "bytes": 8887,
+        "dimensions": {
+          "width": 80,
+          "height": 80
+        },
+        "sha256": "b4182ca69fbf7fa0b7936c053e526c633424409c62dce7856a0fa90c2a92dfca",
+        "mime": "image/png",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "converted": {
+        "filename": "보더콜리-1.webp",
+        "bytes": 2230,
+        "dimensions": {
+          "width": 80,
+          "height": 80
+        },
+        "sha256": "a09ce5da50b0f754527438fba4c0f2620e4ed01a8ed37703bf2def87ea0dceeb",
+        "mime": "image/webp",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "uploadStatus": "not-uploaded",
+      "objectKey": null,
+      "publicUrl": null
+    },
+    {
+      "originalFilename": {
+        "display": "비숑.png",
+        "normalizedNfc": "비숑.png"
+      },
+      "breedId": "bichon",
+      "role": "cover",
+      "source": {
+        "bytes": 22233,
+        "dimensions": {
+          "width": 288,
+          "height": 200
+        },
+        "sha256": "beae9b9b40e83e571f987be3cd354574bcf8c285ce241410df16739caee4abdf",
+        "mime": "image/png",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "converted": {
+        "filename": "비숑.webp",
+        "bytes": 4470,
+        "dimensions": {
+          "width": 288,
+          "height": 200
+        },
+        "sha256": "7ac6fcaf933d3ec94f3909da74b4c8e0ec2969e03a88bb902434c266381f28f4",
+        "mime": "image/webp",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "uploadStatus": "not-uploaded",
+      "objectKey": null,
+      "publicUrl": null
+    },
+    {
+      "originalFilename": {
+        "display": "비숑-1.png",
+        "normalizedNfc": "비숑-1.png"
+      },
+      "breedId": "bichon",
+      "role": "profile",
+      "source": {
+        "bytes": 6376,
+        "dimensions": {
+          "width": 80,
+          "height": 80
+        },
+        "sha256": "695a85dbf9d407695c473ae06d89b1ea8b1631c8a24202a94a841dfc3e66016b",
+        "mime": "image/png",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "converted": {
+        "filename": "비숑-1.webp",
+        "bytes": 1308,
+        "dimensions": {
+          "width": 80,
+          "height": 80
+        },
+        "sha256": "02a5e6b51bf55a69336d919e0de13f868063fe6adf4b6593c5f6e818b8d1031a",
+        "mime": "image/webp",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "uploadStatus": "not-uploaded",
+      "objectKey": null,
+      "publicUrl": null
+    },
+    {
+      "originalFilename": {
+        "display": "시고르자브종.png",
+        "normalizedNfc": "시고르자브종.png"
+      },
+      "breedId": "mixed-breed",
+      "role": "cover",
+      "source": {
+        "bytes": 27739,
+        "dimensions": {
+          "width": 288,
+          "height": 200
+        },
+        "sha256": "acaf644e13b3abfceb85b199e4fc728985e2151ae87260a60cfb516b55f8607f",
+        "mime": "image/png",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "converted": {
+        "filename": "시고르자브종.webp",
+        "bytes": 6882,
+        "dimensions": {
+          "width": 288,
+          "height": 200
+        },
+        "sha256": "fbfd04e607c5ce92e5c03dd4549304899a2f3120bbffecef277115d759ca4195",
+        "mime": "image/webp",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "uploadStatus": "not-uploaded",
+      "objectKey": null,
+      "publicUrl": null
+    },
+    {
+      "originalFilename": {
+        "display": "시고르자브종-1.png",
+        "normalizedNfc": "시고르자브종-1.png"
+      },
+      "breedId": "mixed-breed",
+      "role": "profile",
+      "source": {
+        "bytes": 7922,
+        "dimensions": {
+          "width": 80,
+          "height": 80
+        },
+        "sha256": "e9a0b72ccd4375e3b52a9f726ae618e4b5bbe0d910b71e5cfea7963380705315",
+        "mime": "image/png",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "converted": {
+        "filename": "시고르자브종-1.webp",
+        "bytes": 2148,
+        "dimensions": {
+          "width": 80,
+          "height": 80
+        },
+        "sha256": "7140fd9a6a9381540078a5212850419cfd172e10aecb0fdb3c6d9d13355382ec",
+        "mime": "image/webp",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "uploadStatus": "not-uploaded",
+      "objectKey": null,
+      "publicUrl": null
+    },
+    {
+      "originalFilename": {
+        "display": "시바견.png",
+        "normalizedNfc": "시바견.png"
+      },
+      "breedId": "shiba",
+      "role": "cover",
+      "source": {
+        "bytes": 25595,
+        "dimensions": {
+          "width": 288,
+          "height": 200
+        },
+        "sha256": "d69054305ebd8ea6bce86747d8966ad48fc49f32608ce5d1362a6e34eea6764f",
+        "mime": "image/png",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "converted": {
+        "filename": "시바견.webp",
+        "bytes": 5784,
+        "dimensions": {
+          "width": 288,
+          "height": 200
+        },
+        "sha256": "9fca518262f5cf6fcb2c43207f2d5b21f65b89d577ece7f907268970c4b36f73",
+        "mime": "image/webp",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "uploadStatus": "not-uploaded",
+      "objectKey": null,
+      "publicUrl": null
+    },
+    {
+      "originalFilename": {
+        "display": "시바견-1.png",
+        "normalizedNfc": "시바견-1.png"
+      },
+      "breedId": "shiba",
+      "role": "profile",
+      "source": {
+        "bytes": 7025,
+        "dimensions": {
+          "width": 80,
+          "height": 80
+        },
+        "sha256": "02bda3e0e833afac66ce75ea7165a15555d980b56d366bba5626f85caa9658cb",
+        "mime": "image/png",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "converted": {
+        "filename": "시바견-1.webp",
+        "bytes": 1826,
+        "dimensions": {
+          "width": 80,
+          "height": 80
+        },
+        "sha256": "c9c030f3edbb7245979058b222d15ff8ba91987f98e12610a78b825f9314133b",
+        "mime": "image/webp",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "uploadStatus": "not-uploaded",
+      "objectKey": null,
+      "publicUrl": null
+    },
+    {
+      "originalFilename": {
+        "display": "웰시코기.png",
+        "normalizedNfc": "웰시코기.png"
+      },
+      "breedId": "welsh-corgi",
+      "role": "cover",
+      "source": {
+        "bytes": 27683,
+        "dimensions": {
+          "width": 288,
+          "height": 200
+        },
+        "sha256": "b262cec5bad4553c6330cc4dd37fceb37cf1ee0a034a97517f6ad605a4af7d6f",
+        "mime": "image/png",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "converted": {
+        "filename": "웰시코기.webp",
+        "bytes": 6364,
+        "dimensions": {
+          "width": 288,
+          "height": 200
+        },
+        "sha256": "f3e9f7a68513b2de638a9088bdf45800b4651700ca3de46ff2f8b4eb5f268e7c",
+        "mime": "image/webp",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "uploadStatus": "not-uploaded",
+      "objectKey": null,
+      "publicUrl": null
+    },
+    {
+      "originalFilename": {
+        "display": "웰시코기-1.png",
+        "normalizedNfc": "웰시코기-1.png"
+      },
+      "breedId": "welsh-corgi",
+      "role": "profile",
+      "source": {
+        "bytes": 7771,
+        "dimensions": {
+          "width": 80,
+          "height": 80
+        },
+        "sha256": "71a05a6a9138e90a18cd2b829a8c21398f5bff80410d8e576e9cb339afae63e6",
+        "mime": "image/png",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "converted": {
+        "filename": "웰시코기-1.webp",
+        "bytes": 2148,
+        "dimensions": {
+          "width": 80,
+          "height": 80
+        },
+        "sha256": "8a8e5958e8993e077b4f128643396a62188f99eef54bf71b6d4a132c8bff8529",
+        "mime": "image/webp",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "uploadStatus": "not-uploaded",
+      "objectKey": null,
+      "publicUrl": null
+    },
+    {
+      "originalFilename": {
+        "display": "진돗개.png",
+        "normalizedNfc": "진돗개.png"
+      },
+      "breedId": "jindo",
+      "role": "cover",
+      "source": {
+        "bytes": 24465,
+        "dimensions": {
+          "width": 288,
+          "height": 200
+        },
+        "sha256": "eb2d49f660baeb8151918dff79ad5391715ff8842b1c5726a7ee21250eeddad2",
+        "mime": "image/png",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "converted": {
+        "filename": "진돗개.webp",
+        "bytes": 5636,
+        "dimensions": {
+          "width": 288,
+          "height": 200
+        },
+        "sha256": "644715475a6c633f6203dd9aaf67c894f00158c96ce9fb1a82df39085deb291d",
+        "mime": "image/webp",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "uploadStatus": "not-uploaded",
+      "objectKey": null,
+      "publicUrl": null
+    },
+    {
+      "originalFilename": {
+        "display": "진돗개-1.png",
+        "normalizedNfc": "진돗개-1.png"
+      },
+      "breedId": "jindo",
+      "role": "profile",
+      "source": {
+        "bytes": 7279,
+        "dimensions": {
+          "width": 80,
+          "height": 80
+        },
+        "sha256": "12cb5001eef86273404a117ce0d10caa1252009a615f809e0dbfdede47c42c83",
+        "mime": "image/png",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "converted": {
+        "filename": "진돗개-1.webp",
+        "bytes": 1758,
+        "dimensions": {
+          "width": 80,
+          "height": 80
+        },
+        "sha256": "b017649e92e14dfb7a88d6351d2e1cd7e832540abadb13ab2242954d051dfd26",
+        "mime": "image/webp",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "uploadStatus": "not-uploaded",
+      "objectKey": null,
+      "publicUrl": null
+    },
+    {
+      "originalFilename": {
+        "display": "치와와.png",
+        "normalizedNfc": "치와와.png"
+      },
+      "breedId": "chihuahua",
+      "role": "cover",
+      "source": {
+        "bytes": 25814,
+        "dimensions": {
+          "width": 288,
+          "height": 200
+        },
+        "sha256": "91ddaf9900b51eac910fefc0a9e2379a442240f260811db9451abc79cbec2c63",
+        "mime": "image/png",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "converted": {
+        "filename": "치와와.webp",
+        "bytes": 6624,
+        "dimensions": {
+          "width": 288,
+          "height": 200
+        },
+        "sha256": "83dda0cf53356fe50d5ace9620296801b902ff07023a701cacf50dff6eb71627",
+        "mime": "image/webp",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "uploadStatus": "not-uploaded",
+      "objectKey": null,
+      "publicUrl": null
+    },
+    {
+      "originalFilename": {
+        "display": "치와와-1.png",
+        "normalizedNfc": "치와와-1.png"
+      },
+      "breedId": "chihuahua",
+      "role": "profile",
+      "source": {
+        "bytes": 6690,
+        "dimensions": {
+          "width": 80,
+          "height": 80
+        },
+        "sha256": "f5846d1b4fd8d8d1dd8a82a5e14998e8ddac11b5fed3ee79c9d3291fa2eefaa1",
+        "mime": "image/png",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "converted": {
+        "filename": "치와와-1.webp",
+        "bytes": 1894,
+        "dimensions": {
+          "width": 80,
+          "height": 80
+        },
+        "sha256": "80ebead1ad63e2e497905fbd86c4e0b3ef19150939777796b6b8083ba9a76d9f",
+        "mime": "image/webp",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "uploadStatus": "not-uploaded",
+      "objectKey": null,
+      "publicUrl": null
+    },
+    {
+      "originalFilename": {
+        "display": "포메라니안.png",
+        "normalizedNfc": "포메라니안.png"
+      },
+      "breedId": "pomeranian",
+      "role": "cover",
+      "source": {
+        "bytes": 28557,
+        "dimensions": {
+          "width": 288,
+          "height": 200
+        },
+        "sha256": "cb32e4a9e1b6498659887a1a1116514314ecd84208963e3c64a7d1d84f00f7eb",
+        "mime": "image/png",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "converted": {
+        "filename": "포메라니안.webp",
+        "bytes": 6176,
+        "dimensions": {
+          "width": 288,
+          "height": 200
+        },
+        "sha256": "f033c56131cdb3fb935cba1fc6247bf37aabf771cf50b39423a031e2e6e0bb66",
+        "mime": "image/webp",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "uploadStatus": "not-uploaded",
+      "objectKey": null,
+      "publicUrl": null
+    },
+    {
+      "originalFilename": {
+        "display": "포메라니안-1.png",
+        "normalizedNfc": "포메라니안-1.png"
+      },
+      "breedId": "pomeranian",
+      "role": "profile",
+      "source": {
+        "bytes": 9198,
+        "dimensions": {
+          "width": 80,
+          "height": 80
+        },
+        "sha256": "daee62367d45a331f9c84edb865bb614fc744125d49873ff1f88517aa01861aa",
+        "mime": "image/png",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "converted": {
+        "filename": "포메라니안-1.webp",
+        "bytes": 2138,
+        "dimensions": {
+          "width": 80,
+          "height": 80
+        },
+        "sha256": "0a718e7bccb374a8cea7267e3a53130320277e0d5a22a7e957192e3148655109",
+        "mime": "image/webp",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "uploadStatus": "not-uploaded",
+      "objectKey": null,
+      "publicUrl": null
+    },
+    {
+      "originalFilename": {
+        "display": "푸들.png",
+        "normalizedNfc": "푸들.png"
+      },
+      "breedId": "poodle",
+      "role": "cover",
+      "source": {
+        "bytes": 28010,
+        "dimensions": {
+          "width": 288,
+          "height": 200
+        },
+        "sha256": "e5a635076bd2dea6529783a3e7f8fccb9675af5039062e90d79cbd8bf032d3d4",
+        "mime": "image/png",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "converted": {
+        "filename": "푸들.webp",
+        "bytes": 6596,
+        "dimensions": {
+          "width": 288,
+          "height": 200
+        },
+        "sha256": "cc4250c3e617f3cbee74e3e463ec5b6fba9b5fa4e6db4d9d273360dec0f87ea5",
+        "mime": "image/webp",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "uploadStatus": "not-uploaded",
+      "objectKey": null,
+      "publicUrl": null
+    },
+    {
+      "originalFilename": {
+        "display": "푸들-1.png",
+        "normalizedNfc": "푸들-1.png"
+      },
+      "breedId": "poodle",
+      "role": "profile",
+      "source": {
+        "bytes": 8073,
+        "dimensions": {
+          "width": 80,
+          "height": 80
+        },
+        "sha256": "c65f9db8eae3678b7c7caecaf8bc6b66e353cd7efc5ea7d4902348b69194d8f4",
+        "mime": "image/png",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "converted": {
+        "filename": "푸들-1.webp",
+        "bytes": 2028,
+        "dimensions": {
+          "width": 80,
+          "height": 80
+        },
+        "sha256": "29fe8b1c5fe461ea2cc6eb3174c455a0e8fb6777b691376b1677377157cc6572",
+        "mime": "image/webp",
+        "hasAlpha": true,
+        "hasTransparency": true
+      },
+      "uploadStatus": "not-uploaded",
+      "objectKey": null,
+      "publicUrl": null
+    }
+  ]
+}

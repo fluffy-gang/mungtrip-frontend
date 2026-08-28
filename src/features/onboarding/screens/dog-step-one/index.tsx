@@ -16,6 +16,8 @@ import {
 import { BREEDS } from '../../constants';
 import { useOnboarding } from '../../context';
 import { styles } from './style';
+import { getBreedPreset } from '../../preset-assets';
+import { SafeImage } from '../../components/safe-image';
 
 import type { Href } from 'expo-router';
 
@@ -64,7 +66,9 @@ export function DogStepOneScreen() {
       </View>
       <FadeSequence delay={80} style={styles.breedSection}>
         <View style={styles.breedPreview}>
-          <DogPlaceholder style={styles.breedPreviewImage} />
+          {getBreedPreset(selectedId, 'selected') ? (
+            <SafeImage contentFit="contain" source={getBreedPreset(selectedId, 'selected')?.cover} fallback={<DogPlaceholder style={styles.breedPreviewImage} />} style={styles.breedPreviewImage} />
+          ) : <DogPlaceholder style={styles.breedPreviewImage} />}
         </View>
         <FlatList
           contentContainerStyle={[
@@ -112,7 +116,9 @@ export function DogStepOneScreen() {
                 style={styles.breedItem}
               >
                 <View style={[styles.breedCard, selected && styles.breedCardSelected]}>
-                  <DogPlaceholder compact style={styles.breedThumbnail} />
+                  {getBreedPreset(item.id, 'selected') ? (
+                    <SafeImage contentFit="contain" source={getBreedPreset(item.id, 'selected')?.profile} fallback={<DogPlaceholder compact style={styles.breedThumbnail} />} style={styles.breedThumbnail} />
+                  ) : <DogPlaceholder compact style={styles.breedThumbnail} />}
                 </View>
                 <Text
                   color={selected ? 'primary' : 'textSecondary'}

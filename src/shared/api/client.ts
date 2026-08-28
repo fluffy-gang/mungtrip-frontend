@@ -1,6 +1,7 @@
 import { create } from 'axios';
 
 import { ApiError, toApiError } from '@/shared/api/error';
+import { isApiEnvelope } from '@/shared/api/types';
 import { ENV } from '@/shared/config/env';
 
 const serializeParams = (params: Record<string, unknown>): string => {
@@ -40,6 +41,12 @@ apiClient.interceptors.request.use(config => {
 });
 
 apiClient.interceptors.response.use(
-  response => response,
+  response => {
+    if (isApiEnvelope(response.data)) {
+      response.data = response.data.data;
+    }
+
+    return response;
+  },
   error => Promise.reject(toApiError(error)),
 );

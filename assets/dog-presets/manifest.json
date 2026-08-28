@@ -23,7 +23,7 @@
         "hasTransparency": false
       },
       "converted": {
-        "filename": "강아지등록.webp",
+        "filename": "registration-hero.webp",
         "bytes": 16052,
         "dimensions": {
           "width": 1125,
@@ -57,7 +57,7 @@
         "hasTransparency": true
       },
       "converted": {
-        "filename": "골든 리트리버.webp",
+        "filename": "golden-retriever-cover.webp",
         "bytes": 7448,
         "dimensions": {
           "width": 288,
@@ -91,7 +91,7 @@
         "hasTransparency": true
       },
       "converted": {
-        "filename": "골든 리트리버-1.webp",
+        "filename": "golden-retriever-profile.webp",
         "bytes": 2284,
         "dimensions": {
           "width": 80,
@@ -125,7 +125,7 @@
         "hasTransparency": true
       },
       "converted": {
-        "filename": "그레이하운드.webp",
+        "filename": "greyhound-cover.webp",
         "bytes": 4680,
         "dimensions": {
           "width": 288,
@@ -159,7 +159,7 @@
         "hasTransparency": true
       },
       "converted": {
-        "filename": "그레이하운드-1.webp",
+        "filename": "greyhound-profile.webp",
         "bytes": 1660,
         "dimensions": {
           "width": 80,
@@ -193,7 +193,7 @@
         "hasTransparency": true
       },
       "converted": {
-        "filename": "말티즈.webp",
+        "filename": "maltese-cover.webp",
         "bytes": 5172,
         "dimensions": {
           "width": 288,
@@ -227,7 +227,7 @@
         "hasTransparency": true
       },
       "converted": {
-        "filename": "말티즈-1.webp",
+        "filename": "maltese-profile.webp",
         "bytes": 1540,
         "dimensions": {
           "width": 80,
@@ -261,7 +261,7 @@
         "hasTransparency": true
       },
       "converted": {
-        "filename": "보더콜리.webp",
+        "filename": "border-collie-cover.webp",
         "bytes": 6508,
         "dimensions": {
           "width": 288,
@@ -295,7 +295,7 @@
         "hasTransparency": true
       },
       "converted": {
-        "filename": "보더콜리-1.webp",
+        "filename": "border-collie-profile.webp",
         "bytes": 2230,
         "dimensions": {
           "width": 80,
@@ -329,7 +329,7 @@
         "hasTransparency": true
       },
       "converted": {
-        "filename": "비숑.webp",
+        "filename": "bichon-cover.webp",
         "bytes": 4470,
         "dimensions": {
           "width": 288,
@@ -363,7 +363,7 @@
         "hasTransparency": true
       },
       "converted": {
-        "filename": "비숑-1.webp",
+        "filename": "bichon-profile.webp",
         "bytes": 1308,
         "dimensions": {
           "width": 80,
@@ -397,7 +397,7 @@
         "hasTransparency": true
       },
       "converted": {
-        "filename": "시고르자브종.webp",
+        "filename": "mixed-breed-cover.webp",
         "bytes": 6882,
         "dimensions": {
           "width": 288,
@@ -431,7 +431,7 @@
         "hasTransparency": true
       },
       "converted": {
-        "filename": "시고르자브종-1.webp",
+        "filename": "mixed-breed-profile.webp",
         "bytes": 2148,
         "dimensions": {
           "width": 80,
@@ -465,7 +465,7 @@
         "hasTransparency": true
       },
       "converted": {
-        "filename": "시바견.webp",
+        "filename": "shiba-cover.webp",
         "bytes": 5784,
         "dimensions": {
           "width": 288,
@@ -499,7 +499,7 @@
         "hasTransparency": true
       },
       "converted": {
-        "filename": "시바견-1.webp",
+        "filename": "shiba-profile.webp",
         "bytes": 1826,
         "dimensions": {
           "width": 80,
@@ -533,7 +533,7 @@
         "hasTransparency": true
       },
       "converted": {
-        "filename": "웰시코기.webp",
+        "filename": "welsh-corgi-cover.webp",
         "bytes": 6364,
         "dimensions": {
           "width": 288,
@@ -567,7 +567,7 @@
         "hasTransparency": true
       },
       "converted": {
-        "filename": "웰시코기-1.webp",
+        "filename": "welsh-corgi-profile.webp",
         "bytes": 2148,
         "dimensions": {
           "width": 80,
@@ -601,7 +601,7 @@
         "hasTransparency": true
       },
       "converted": {
-        "filename": "진돗개.webp",
+        "filename": "jindo-cover.webp",
         "bytes": 5636,
         "dimensions": {
           "width": 288,
@@ -635,7 +635,7 @@
         "hasTransparency": true
       },
       "converted": {
-        "filename": "진돗개-1.webp",
+        "filename": "jindo-profile.webp",
         "bytes": 1758,
         "dimensions": {
           "width": 80,
@@ -669,7 +669,7 @@
         "hasTransparency": true
       },
       "converted": {
-        "filename": "치와와.webp",
+        "filename": "chihuahua-cover.webp",
         "bytes": 6624,
         "dimensions": {
           "width": 288,
@@ -703,7 +703,7 @@
         "hasTransparency": true
       },
       "converted": {
-        "filename": "치와와-1.webp",
+        "filename": "chihuahua-profile.webp",
         "bytes": 1894,
         "dimensions": {
           "width": 80,
@@ -737,7 +737,7 @@
         "hasTransparency": true
       },
       "converted": {
-        "filename": "포메라니안.webp",
+        "filename": "pomeranian-cover.webp",
         "bytes": 6176,
         "dimensions": {
           "width": 288,
@@ -771,7 +771,7 @@
         "hasTransparency": true
       },
       "converted": {
-        "filename": "포메라니안-1.webp",
+        "filename": "pomeranian-profile.webp",
         "bytes": 2138,
         "dimensions": {
           "width": 80,
@@ -805,7 +805,7 @@
         "hasTransparency": true
       },
       "converted": {
-        "filename": "푸들.webp",
+        "filename": "poodle-cover.webp",
         "bytes": 6596,
         "dimensions": {
           "width": 288,
@@ -839,7 +839,7 @@
         "hasTransparency": true
       },
       "converted": {
-        "filename": "푸들-1.webp",
+        "filename": "poodle-profile.webp",
         "bytes": 2028,
         "dimensions": {
           "width": 80,

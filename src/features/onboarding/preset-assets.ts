@@ -4,20 +4,20 @@ import { hasBreedPreset } from './preset-rules';
 
 import type { BreedInputMode } from './types';
 
-const HERO = require('../../../assets/dog-presets/webp/강아지등록.webp');
+const HERO = require('../../../assets/dog-presets/webp/registration-hero.webp');
 const PRESETS: Record<string, { cover: number; profile: number }> = {
-  'golden-retriever': { cover: require('../../../assets/dog-presets/webp/골든 리트리버.webp'), profile: require('../../../assets/dog-presets/webp/골든 리트리버-1.webp') },
-  greyhound: { cover: require('../../../assets/dog-presets/webp/그레이하운드.webp'), profile: require('../../../assets/dog-presets/webp/그레이하운드-1.webp') },
-  maltese: { cover: require('../../../assets/dog-presets/webp/말티즈.webp'), profile: require('../../../assets/dog-presets/webp/말티즈-1.webp') },
-  'border-collie': { cover: require('../../../assets/dog-presets/webp/보더콜리.webp'), profile: require('../../../assets/dog-presets/webp/보더콜리-1.webp') },
-  bichon: { cover: require('../../../assets/dog-presets/webp/비숑.webp'), profile: require('../../../assets/dog-presets/webp/비숑-1.webp') },
-  'mixed-breed': { cover: require('../../../assets/dog-presets/webp/시고르자브종.webp'), profile: require('../../../assets/dog-presets/webp/시고르자브종-1.webp') },
-  shiba: { cover: require('../../../assets/dog-presets/webp/시바견.webp'), profile: require('../../../assets/dog-presets/webp/시바견-1.webp') },
-  'welsh-corgi': { cover: require('../../../assets/dog-presets/webp/웰시코기.webp'), profile: require('../../../assets/dog-presets/webp/웰시코기-1.webp') },
-  jindo: { cover: require('../../../assets/dog-presets/webp/진돗개.webp'), profile: require('../../../assets/dog-presets/webp/진돗개-1.webp') },
-  chihuahua: { cover: require('../../../assets/dog-presets/webp/치와와.webp'), profile: require('../../../assets/dog-presets/webp/치와와-1.webp') },
-  pomeranian: { cover: require('../../../assets/dog-presets/webp/포메라니안.webp'), profile: require('../../../assets/dog-presets/webp/포메라니안-1.webp') },
-  poodle: { cover: require('../../../assets/dog-presets/webp/푸들.webp'), profile: require('../../../assets/dog-presets/webp/푸들-1.webp') },
+  'golden-retriever': { cover: require('../../../assets/dog-presets/webp/golden-retriever-cover.webp'), profile: require('../../../assets/dog-presets/webp/golden-retriever-profile.webp') },
+  greyhound: { cover: require('../../../assets/dog-presets/webp/greyhound-cover.webp'), profile: require('../../../assets/dog-presets/webp/greyhound-profile.webp') },
+  maltese: { cover: require('../../../assets/dog-presets/webp/maltese-cover.webp'), profile: require('../../../assets/dog-presets/webp/maltese-profile.webp') },
+  'border-collie': { cover: require('../../../assets/dog-presets/webp/border-collie-cover.webp'), profile: require('../../../assets/dog-presets/webp/border-collie-profile.webp') },
+  bichon: { cover: require('../../../assets/dog-presets/webp/bichon-cover.webp'), profile: require('../../../assets/dog-presets/webp/bichon-profile.webp') },
+  'mixed-breed': { cover: require('../../../assets/dog-presets/webp/mixed-breed-cover.webp'), profile: require('../../../assets/dog-presets/webp/mixed-breed-profile.webp') },
+  shiba: { cover: require('../../../assets/dog-presets/webp/shiba-cover.webp'), profile: require('../../../assets/dog-presets/webp/shiba-profile.webp') },
+  'welsh-corgi': { cover: require('../../../assets/dog-presets/webp/welsh-corgi-cover.webp'), profile: require('../../../assets/dog-presets/webp/welsh-corgi-profile.webp') },
+  jindo: { cover: require('../../../assets/dog-presets/webp/jindo-cover.webp'), profile: require('../../../assets/dog-presets/webp/jindo-profile.webp') },
+  chihuahua: { cover: require('../../../assets/dog-presets/webp/chihuahua-cover.webp'), profile: require('../../../assets/dog-presets/webp/chihuahua-profile.webp') },
+  pomeranian: { cover: require('../../../assets/dog-presets/webp/pomeranian-cover.webp'), profile: require('../../../assets/dog-presets/webp/pomeranian-profile.webp') },
+  poodle: { cover: require('../../../assets/dog-presets/webp/poodle-cover.webp'), profile: require('../../../assets/dog-presets/webp/poodle-profile.webp') },
 };
 
 export function getHeroPreset() { return HERO; }

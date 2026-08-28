@@ -44,7 +44,6 @@ function OnboardingGate() {
 
   useEffect(() => {
     if (status === 'initializing') return;
-    if (path === 'onboarding/oauth-callback') return;
 
     if (status === 'anonymous' && path !== 'onboarding/login') {
       router.replace('/onboarding/login' as Href);

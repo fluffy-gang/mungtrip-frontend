@@ -1,6 +1,5 @@
 import * as Crypto from 'expo-crypto';
 import * as SecureStore from 'expo-secure-store';
-import { Platform } from 'react-native';
 
 import type { AuthSession } from './types';
 
@@ -8,23 +7,14 @@ const SESSION_KEY = 'mungtrip.auth.session';
 const DEVICE_ID_KEY = 'mungtrip.device.id';
 
 async function getItem(key: string) {
-  if (Platform.OS === 'web') return globalThis.localStorage?.getItem(key) ?? null;
   return SecureStore.getItemAsync(key);
 }
 
 async function setItem(key: string, value: string) {
-  if (Platform.OS === 'web') {
-    globalThis.localStorage?.setItem(key, value);
-    return;
-  }
   await SecureStore.setItemAsync(key, value);
 }
 
 async function deleteItem(key: string) {
-  if (Platform.OS === 'web') {
-    globalThis.localStorage?.removeItem(key);
-    return;
-  }
   await SecureStore.deleteItemAsync(key);
 }
 

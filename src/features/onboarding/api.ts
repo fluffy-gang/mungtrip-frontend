@@ -1,6 +1,13 @@
+import {
+  getMyAgreements,
+  hasRequiredAgreements,
+} from '@/features/agreements/api';
+import { getAccessToken } from '@/features/auth/storage';
+import { getMyDogs } from '@/features/dogs/api';
+import { isUnauthorizedApiError } from '@/shared/api/error';
+import { joinUrl } from '@/utils/url';
 import { AGREEMENT_URLS } from './constants';
 import { clearSession, getStoredSession, saveSession } from './storage';
-import { joinUrl } from '@/utils/url';
 
 import type {
   AgreementDefinition,
@@ -12,6 +19,7 @@ import type {
   LoginProvider,
   LoginResponse,
   Personality,
+  OnboardingStatus,
 } from './types';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_BASE_URL ?? 'https://dev.mungtrip.site';
@@ -178,3 +186,33 @@ export function toWireSize(size: import('./types').DogSize): import('./types').D
 export function fromWireSize(size: import('./types').DogSizeWire): import('./types').DogSize {
   return { L: 'LARGE', M: 'MEDIUM', S: 'SMALL' }[size] as import('./types').DogSize;
 }
+
+export const getOnboardingStatus = async (): Promise<OnboardingStatus> => {
+  const token = await getAccessToken();
+
+  if (!token) {
+    return 'needs-login';
+  }
+
+  try {
+    const agreementsResponse = await getMyAgreements();
+
+    if (!hasRequiredAgreements(agreementsResponse.agreements)) {
+      return 'needs-agreements';
+    }
+
+    const dogs = await getMyDogs();
+
+    if (dogs.length === 0) {
+      return 'needs-dog';
+    }
+
+    return 'completed';
+  } catch (error) {
+    if (isUnauthorizedApiError(error)) {
+      return 'needs-login';
+    }
+
+    throw error;
+  }
+};

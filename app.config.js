@@ -1,4 +1,4 @@
-const baseConfig = require('./app.json');
+const appJson = require('./app.json');
 
 function getGoogleIosScheme(clientId) {
   if (!clientId?.endsWith('.apps.googleusercontent.com')) return undefined;
@@ -6,38 +6,46 @@ function getGoogleIosScheme(clientId) {
   return `com.googleusercontent.apps.${clientId.replace('.apps.googleusercontent.com', '')}`;
 }
 
-module.exports = () => {
-  const expo = baseConfig.expo;
-  const kakaoNativeAppKey = process.env.OAUTH_KAKAO_ANDROID_KEY;
-  const kakaoJavascriptKey = process.env.OAUTH_KAKAO_JAVSCRIPT_KEY;
-  const kakaoRestApiKey = process.env.OAUTH_KAKAO_API_KEY;
-  const googleAndroidClientId = process.env.OAUTH_GOOGLE_ANDROID_CLIENT_ID;
-  const googleIosClientId = process.env.OAUTH_GOOGLE_IOS_CLIENT_ID;
-  const googleWebClientId = process.env.OAUTH_GOOGLE_WEB_CLIENT_ID;
+module.exports = ({ config }) => {
+  const naverMapClientId = process.env.EXPO_PUBLIC_NAVER_MAP_CLIENT_ID?.trim();
+  const kakaoNativeAppKey = process.env.OAUTH_KAKAO_ANDROID_KEY?.trim();
+  const googleAndroidClientId = process.env.OAUTH_GOOGLE_ANDROID_CLIENT_ID?.trim();
+  const googleIosClientId = process.env.OAUTH_GOOGLE_IOS_CLIENT_ID?.trim();
+  const googleWebClientId = process.env.OAUTH_GOOGLE_WEB_CLIENT_ID?.trim();
   const googleIosScheme = getGoogleIosScheme(googleIosClientId);
-  const plugins = expo.plugins.filter(
-    (plugin) =>
-      plugin !== 'expo-build-properties' &&
-      plugin !== 'expo-image-picker' &&
-      plugin !== 'expo-location' &&
-      plugin !== '@react-native-google-signin/google-signin' &&
-      plugin !== '@react-native-seoul/kakao-login',
-  );
+  const locationPermission =
+    '현재 위치를 기준으로 가까운 반려동물 동반 장소를 보여드릴게요.';
+  const plugins = [...appJson.expo.plugins];
+  const extraMavenRepos = [
+    'https://repository.map.naver.com/archive/maven',
+    'https://devrepo.kakao.com/nexus/content/groups/public/',
+  ];
 
   plugins.push([
-    'expo-image-picker',
+    'expo-build-properties',
     {
-      photosPermission: '반려견 프로필 사진을 등록하려면 사진 접근 권한이 필요해요.',
-      cameraPermission: false,
-      microphonePermission: false,
+      android: {
+        extraMavenRepos,
+        kotlinVersion: '2.1.20',
+      },
     },
   ]);
-  plugins.push([
-    'expo-location',
-    {
-      locationWhenInUsePermission: '반려견과 함께 갈 수 있는 장소를 찾기 위해 위치 권한이 필요해요.',
-    },
-  ]);
+
+  if (naverMapClientId) {
+    plugins.push([
+      '@mj-studio/react-native-naver-map',
+      {
+        client_id: naverMapClientId,
+        android: {
+          ACCESS_FINE_LOCATION: true,
+          ACCESS_COARSE_LOCATION: true,
+        },
+        ios: {
+          NSLocationWhenInUseUsageDescription: locationPermission,
+        },
+      },
+    ]);
+  }
 
   if (kakaoNativeAppKey) {
     plugins.push([
@@ -56,28 +64,15 @@ module.exports = () => {
     ]);
   }
 
-  plugins.push([
-    'expo-build-properties',
-    {
-      android: {
-        extraMavenRepos: [
-          'https://devrepo.kakao.com/nexus/content/groups/public/',
-        ],
-        kotlinVersion: '2.1.20',
-      },
-    },
-  ]);
-
   return {
-    ...expo,
+    ...config,
+    ...appJson.expo,
     extra: {
-      ...expo.extra,
+      ...appJson.expo.extra,
       oauth: {
         googleAndroidClientId,
         googleIosClientId,
         googleWebClientId,
-        kakaoJavascriptKey,
-        kakaoRestApiKey,
       },
     },
     plugins,

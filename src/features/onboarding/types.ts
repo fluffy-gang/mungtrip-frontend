@@ -99,3 +99,9 @@ export type BootstrapStatus =
   | 'agreements'
   | 'dogPrompt'
   | 'ready';
+
+export type OnboardingStatus =
+  | 'needs-login'
+  | 'needs-agreements'
+  | 'needs-dog'
+  | 'completed';

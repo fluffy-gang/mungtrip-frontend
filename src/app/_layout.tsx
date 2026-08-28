@@ -1,14 +1,30 @@
-import { Stack, useRouter, useSegments } from 'expo-router';
+import {
+  DarkTheme,
+  DefaultTheme,
+  Stack,
+  ThemeProvider as ExpoThemeProvider,
+  useRouter,
+  useSegments,
+} from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useRef } from 'react';
-import { ThemeProvider } from 'styled-components/native';
+import { useColorScheme } from 'react-native';
+import { ThemeProvider as StyledThemeProvider } from 'styled-components/native';
 
 import { BootstrapError } from '@/features/onboarding/components';
 
-import { OnboardingProvider, useOnboarding } from '@/features/onboarding/context';
 import { tokens } from '@/constants/tokens';
+import { setupAuthInterceptor } from '@/features/auth/api';
+import {
+  OnboardingProvider,
+  useOnboarding,
+} from '@/features/onboarding/context';
 import { useAppFonts } from '@/hooks/use-app-fonts';
 
 import type { Href } from 'expo-router';
+
+void SplashScreen.preventAutoHideAsync();
+setupAuthInterceptor();
 
 function OnboardingGate() {
   const router = useRouter();
@@ -19,8 +35,11 @@ function OnboardingGate() {
 
   useEffect(() => {
     if (started.current) return;
+
     started.current = true;
-    void bootstrap();
+    void bootstrap().finally(() => {
+      void SplashScreen.hideAsync();
+    });
   }, [bootstrap]);
 
   useEffect(() => {
@@ -31,14 +50,21 @@ function OnboardingGate() {
       router.replace('/onboarding/login' as Href);
       return;
     }
+
     if (status === 'agreements' && path !== 'onboarding/agreements') {
       router.replace('/onboarding/agreements' as Href);
       return;
     }
-    if (status === 'dogPrompt' && !path.startsWith('onboarding/dog') && path !== 'onboarding/complete') {
+
+    if (
+      status === 'dogPrompt' &&
+      !path.startsWith('onboarding/dog') &&
+      path !== 'onboarding/complete'
+    ) {
       router.replace('/onboarding/dog-prompt' as Href);
       return;
     }
+
     if (status === 'ready' && path.startsWith('onboarding')) {
       router.replace('/' as Href);
     }
@@ -52,16 +78,18 @@ function OnboardingGate() {
 }
 
 export default function RootLayout() {
+  const colorScheme = useColorScheme();
   const fontsReady = useAppFonts();
 
   if (!fontsReady) return null;
 
-  // styled-components/native 프리미티브가 참조할 루트 테마 원본이다.
   return (
-    <ThemeProvider theme={tokens}>
-      <OnboardingProvider>
-        <OnboardingGate />
-      </OnboardingProvider>
-    </ThemeProvider>
+    <ExpoThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <StyledThemeProvider theme={tokens}>
+        <OnboardingProvider>
+          <OnboardingGate />
+        </OnboardingProvider>
+      </StyledThemeProvider>
+    </ExpoThemeProvider>
   );
 }

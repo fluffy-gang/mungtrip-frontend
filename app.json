@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "mungtrip-frontend",
+    "name": "멍멍트립",
     "slug": "mungtrip-frontend",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -8,15 +8,14 @@
     "scheme": "mungtrip",
     "userInterfaceStyle": "light",
     "ios": {
-      "icon": "./assets/expo.icon",
-      "bundleIdentifier": "com.mungtrip.app"
+      "bundleIdentifier": "com.mungtrip.app",
+      "icon": "./assets/images/icon.png"
     },
     "android": {
       "package": "com.mungtrip.app",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#FE6A20",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false
@@ -43,35 +42,17 @@
               {
                 "fontFamily": "Pretendard",
                 "fontDefinitions": [
-                  {
-                    "path": "./assets/fonts/Pretendard-Regular.otf",
-                    "weight": 400
-                  },
-                  {
-                    "path": "./assets/fonts/Pretendard-Medium.otf",
-                    "weight": 500
-                  },
-                  {
-                    "path": "./assets/fonts/Pretendard-SemiBold.otf",
-                    "weight": 600
-                  },
-                  {
-                    "path": "./assets/fonts/Pretendard-Bold.otf",
-                    "weight": 700
-                  }
+                  { "path": "./assets/fonts/Pretendard-Regular.otf", "weight": 400 },
+                  { "path": "./assets/fonts/Pretendard-Medium.otf", "weight": 500 },
+                  { "path": "./assets/fonts/Pretendard-SemiBold.otf", "weight": 600 },
+                  { "path": "./assets/fonts/Pretendard-Bold.otf", "weight": 700 }
                 ]
               },
               {
                 "fontFamily": "Hakgyoansim Dunggeunmiso",
                 "fontDefinitions": [
-                  {
-                    "path": "./assets/fonts/Hakgyoansim Dunggeunmiso OTF R.otf",
-                    "weight": 400
-                  },
-                  {
-                    "path": "./assets/fonts/Hakgyoansim Dunggeunmiso OTF B.otf",
-                    "weight": 700
-                  }
+                  { "path": "./assets/fonts/Hakgyoansim Dunggeunmiso OTF R.otf", "weight": 400 },
+                  { "path": "./assets/fonts/Hakgyoansim Dunggeunmiso OTF B.otf", "weight": 700 }
                 ]
               }
             ]
@@ -81,17 +62,41 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
+          "backgroundColor": "#FE6A20",
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 76
+          "imageWidth": 240,
+          "resizeMode": "contain"
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "현재 위치를 기준으로 가까운 반려동물 동반 장소를 보여드릴게요."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "반려견 프로필 사진을 등록하려면 사진 접근 권한이 필요해요.",
+          "cameraPermission": false,
+          "microphonePermission": false
         }
       ],
       "expo-secure-store",
-      "expo-build-properties"
+      "expo-image",
+      "expo-status-bar",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "bbe03cdd-0552-4bfb-8a1c-eb73a42b4caa"
+      }
+    },
+    "owner": "jeongjinho"
   }
 }

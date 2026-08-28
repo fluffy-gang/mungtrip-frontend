@@ -1,0 +1,23 @@
+{
+  "project": "mungtrip-frontend",
+  "phase": "play-review-mvp-07-release-readiness",
+  "steps": [
+    {
+      "step": 0,
+      "name": "release-evidence",
+      "status": "completed",
+      "started_at": "2026-08-28T01:33:01.370Z",
+      "summary": "release checklist와 증빙 양식을 추가했으며 다음 step에서 미확인 운영값과 수동 검증 결과를 채울 수 있다.",
+      "completed_at": "2026-08-28T01:36:12.718Z"
+    },
+    {
+      "step": 1,
+      "name": "operator-handoff",
+      "status": "blocked",
+      "started_at": "2026-08-28T01:36:12.719Z",
+      "blocked_reason": "운영자 문의 이메일, 개인정보처리방침 URL, 릴리즈 담당자, EAS build ID, versionCode, production 환경 이름이 필요하다.",
+      "blocked_at": "2026-08-28T01:37:08.454Z"
+    }
+  ],
+  "created_at": "2026-08-28T01:33:01.365Z"
+}

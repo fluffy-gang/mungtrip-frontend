@@ -1,0 +1,39 @@
+{
+  "phases": [
+    {
+      "dir": "play-review-mvp-01-foundation",
+      "status": "completed",
+      "completed_at": "2026-08-27T12:54:59.309Z"
+    },
+    {
+      "dir": "play-review-mvp-02-place-domain",
+      "status": "completed",
+      "completed_at": "2026-08-27T13:32:11.929Z"
+    },
+    {
+      "dir": "play-review-mvp-03-app-information",
+      "status": "completed",
+      "completed_at": "2026-08-27T13:14:35.690Z"
+    },
+    {
+      "dir": "play-review-mvp-04-home-exploration",
+      "status": "completed",
+      "completed_at": "2026-08-28T00:47:49.517Z"
+    },
+    {
+      "dir": "play-review-mvp-05-place-detail",
+      "status": "completed",
+      "completed_at": "2026-08-28T00:44:38.107Z"
+    },
+    {
+      "dir": "play-review-mvp-06-integration",
+      "status": "completed",
+      "completed_at": "2026-08-28T01:28:04.330Z"
+    },
+    {
+      "dir": "play-review-mvp-07-release-readiness",
+      "status": "blocked",
+      "blocked_at": "2026-08-28T01:37:08.455Z"
+    }
+  ]
+}

@@ -2,9 +2,11 @@ const API_PREFIX = '/api/v1';
 
 export const ENDPOINTS = {
   auth: {
+    reissue: `${API_PREFIX}/auth/reissue`,
     socialLogin: `${API_PREFIX}/auth/social-login`,
   },
   agreements: {
+    list: `${API_PREFIX}/agreements`,
     me: `${API_PREFIX}/users/me/agreements`,
   },
   dogPersonalities: {
@@ -28,6 +30,9 @@ export const ENDPOINTS = {
     list: `${API_PREFIX}/courses`,
     detail: (courseId: number) => `${API_PREFIX}/courses/${courseId}`,
     like: (courseId: number) => `${API_PREFIX}/courses/${courseId}/like`,
+  },
+  uploads: {
+    presigned: `${API_PREFIX}/uploads/presigned`,
   },
   admin: {
     places: `${API_PREFIX}/admin/places`,

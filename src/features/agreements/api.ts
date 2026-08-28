@@ -3,12 +3,21 @@ import { ENDPOINTS } from '@/shared/api/endpoints';
 
 import type {
   Agreement,
+  GetAgreementDefinitionsResponse,
   GetAgreementsResponse,
   SaveAgreementsRequest,
   SaveAgreementsResponse,
 } from './types';
 
 const OPTIONAL_AGREEMENT_TYPES = ['MARKETING'] as const;
+
+export const getAgreementDefinitions = async (): Promise<GetAgreementDefinitionsResponse> => {
+  const { data } = await apiClient.get<GetAgreementDefinitionsResponse>(
+    ENDPOINTS.agreements.list,
+  );
+
+  return data;
+};
 
 export const getMyAgreements = async (): Promise<GetAgreementsResponse> => {
   const { data } = await apiClient.get<GetAgreementsResponse>(

@@ -29,12 +29,14 @@ export function DogStepOneScreen() {
   const router = useRouter();
   const { width } = useWindowDimensions();
   const { draft, loadPersonalities, setDraft } = useOnboarding();
-  const initialBreedId = draft.breedId ?? BREEDS.find((item) => item.name === draft.breed)?.id;
-  const initialIndex = BREEDS.length
-    + Math.max(BREEDS.findIndex((item) => item.id === initialBreedId), 0);
+  const initialBreed = BREEDS.find((item) => item.id === draft.breedId)
+    ?? BREEDS.find((item) => item.name === draft.breed)
+    ?? BREEDS[0];
+  const initialBreedId = initialBreed.id;
+  const initialIndex = BREEDS.length + BREEDS.indexOf(initialBreed);
   const listRef = useRef<FlatList<(typeof LOOP_BREEDS)[number]>>(null);
   const [carouselWidth, setCarouselWidth] = useState(width);
-  const [selectedId, setSelectedId] = useState(initialBreedId ?? BREEDS[0].id);
+  const [selectedId, setSelectedId] = useState(initialBreedId);
   const selectedBreed = BREEDS.find((item) => item.id === selectedId);
 
   useEffect(() => {

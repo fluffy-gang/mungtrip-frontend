@@ -69,10 +69,6 @@ export const BREEDS: BreedDefinition[] = [
   ['border-collie', '보더콜리', 'MEDIUM', false],
   ['mixed-breed', '시고르자브종', 'MEDIUM', false],
   ['chihuahua', '치와와', 'SMALL', false],
-  ['labrador', '래브라도 리트리버', 'LARGE', false],
-  ['dachshund', '닥스훈트', 'SMALL', false],
-  ['rottweiler', '로트와일러', 'LARGE', true],
-  ['pit-bull', '핏불테리어', 'MEDIUM', true],
 ].map(([id, name, defaultSize, isDangerousDog], index) => ({
   defaultSize: defaultSize as DogSize,
   id: id as string,

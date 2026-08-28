@@ -54,9 +54,9 @@ export function DogStepThreeScreen() {
       return;
     }
 
+    setPending(true);
+    setError(undefined);
     try {
-      setPending(true);
-      setError(undefined);
       await submitDog(
         skipExtras
           ? { isNeutered: undefined, personalities: [] }
@@ -65,7 +65,6 @@ export function DogStepThreeScreen() {
       router.replace('/onboarding/complete' as Href);
     } catch (nextError) {
       setError(getErrorMessage(nextError));
-    } finally {
       setPending(false);
     }
   };

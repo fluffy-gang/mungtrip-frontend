@@ -86,16 +86,8 @@
           "resizeMode": "contain"
         }
       ],
-      [
-        "expo-location",
-        {
-          "locationWhenInUsePermission": "현재 위치를 기준으로 가까운 반려동물 동반 장소를 보여드릴게요."
-        }
-      ],
-      "expo-secure-store",
       "expo-image",
-      "expo-status-bar",
-      "expo-web-browser"
+      "expo-status-bar"
     ],
     "experiments": {
       "typedRoutes": true,

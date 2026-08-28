@@ -1,0 +1,24 @@
+{
+  "project": "mungtrip-frontend",
+  "phase": "play-review-mvp-06-integration",
+  "steps": [
+    {
+      "step": 0,
+      "name": "scope-cleanup",
+      "status": "completed",
+      "started_at": "2026-08-28T00:57:58.005Z",
+      "summary": "심사용 route를 익명 장소 탐색·상세·앱 정보로 한정하고 고립된 기능 코드와 의존성을 제거했으며 전체 검증을 통과했다.",
+      "completed_at": "2026-08-28T01:06:29.764Z"
+    },
+    {
+      "step": 1,
+      "name": "integration-verification",
+      "status": "completed",
+      "started_at": "2026-08-28T01:22:56.618Z",
+      "summary": "전체 검증과 Android 권한·plugin·secret 감사를 통과하고 실패 회귀 테스트를 보강했으며 실기기 항목은 release checklist로 이관했다.",
+      "completed_at": "2026-08-28T01:28:04.327Z"
+    }
+  ],
+  "created_at": "2026-08-28T00:57:57.999Z",
+  "completed_at": "2026-08-28T01:28:04.330Z"
+}

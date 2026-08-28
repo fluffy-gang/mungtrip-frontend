@@ -1,0 +1,24 @@
+{
+  "project": "mungtrip-frontend",
+  "phase": "play-review-mvp-02-place-domain",
+  "steps": [
+    {
+      "step": 0,
+      "name": "place-mapping",
+      "status": "completed",
+      "started_at": "2026-08-27T13:19:01.496Z",
+      "summary": "장소 목록과 상세가 공통 mapper에서 필수 필드를 검증하고 선택 필드의 누락 및 대체 key를 정규화합니다.",
+      "completed_at": "2026-08-27T13:26:01.577Z"
+    },
+    {
+      "step": 1,
+      "name": "exploration-query",
+      "status": "completed",
+      "started_at": "2026-08-27T13:26:01.580Z",
+      "summary": "통합 탐색 hook이 keyword·단일 category/tag·확정 bounds·page/size를 결합하고 최신 요청 상태와 결과 수 및 동일 조건 재시도를 제공합니다.",
+      "completed_at": "2026-08-27T13:32:11.925Z"
+    }
+  ],
+  "created_at": "2026-08-27T13:19:01.492Z",
+  "completed_at": "2026-08-27T13:32:11.928Z"
+}

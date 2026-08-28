@@ -1,0 +1,32 @@
+{
+  "project": "mungtrip-frontend",
+  "phase": "play-review-mvp-04-home-exploration",
+  "steps": [
+    {
+      "step": 0,
+      "name": "exploration-state",
+      "status": "completed",
+      "started_at": "2026-08-28T00:25:08.931Z",
+      "summary": "홈이 단일 탐색 조건과 확정·임시 bounds 및 통합 결과·선택 상태를 공유하며 명시적 지역 검색과 범위별 초기화를 제공합니다.",
+      "completed_at": "2026-08-28T00:31:29.037Z"
+    },
+    {
+      "step": 1,
+      "name": "map-list-interface",
+      "status": "completed",
+      "started_at": "2026-08-28T00:31:29.041Z",
+      "summary": "홈이 단일 조건 칩, 명시적 지역 검색, 동기화된 지도·목록 선택과 지도 실패 시 유지되는 장소 탐색 흐름을 제공합니다.",
+      "completed_at": "2026-08-28T00:38:09.559Z"
+    },
+    {
+      "step": 2,
+      "name": "search-and-recovery",
+      "status": "completed",
+      "started_at": "2026-08-28T00:38:09.561Z",
+      "summary": "홈이 검색 조건 결합과 무기록 검색 UI, 구분된 조회·빈 결과·오류 복구 상태 및 접근 가능한 결과 탐색을 제공합니다.",
+      "completed_at": "2026-08-28T00:47:49.513Z"
+    }
+  ],
+  "created_at": "2026-08-28T00:24:37.032Z",
+  "completed_at": "2026-08-28T00:47:49.516Z"
+}

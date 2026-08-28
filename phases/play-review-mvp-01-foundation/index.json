@@ -1,0 +1,32 @@
+{
+  "project": "mungtrip-frontend",
+  "phase": "play-review-mvp-01-foundation",
+  "steps": [
+    {
+      "step": 0,
+      "name": "test-foundation",
+      "status": "completed",
+      "summary": "jest-expo와 React Native Testing Library 기반 단발 테스트 및 TypeScript alias smoke test를 구성했다.",
+      "started_at": "2026-08-27T12:35:27.263Z",
+      "completed_at": "2026-08-27T12:44:18.354Z"
+    },
+    {
+      "step": 1,
+      "name": "anonymous-bootstrap",
+      "status": "completed",
+      "summary": "Root layout을 익명 부트스트랩으로 전환하고 인증·위치 실행 경로와 plugin·직접 의존성 및 Android 위치 권한을 제거했다.",
+      "started_at": "2026-08-27T12:44:18.369Z",
+      "completed_at": "2026-08-27T12:49:44.664Z"
+    },
+    {
+      "step": 2,
+      "name": "release-configuration",
+      "status": "completed",
+      "summary": "EAS remote versioning과 production Android AAB 자동 증가 설정을 추가하고 public Expo config의 secret 노출 회귀 테스트를 구성했다.",
+      "started_at": "2026-08-27T12:49:44.669Z",
+      "completed_at": "2026-08-27T12:54:59.306Z"
+    }
+  ],
+  "created_at": "2026-08-27T12:34:33.354Z",
+  "completed_at": "2026-08-27T12:54:59.309Z"
+}

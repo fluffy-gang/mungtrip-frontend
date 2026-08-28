@@ -1,14 +1,18 @@
-import { Image } from "expo-image";
 import { SymbolView } from "expo-symbols";
-import { useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import type { NaverMapViewRef } from "@mj-studio/react-native-naver-map";
 
-import type { Place, PlaceCategory } from "@/features/places/types";
+import type { Place } from "@/features/places/types";
 
-import { JEJU_MAP_CAMERA } from "../constants";
+import {
+  JEJU_MAP_CAMERA,
+  MAP_SEARCH_FIT_PIVOT,
+  MAP_SEARCH_SINGLE_RESULT_ZOOM,
+} from "../constants";
 import { styles as homeStyles } from "../styles";
-import type { LocationCoordinate, MapBounds, MapCamera } from "../types";
-import { toMapBounds } from "../utils/map-utils";
+import type { MapBounds, MapCamera } from "../types";
+import { getPlaceCoordinateBounds, toMapBounds } from "../utils/map-utils";
 import { loadNativeMapModule } from "../utils/native-modules";
 import { hasPlaceCoordinate } from "../utils/place-utils";
 import { PlaceMarker } from "./place-marker";
@@ -19,36 +23,90 @@ interface MapCanvasProps {
   mapCamera: MapCamera;
   onSelectPlace: (place: Place) => void;
   places: Place[];
-  selectedCategory?: PlaceCategory;
+  fitToPlaces: boolean;
+  fitRequestKey?: string;
+  mapBottomInset: number;
   selectedPlaceId?: number;
   setMapBounds: (bounds: MapBounds) => void;
   setMapCamera: (camera: MapCamera) => void;
-  userCoordinate: LocationCoordinate | null;
-  userProfileImageUrl?: string;
 }
 
 export function MapCanvas({
   mapCamera,
   onSelectPlace,
   places,
-  selectedCategory,
+  fitToPlaces,
+  fitRequestKey,
+  mapBottomInset,
   selectedPlaceId,
   setMapBounds,
   setMapCamera,
-  userCoordinate,
-  userProfileImageUrl,
 }: MapCanvasProps) {
+  const mapRef = useRef<NaverMapViewRef | null>(null);
+  const [mapHeight, setMapHeight] = useState(0);
   const visiblePins = places.filter(hasPlaceCoordinate).slice(0, 50);
-  const userMarkerSource = useMemo(
-    () => ({ uri: userProfileImageUrl }),
-    [userProfileImageUrl],
+  const fitKey = useMemo(
+    () => `${fitRequestKey ?? ''}|${places
+      .filter(hasPlaceCoordinate)
+      .map(place => `${place.id}:${place.latitude}:${place.longitude}`)
+      .join('|')}`,
+    [fitRequestKey, places],
   );
+  const lastFitKey = useRef<string | null>(null);
+  const fitPivot = useMemo(() => {
+    if (mapHeight <= 0) return MAP_SEARCH_FIT_PIVOT;
+
+    const visibleHeight = Math.max(mapHeight - mapBottomInset, 1);
+    return {
+      x: MAP_SEARCH_FIT_PIVOT.x,
+      y: Math.min(0.45, Math.max(0.2, visibleHeight / mapHeight / 2)),
+    };
+  }, [mapBottomInset, mapHeight]);
+  const fitPlacesToMap = useCallback(() => {
+    if (!fitToPlaces) {
+      lastFitKey.current = null;
+      return;
+    }
+
+    if (!fitKey || mapHeight <= 0 || !mapRef.current || fitKey === lastFitKey.current) {
+      return;
+    }
+
+    const bounds = getPlaceCoordinateBounds(visiblePins);
+    if (!bounds) return;
+
+    lastFitKey.current = fitKey;
+    if (visiblePins.length === 1 ||
+      (bounds.neLat - bounds.swLat <= 0.01 && bounds.neLng - bounds.swLng <= 0.01)) {
+      const [place] = visiblePins;
+      mapRef.current.animateCameraTo({
+        latitude: place.latitude,
+        longitude: place.longitude,
+        pivot: fitPivot,
+        zoom: MAP_SEARCH_SINGLE_RESULT_ZOOM,
+      });
+      return;
+    }
+
+    mapRef.current.animateCameraWithTwoCoords({
+      coord1: { latitude: bounds.swLat, longitude: bounds.swLng },
+      coord2: { latitude: bounds.neLat, longitude: bounds.neLng },
+      pivot: fitPivot,
+    });
+  }, [fitKey, fitPivot, fitToPlaces, mapHeight, visiblePins]);
+
+  useEffect(() => {
+    fitPlacesToMap();
+  }, [fitPlacesToMap]);
 
   if (nativeMapModule) {
     const { NaverMapMarkerOverlay, NaverMapView } = nativeMapModule;
 
     return (
-      <View style={homeStyles.mapLayer}>
+      <View
+        onLayout={event => setMapHeight(event.nativeEvent.layout.height)}
+        style={homeStyles.mapLayer}
+      >
         <NaverMapView
           animationDuration={220}
           camera={mapCamera}
@@ -61,6 +119,7 @@ export function MapCanvas({
           logoAlign="BottomLeft"
           logoMargin={{ bottom: 12, left: 12 }}
           mapType="Basic"
+          onInitialized={fitPlacesToMap}
           onCameraIdle={(nextCamera) => {
             setMapCamera({
               latitude: nextCamera.latitude,
@@ -70,41 +129,17 @@ export function MapCanvas({
             setMapBounds(toMapBounds(nextCamera.region));
           }}
           style={styles.map}
+          ref={mapRef}
         >
-          {visiblePins.map((place) => {
-            const isSelected = place.id === selectedPlaceId;
-            const isCategoryMatch =
-              !selectedCategory || place.category === selectedCategory.code;
-
-            return (
-              <PlaceMarker
-                key={`${place.id}-${isSelected ? "selected" : "default"}-${isCategoryMatch ? "match" : "dim"}`}
-                MarkerOverlay={NaverMapMarkerOverlay}
-                onSelect={onSelectPlace}
-                place={place}
-                selectedCategory={selectedCategory}
-                selectedPlaceId={selectedPlaceId}
-              />
-            );
-          })}
-          {userCoordinate && userProfileImageUrl ? (
-            <NaverMapMarkerOverlay
-              anchor={{ x: 0.5, y: 0.5 }}
-              height={38}
-              isForceShowIcon
-              latitude={userCoordinate.latitude}
-              longitude={userCoordinate.longitude}
-              width={38}
-              zIndex={100}
-            >
-              <Image
-                collapsable={false}
-                contentFit="cover"
-                source={userMarkerSource}
-                style={homeStyles.nativeUserLocationMarker}
-              />
-            </NaverMapMarkerOverlay>
-          ) : null}
+          {visiblePins.map(place => (
+            <PlaceMarker
+              key={place.id}
+              MarkerOverlay={NaverMapMarkerOverlay}
+              onSelect={onSelectPlace}
+              place={place}
+              selectedPlaceId={selectedPlaceId}
+            />
+          ))}
         </NaverMapView>
       </View>
     );
@@ -118,7 +153,7 @@ export function MapCanvas({
         tintColor="#8B95A1"
       />
       <Text style={styles.unavailableText}>
-        지도는 Android/iOS 개발 빌드에서 확인할 수 있어요.
+        지도를 불러오지 못했어요. 아래 목록에서 장소를 확인해주세요.
       </Text>
     </View>
   );

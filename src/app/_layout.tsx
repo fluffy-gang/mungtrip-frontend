@@ -1,42 +1,54 @@
-import { DarkTheme, DefaultTheme, Stack, ThemeProvider as ExpoThemeProvider } from 'expo-router';
+import { DefaultTheme, Stack, ThemeProvider as ExpoThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
-import { useColorScheme } from 'react-native';
 import { ThemeProvider as StyledThemeProvider } from 'styled-components/native';
 
 import { tokens } from '@/constants/tokens';
-import { setupAuthInterceptor } from '@/features/auth/api';
-import { useAuth } from '@/features/auth/useAuth';
+import { PlaceCatalogProvider } from '@/features/places/place-catalog-context';
 
 void SplashScreen.preventAutoHideAsync();
-setupAuthInterceptor();
+
+const lightColors = tokens.colors.semantic.light;
+const navigationTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: lightColors.background,
+    border: lightColors.border,
+    card: lightColors.surface,
+    text: lightColors.textPrimary,
+  },
+};
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const { initAuth } = useAuth();
-
   useEffect(() => {
-    let isMounted = true;
-
-    void initAuth()
-      .catch(error => {
-        console.warn('인증 초기화 중 문제가 발생했습니다.', error);
-      })
-      .finally(() => {
-        if (isMounted) {
-          void SplashScreen.hideAsync();
-        }
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, [initAuth]);
+    void SplashScreen.hideAsync();
+  }, []);
 
   return (
-    <ExpoThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ExpoThemeProvider value={navigationTheme}>
       <StyledThemeProvider theme={tokens}>
-        <Stack screenOptions={{ headerShown: false }} />
+        <PlaceCatalogProvider>
+          <Stack
+            screenOptions={{
+              contentStyle: { backgroundColor: lightColors.background },
+              headerShown: false,
+            }}
+          >
+            <Stack.Screen
+              name="info"
+              options={{
+                headerBackTitle: '뒤로',
+                headerShadowVisible: false,
+                headerShown: true,
+                headerStyle: { backgroundColor: lightColors.surface },
+                headerTintColor: lightColors.textPrimary,
+                statusBarStyle: 'dark',
+                title: '앱 정보',
+              }}
+            />
+          </Stack>
+        </PlaceCatalogProvider>
       </StyledThemeProvider>
     </ExpoThemeProvider>
   );

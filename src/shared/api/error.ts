@@ -77,11 +77,3 @@ export const toApiError = (error: unknown): ApiError => {
 
   return new ApiError(getApiErrorMessage(error));
 };
-
-export const isUnauthorizedApiError = (error: unknown): boolean => {
-  if (error instanceof ApiError) {
-    return error.status === 401;
-  }
-
-  return isAxiosError(error) && error.response?.status === 401;
-};

@@ -48,13 +48,6 @@ export interface PlaceQueryParams {
   neLat?: number;
   category?: string;
   tags?: string[];
-  dogIds?: number[];
   page?: number;
   size?: number;
-}
-
-export interface TopPlacesQueryParams {
-  category: string;
-  limit?: number;
-  days?: number;
 }

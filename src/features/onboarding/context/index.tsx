@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react';
 
 import { useAuth } from '@/features/auth/useAuth';
 import { getAuthSession } from '@/features/auth/storage';
@@ -8,11 +8,13 @@ import {
   getDogs,
   getPersonalities,
   getUserAgreements,
-  toWireSize,
   updateDog,
   uploadDogProfile,
 } from '../api';
 import { createEmptyDraft } from '../constants';
+import { getLocalAssetUri, getBreedPreset } from '../preset-assets';
+import { submitDogDraft } from '../dog-submission';
+import { createDraftSubmissionState, resetDraftSubmission } from '../submission-state';
 import { getProviderToken } from '../social';
 import {
   getDeviceId,
@@ -39,6 +41,7 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
   const [dogs, setDogs] = useState<Dog[]>([]);
   const [personalities, setPersonalities] = useState<Personality[]>([]);
   const [draft, setDraftState] = useState(createEmptyDraft);
+  const submission = useRef(createDraftSubmissionState());
 
   const resolveStatus = useCallback(async (nextSession: AuthSession) => {
     const agreement = await getUserAgreements();
@@ -109,7 +112,10 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
     setDraftState((current) => ({ ...current, ...patch }));
   }, []);
 
-  const resetDraft = useCallback(() => setDraftState(createEmptyDraft()), []);
+  const resetDraft = useCallback(() => {
+    setDraftState(createEmptyDraft());
+    resetDraftSubmission(submission.current);
+  }, []);
 
   const loadDogs = useCallback(async () => {
     const next = await getDogs();
@@ -129,6 +135,7 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
   }, []);
 
   const startEdit = useCallback((dog: Dog) => {
+    resetDraftSubmission(submission.current, dog.dogId);
     setDraftState({
       breed: dog.breed ?? '',
       breedId: undefined,
@@ -145,31 +152,15 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
   }, []);
 
   const submitDog = useCallback(async (overrides?: Partial<OnboardingDraft>) => {
-    const submittedDraft = { ...draft, ...overrides };
-    let profileImageUrl = submittedDraft.profileImageUrl;
-    if (submittedDraft.profileImage?.uri) {
-      profileImageUrl = await uploadDogProfile(
-        submittedDraft.profileImage.uri,
-        submittedDraft.profileImage.mimeType ?? 'image/jpeg',
-      );
-    }
-    const weight = submittedDraft.weight.trim() ? Number(submittedDraft.weight) : undefined;
-    const payload = {
-      breed: submittedDraft.breed.trim(),
-      isDangerousDog: submittedDraft.isDangerousDog,
-      isNeutered: submittedDraft.isNeutered,
-      name: submittedDraft.name.trim(),
-      personalityIds: submittedDraft.personalities,
-      profileImageUrl,
-      size: toWireSize(submittedDraft.size),
-      weight,
-    };
-    const response = submittedDraft.dogId
-      ? await updateDog(submittedDraft.dogId, payload)
-      : await createDog(payload);
-    if (session) await setDogRegistrationSkipped(session.userId, false);
-    await loadDogs();
-    return response.dogId;
+    return submitDogDraft(submission.current, draft, overrides, {
+      createDog,
+      getLocalAssetUri,
+      getPresetProfile: (breedId, mode) => getBreedPreset(breedId, mode)?.profile,
+      loadDogs,
+      setSkipped: () => session ? setDogRegistrationSkipped(session.userId, false) : Promise.resolve(),
+      updateDog,
+      uploadDogProfile,
+    });
   }, [draft, loadDogs, session]);
 
   const skipDogRegistration = useCallback(async () => {

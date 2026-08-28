@@ -164,7 +164,9 @@ function run() {
   const manifestAssets = [];
   for (const asset of assets) {
     const source = findByNfc(sourceEntries, asset.original);
-    const outputFilename = `${asset.original.slice(0, -4)}.webp`.normalize('NFC');
+    const outputFilename = asset.role === 'hero'
+      ? 'registration-hero.webp'
+      : `${asset.breedId}-${asset.role}.webp`;
     const outputPath = path.join(options.outputDir, outputFilename);
     if (options.mode === 'prepare') {
       const conversion = spawnSync('cwebp', ['-quiet', '-q', '90', source.path, '-o', outputPath], { encoding: 'utf8' });

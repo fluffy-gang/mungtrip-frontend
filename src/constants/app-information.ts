@@ -2,8 +2,9 @@ export const APP_INFORMATION = {
   dataSourceName: '한국관광공사',
   accuracyNotice:
     '제공 정보는 실제와 다를 수 있으니 방문 전 사업자에게 확인해 주세요.',
-  privacyPolicyUrl: undefined as string | undefined,
-  supportEmail: undefined as string | undefined,
+  privacyPolicyUrl:
+    'https://fluffy-gang.github.io/mungtrip-policy/privacy-policy/',
+  supportEmail: 'fluffygang.dev@gmail.com',
 } as const;
 
 // 외부 열기 동작은 유효한 HTTPS URL에서만 노출한다.

@@ -5,7 +5,7 @@ const expoConfig = require("eslint-config-expo/flat");
 module.exports = defineConfig([
   expoConfig,
   {
-    ignores: ["dist/*"],
+    files: ["**/*.ts", "**/*.tsx"],
     rules: {
       "@typescript-eslint/consistent-type-imports": [
         "error",
@@ -15,6 +15,11 @@ module.exports = defineConfig([
           prefer: "type-imports",
         },
       ],
+    },
+  },
+  {
+    ignores: ["dist/*"],
+    rules: {
       "import/order": [
         "error",
         {

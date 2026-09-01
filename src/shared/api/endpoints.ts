@@ -17,6 +17,8 @@ export const ENDPOINTS = {
     detail: (dogId: number) => `${API_PREFIX}/dogs/${dogId}`,
   },
   map: {
+    likedPlaces: `${API_PREFIX}/places/me/likes`,
+    placeLike: (placeId: number) => `${API_PREFIX}/places/${placeId}/like`,
     categories: `${API_PREFIX}/categories`,
     tags: `${API_PREFIX}/tags`,
     places: `${API_PREFIX}/places`,

@@ -54,7 +54,7 @@ export function DogStepThreeScreen() {
       setError(undefined);
       await submitDog(
         skipExtras
-          ? { isNeutered: undefined, personalities: [], profileImage: undefined }
+          ? { isNeutered: undefined, personalities: [] }
           : undefined,
       );
       router.replace('/onboarding/complete' as Href);

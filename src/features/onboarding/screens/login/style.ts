@@ -16,13 +16,14 @@ export const styles = StyleSheet.create({
     borderColor: tokens.colors.semantic.light.border,
     borderWidth: 1,
   },
-  heroPlaceholder: {
-    backgroundColor: tokens.colors.semantic.light.surfaceMuted,
-    height: 256,
-    marginTop: tokens.spacing[56],
+  heroImage: {
+    aspectRatio: 750 / 624,
     width: '100%',
   },
   introSlide: {
+    alignItems: 'center',
+  },
+  introCopy: {
     alignItems: 'center',
     gap: tokens.spacing[10],
     paddingHorizontal: tokens.spacing[20],
@@ -49,6 +50,14 @@ export const styles = StyleSheet.create({
     gap: tokens.spacing[12],
     height: 56,
     justifyContent: 'center',
+    position: 'relative',
     width: '100%',
+  },
+  socialIcon: {
+    height: 24,
+    left: tokens.spacing[16],
+    position: 'absolute',
+    top: tokens.spacing[16],
+    width: 24,
   },
 });

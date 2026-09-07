@@ -1,3 +1,4 @@
+import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
 import { FlatList, Pressable, ScrollView, useWindowDimensions, View } from 'react-native';
@@ -15,6 +16,13 @@ import type { Href } from 'expo-router';
 import type { LoginProvider } from '../../types';
 
 const LOOP_SLIDES = [INTRO_SLIDES[2], ...INTRO_SLIDES, INTRO_SLIDES[0]];
+const INTRO_SLIDE_IMAGES: Record<(typeof INTRO_SLIDES)[number]['id'], number> = {
+  courses: require('../../../../../assets/images/onboarding/onboard-2.png'),
+  places: require('../../../../../assets/images/onboarding/onboard-1.png'),
+  verified: require('../../../../../assets/images/onboarding/onboard-3.png'),
+};
+const googleIcon = require('../../../../../assets/images/onboarding/google-icon.png');
+const kakaoIcon = require('../../../../../assets/images/onboarding/kakao-icon.png');
 
 export function LoginScreen() {
   const router = useRouter();
@@ -48,7 +56,6 @@ export function LoginScreen() {
   return (
     <OnboardingPage>
       <ScrollView bounces={false} contentContainerStyle={styles.loginScroll}>
-        <View style={styles.heroPlaceholder} />
         <FlatList
           data={LOOP_SLIDES}
           getItemLayout={(_, index) => ({ index, length: width, offset: width * index })}
@@ -71,10 +78,18 @@ export function LoginScreen() {
           ref={listRef}
           renderItem={({ item }) => (
             <View style={[styles.introSlide, { width }]}>
-              <ScreenTitle>{item.title}</ScreenTitle>
-              <Text color="textSecondary" fontSize={16} lineHeight={28} style={styles.centerText}>
-                {item.description}
-              </Text>
+              <Image
+                accessibilityLabel={`${item.title} 미리보기`}
+                contentFit="cover"
+                source={INTRO_SLIDE_IMAGES[item.id]}
+                style={styles.heroImage}
+              />
+              <View style={styles.introCopy}>
+                <ScreenTitle>{item.title}</ScreenTitle>
+                <Text color="textSecondary" fontSize={16} lineHeight={28} style={styles.centerText}>
+                  {item.description}
+                </Text>
+              </View>
             </View>
           )}
           showsHorizontalScrollIndicator={false}
@@ -92,7 +107,7 @@ export function LoginScreen() {
           onPress={() => void handleLogin('KAKAO')}
           style={({ pressed }) => [styles.socialButton, styles.kakaoButton, pressed && styles.pressed]}
         >
-          <Text fontSize={18} fontWeight="bold" lineHeight={24}>●</Text>
+          <Image contentFit="contain" source={kakaoIcon} style={styles.socialIcon} />
           <Text fontSize={16} fontWeight="bold" lineHeight={24}>
             {pending === 'KAKAO' ? '로그인 중...' : '카카오로 시작하기'}
           </Text>
@@ -103,7 +118,7 @@ export function LoginScreen() {
           onPress={() => void handleLogin('GOOGLE')}
           style={({ pressed }) => [styles.socialButton, styles.googleButton, pressed && styles.pressed]}
         >
-          <Text color="accentBlue" fontSize={18} fontWeight="bold" lineHeight={24}>G</Text>
+          <Image contentFit="contain" source={googleIcon} style={styles.socialIcon} />
           <Text fontSize={16} fontWeight="bold" lineHeight={24}>
             {pending === 'GOOGLE' ? '로그인 중...' : 'Google로 시작하기'}
           </Text>

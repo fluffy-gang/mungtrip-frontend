@@ -3,13 +3,14 @@ import {
   getHttpsExternalUrl,
 } from '@/constants/app-information';
 
-it('defines public app information without inventing release contacts', () => {
+it('defines verified public app information and release contacts', () => {
   expect(APP_INFORMATION).toEqual({
     dataSourceName: '한국관광공사',
     accuracyNotice:
       '제공 정보는 실제와 다를 수 있으니 방문 전 사업자에게 확인해 주세요.',
-    privacyPolicyUrl: undefined,
-    supportEmail: undefined,
+    privacyPolicyUrl:
+      'https://fluffy-gang.github.io/mungtrip-policy/privacy-policy/',
+    supportEmail: 'fluffygang.dev@gmail.com',
   });
 });
 

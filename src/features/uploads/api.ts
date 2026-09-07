@@ -1,3 +1,6 @@
+import { fetch as expoFetch } from 'expo/fetch';
+import { File } from 'expo-file-system';
+
 import { apiClient } from '@/shared/api/client';
 import { ApiError } from '@/shared/api/error';
 import { ENDPOINTS } from '@/shared/api/endpoints';
@@ -22,10 +25,9 @@ export async function uploadFile(
   uploadType: PresignedUploadRequest['uploadType'],
 ) {
   const presigned = await getPresignedUpload({ fileType, uploadType });
-  const localResponse = await fetch(uri);
-  const blob = await localResponse.blob();
-  const uploadResponse = await fetch(presigned.uploadUrl, {
-    body: blob,
+  const file = new File(uri);
+  const uploadResponse = await expoFetch(presigned.uploadUrl, {
+    body: file,
     headers: { 'Content-Type': fileType },
     method: 'PUT',
   });

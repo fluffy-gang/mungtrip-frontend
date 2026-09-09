@@ -26,6 +26,9 @@ export interface Place {
   phoneNumber?: string;
   homepageUrl?: string;
   businessHours?: string;
+  businessHourEntries?: BusinessHourEntry[];
+  operationStatus?: string;
+  nextOpenAt?: string;
   petRestrictions?: string;
   rating?: number;
   reviewCount?: number;
@@ -36,6 +39,7 @@ export interface Place {
   isOfficial: boolean;
   isLiked: boolean;
   verifiedCount?: number;
+  recentVisitedCount?: number;
   lastVerifiedAt?: string;
   rank?: number;
 }
@@ -57,4 +61,11 @@ export interface TopPlacesQueryParams {
   category: string;
   limit?: number;
   days?: number;
+}
+
+/** Structured hours returned by SDK-facing place detail API; the legacy string stays optional. */
+export interface BusinessHourEntry {
+  day: string;
+  open: string;
+  close: string;
 }

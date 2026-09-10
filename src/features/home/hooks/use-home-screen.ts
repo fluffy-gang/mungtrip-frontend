@@ -3,7 +3,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-
+import { useFeatureIntegration } from '@/features/app-integration/context';
 import {
   HEADER_CONTENT_HEIGHT,
   JEJU_MAP_BOUNDS,
@@ -23,11 +23,12 @@ import { useRecentSearches } from './use-recent-searches';
 import type { HomeMode, MapBounds, PlaceListSource } from '../types';
 import type { Place, PlaceCategory } from '@/features/places/types';
 
-export function useHomeScreen() {
+export function useHomeScreen(initialMode: HomeMode = 'map') {
+  const app = useFeatureIntegration();
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { height: windowHeight } = useWindowDimensions();
-  const [mode, setMode] = useState<HomeMode>('map');
+  const [mode, setMode] = useState<HomeMode>(initialMode);
   const [query, setQuery] = useState('');
   const [listSource, setListSource] = useState<PlaceListSource>('recommendation');
   const headerHeight = insets.top + HEADER_CONTENT_HEIGHT;
@@ -40,7 +41,7 @@ export function useHomeScreen() {
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
   const [selectedCategoryCode, setSelectedCategoryCode] =
     useState<string | null>(null);
-  const homeViewer = useHomeViewer();
+  const homeViewer = useHomeViewer(app.source === 'real');
   const { addRecentSearch, recentSearches, removeRecentSearch } =
     useRecentSearches();
   const {
@@ -59,7 +60,7 @@ export function useHomeScreen() {
     searchResults,
     topCafePlaces,
     topRestaurantPlaces,
-  } = useHomeData(mapBounds, homeViewer.dogIds);
+  } = useHomeData(mapBounds, homeViewer.dogIds, app.catalog);
 
   const handleLocated = useCallback(() => {
     mapSheet.showMap();
@@ -90,18 +91,18 @@ export function useHomeScreen() {
           return currentBounds;
         }
 
-        // 지도 이동 시 검색 결과 고정을 해제하고 위치 기준 목록으로 복귀한다.
-        if (isSearchList) {
-          setQuery('');
-          clearSearchResults();
-          setListSource('recommendation');
-        }
-
         return nextBounds;
       });
     },
-    [clearSearchResults, isSearchList],
+    [],
   );
+  // Initial/programmatic camera-idle events must not discard a just-submitted search.
+  const handleMapUserMove = useCallback(() => {
+    if (!isSearchList) return;
+    setQuery('');
+    clearSearchResults();
+    setListSource('recommendation');
+  }, [clearSearchResults, isSearchList]);
   const filterCategory = query.trim() ? undefined : selectedCategory;
   const filteredPlaces = useMemo(() => {
     if (isSearchList && searchResults) {
@@ -233,11 +234,11 @@ export function useHomeScreen() {
     (place: Place) => {
       // 상세로 바로 이동해 미리보기 카드가 한 프레임 노출되는 깜빡임을 막는다.
       router.push({
-        params: { id: String(place.id) },
+        params: { id: String(place.id), source: app.source },
         pathname: '/places/[id]',
       });
     },
-    [router],
+    [router, app.source],
   );
   const previewPlace = useCallback(
     (place: Place) => {
@@ -308,6 +309,7 @@ export function useHomeScreen() {
     topCafePlaces,
     topRestaurantPlaces,
     updateMapBounds,
+    handleMapUserMove,
     userCoordinate,
     zoomControlBottom: mapSheet.zoomControlBottom,
     zoomIn,

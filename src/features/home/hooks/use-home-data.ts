@@ -7,13 +7,15 @@ import { usePlaceCatalog } from "./use-place-catalog";
 import { usePlaceSearch } from "./use-place-search";
 
 import type { MapBounds } from "../types";
+import type { Place } from '@/features/places/types';
 
 export function useHomeData(
   mapBounds: MapBounds = JEJU_MAP_BOUNDS,
   dogIds: number[] = [],
+  mockPlaces?: Place[],
 ) {
   const [reloadKey, setReloadKey] = useState(0);
-  const catalog = usePlaceCatalog(reloadKey);
+  const catalog = usePlaceCatalog(reloadKey, !mockPlaces);
   const mapPlaces = useMapPlaces({
     bounds: mapBounds,
     categories: catalog.categories,
@@ -32,12 +34,13 @@ export function useHomeData(
     categories: catalog.categories,
     dogIds,
     tags: catalog.tags,
+    mockPlaces,
   });
   const retry = useCallback(() => {
     setReloadKey((currentKey) => currentKey + 1);
   }, []);
 
-  return {
+  const result = {
     categories: catalog.categories,
     clearSearchResults: search.clear,
     courses: feed.courses,
@@ -55,5 +58,14 @@ export function useHomeData(
     tags: catalog.tags,
     topCafePlaces: feed.topCafePlaces,
     topRestaurantPlaces: feed.topRestaurantPlaces,
+  };
+  if (!mockPlaces) return result;
+  return { ...result,
+    categories: [...new Map(mockPlaces.map(place => [place.category, { code: place.category, name: place.categoryName }])).values()],
+    places: mockPlaces, recentlyVerified: mockPlaces,
+    topCafePlaces: mockPlaces.filter(place => place.category === 'CAFE'),
+    topRestaurantPlaces: mockPlaces.filter(place => place.category === 'RESTAURANT'),
+    feedLoading: false, placesLoading: false, feedHasError: false, placesHasError: false,
+    popularKeywords: ['제주', '카페'],
   };
 }

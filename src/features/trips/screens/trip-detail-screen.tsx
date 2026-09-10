@@ -11,7 +11,7 @@ import { TripMap } from '../components/trip-map';
 import { tripColors, Column, Content, ErrorNotice, Header, Heading, Muted, Page, PlaceFacts, Row, SmallTitle, Spread, Thumbnail } from '../components/ui';
 import { useTripEnvironment, useTripSnapshot } from '../context';
 import { completeTripVisit } from '../flow';
-import { visitStatusLabel } from '../visit-status';
+import { rejectReasonLabel, visitStatusLabel } from '../visit-status';
 import { formatDate } from '../date-utils';
 import { errorMessage } from '../provider';
 
@@ -139,7 +139,7 @@ export function TripDetailScreen({ tripId, onBack, onEdit, onAdd, onReplace }: T
                   </Button> : null}
                 </Column>
               </Row>
-              {item.rejectReason ? <Text color="primaryPressed" fontSize={12}>{item.rejectDetail || item.rejectReason}</Text> : null}
+              {item.rejectReason ? <Text color="primaryPressed" fontSize={12}>{item.rejectDetail || rejectReasonLabel(item.rejectReason)}</Text> : null}
               {item.visitStatus === 'REJECTED' ? <Button type="sub" size="m" onPress={() => onReplace(item)}>대체 장소 추천</Button> : null}
             </Column>)}
 

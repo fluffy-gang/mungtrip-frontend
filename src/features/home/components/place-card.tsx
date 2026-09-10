@@ -1,7 +1,7 @@
 import { Pressable, Text, View } from 'react-native';
 import { SymbolView } from 'expo-symbols';
 
-
+import { PlaceLikeButton } from '@/features/app-integration/place-actions';
 import { colors, styles } from '../styles';
 import { getVerifiedDiffDays } from '../utils/place-utils';
 import { PlaceThumbnail } from './place-thumbnail';
@@ -48,13 +48,7 @@ export function PlaceCard({
             <Text style={styles.placeCardBadgeText}>{badgeLabel}</Text>
           </View>
         ) : null}
-        <View style={styles.placeCardLikeBadge}>
-          <SymbolView
-            name={{ android: 'favorite', ios: place.isLiked ? 'heart.fill' : 'heart', web: 'favorite' }}
-            size={14}
-            tintColor={colors.onInverse}
-          />
-        </View>
+        <PlaceLikeButton place={place} style={styles.placeCardLikeBadge} size={14} />
       </View>
       <View style={styles.placeCardBody}>
         <Text numberOfLines={1} style={styles.placeName}>

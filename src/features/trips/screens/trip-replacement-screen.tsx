@@ -10,6 +10,7 @@ import { Card, Column, Content, ErrorNotice, Footer, Header, Heading, Muted, Pag
 import { useTripEnvironment } from '../context';
 import { createReplacementController } from '../flow';
 import { errorMessage } from '../provider';
+import { rejectReasonLabel } from '../visit-status';
 
 import type { TripItem, TripNearbyResult } from '../types';
 export function TripReplacementScreen({ tripId, item, onBack, onComplete }: {
@@ -63,7 +64,7 @@ export function TripReplacementScreen({ tripId, item, onBack, onComplete }: {
           <Muted>거절된 장소</Muted>
           <Heading>{item.placeName}</Heading>
           <Text color="primaryPressed" fontSize={14}>
-            {item.rejectDetail || item.rejectReason || '방문 거절'}
+            {item.rejectDetail || rejectReasonLabel(item.rejectReason)}
           </Text>
         </Card>
         <SmallTitle>추천 장소</SmallTitle>

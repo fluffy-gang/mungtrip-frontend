@@ -11,16 +11,16 @@ const EMPTY_HOME_DOGS: HomeDogProfile[] = [];
 const EMPTY_DOG_IDS: number[] = [];
 
 const dogSizeTagCodes: Record<Dog['size'], DogSizeTagCode> = {
-  SMALL: 'SMALL_DOG',
-  MEDIUM: 'MEDIUM_DOG',
-  LARGE: 'LARGE_DOG',
+  S: 'SMALL_DOG',
+  M: 'MEDIUM_DOG',
+  L: 'LARGE_DOG',
 };
 
 const toHomeDogProfile = (dog: Dog): HomeDogProfile => ({
-  breed: dog.breed.name,
+  breed: dog.breed,
   id: dog.dogId,
-  imageUrl: dog.imageUrl ?? '',
-  isDangerousDog: dog.isDangerousDog,
+  imageUrl: dog.profileImageUrl,
+  isDangerousDog: dog.isDangerousDog ?? false,
   name: dog.name,
   sizeTagCode: dogSizeTagCodes[dog.size],
 });

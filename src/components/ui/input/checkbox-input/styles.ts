@@ -1,14 +1,12 @@
 import { Pressable } from 'react-native';
-import { styled, type DefaultTheme } from 'styled-components/native';
+import { styled } from 'styled-components/native';
 
 import { Text } from '@/components/ui/text';
 
-import { booleanKey, getDisabledOpacity, type BooleanKey } from '../shared-styles';
+import { booleanKey, getDisabledOpacity } from '../shared-styles';
 
-const checkboxMarkColorMap = {
-  false: 'gray300',
-  true: 'onPrimary',
-} as const;
+import type { DefaultTheme } from 'styled-components/native';
+import type { BooleanKey } from '../shared-styles';
 
 function getCheckboxBackgroundColor(selected: boolean | undefined, theme: DefaultTheme) {
   const backgroundColorMap = {
@@ -28,15 +26,6 @@ function getCheckboxBorderColor(selected: boolean | undefined, theme: DefaultThe
   return borderColorMap[booleanKey(selected)];
 }
 
-function getCheckboxMarkColor(selected: boolean | undefined, theme: DefaultTheme) {
-  const colorMap = {
-    gray300: theme.colors.primitive.gray[300],
-    onPrimary: theme.colors.semantic.light.onPrimary,
-  } as const satisfies Record<(typeof checkboxMarkColorMap)[BooleanKey], string>;
-
-  return colorMap[checkboxMarkColorMap[booleanKey(selected)]];
-}
-
 export const CheckboxRow = styled(Pressable)<{ $disabled?: boolean }>`
   align-items: center;
   flex-direction: row;
@@ -53,15 +42,6 @@ export const CheckboxControl = styled.View<{ $selected?: boolean }>`
   height: 24px;
   justify-content: center;
   width: 24px;
-`;
-
-export const CheckboxMark = styled.Text<{ $selected?: boolean }>`
-  color: ${({ $selected, theme }) => getCheckboxMarkColor($selected, theme)};
-  font-family: ${({ theme }) => theme.fonts.sansSerif};
-  font-size: ${({ theme }) => theme.typography.fontSize[14].fontSize}px;
-  font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
-  letter-spacing: ${({ theme }) => theme.typography.fontSize[14].letterSpacing}px;
-  line-height: 14px;
 `;
 
 export const CheckboxLabel = styled(Text).attrs({

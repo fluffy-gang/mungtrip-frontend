@@ -1,6 +1,7 @@
 import { TextInputField } from '../text-input';
-import type { NumberInputFieldProps } from '../types';
 import { UnitText } from './styles';
+
+import type { NumberInputFieldProps } from '../types';
 
 export function NumberInputField({ unitText, ...props }: NumberInputFieldProps) {
   return (

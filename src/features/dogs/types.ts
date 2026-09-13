@@ -1,10 +1,4 @@
 export type DogSize = 'S' | 'M' | 'L';
-export type DogListSize = 'SMALL' | 'MEDIUM' | 'LARGE';
-
-export interface DogBreed {
-  breedId: number;
-  name: string;
-}
 
 export interface DogPersonalitySummary {
   id: number;
@@ -12,15 +6,15 @@ export interface DogPersonalitySummary {
 }
 
 export interface Dog {
+  breed: string;
   dogId: number;
+  isDangerousDog?: boolean;
+  isNeutered?: boolean;
   name: string;
-  breed: DogBreed;
-  size: DogListSize;
-  weight: number;
   personalities: DogPersonalitySummary[];
-  isNeutered: boolean;
-  isDangerousDog: boolean;
-  imageUrl?: string;
+  profileImageUrl: string;
+  size: DogSize;
+  weight?: number;
 }
 
 export interface GetMyDogsResponse {
@@ -31,24 +25,16 @@ export interface DogMutationResponse {
   dogId: number;
 }
 
-export interface CreateDogRequest {
-  size: DogSize;
+export interface DogSaveRequest {
   breed: string;
+  isDangerousDog?: boolean;
+  isNeutered?: boolean;
   name: string;
-  weight: number;
   personalityIds: number[];
-  isNeutered: boolean;
-  isDangerousDog: boolean;
-  profileImageUrl?: string;
+  profileImageUrl: string;
+  size: DogSize;
+  weight?: number;
 }
 
-export interface UpdateDogRequest {
-  size: DogSize;
-  breedId: number;
-  name: string;
-  weight: number;
-  personalityIds: number[];
-  isNeutered: boolean;
-  isDangerousDog: boolean;
-  profileImageKey?: string;
-}
+export type CreateDogRequest = DogSaveRequest;
+export type UpdateDogRequest = DogSaveRequest;

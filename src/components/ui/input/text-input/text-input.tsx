@@ -3,8 +3,9 @@ import { useTheme } from 'styled-components/native';
 
 import { Field } from '../field';
 import { InputShell, resolveFieldState } from '../shared-styles';
-import type { TextInputFieldProps } from '../types';
 import { StyledTextInput } from './styles';
+
+import type { TextInputFieldProps } from '../types';
 
 export function TextInputField({
   disabled,

@@ -1,4 +1,5 @@
 import { TagChip, TagList, TagText } from './styles';
+
 import type { InputOption, TagSelectInputProps } from '../types';
 
 function hasValue<TValue extends string>(value: TValue | TValue[], optionValue: TValue) {

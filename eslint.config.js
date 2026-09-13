@@ -6,5 +6,42 @@ module.exports = defineConfig([
   expoConfig,
   {
     ignores: ["dist/*"],
+    rules: {
+      "@typescript-eslint/consistent-type-imports": [
+        "error",
+        {
+          disallowTypeAnnotations: false,
+          fixStyle: "separate-type-imports",
+          prefer: "type-imports",
+        },
+      ],
+      "import/order": [
+        "error",
+        {
+          groups: [
+            ["builtin", "external"],
+            ["internal", "parent", "sibling", "index"],
+            "type",
+          ],
+          "newlines-between": "always",
+          pathGroups: [
+            {
+              group: "internal",
+              pattern: "@/{components/**,features/*/components}",
+              position: "before",
+            },
+          ],
+          pathGroupsExcludedImportTypes: ["builtin", "type"],
+        },
+      ],
+      "max-lines": [
+        "error",
+        {
+          max: 300,
+          skipBlankLines: true,
+          skipComments: true,
+        },
+      ],
+    },
   }
 ]);

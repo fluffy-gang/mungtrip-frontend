@@ -1,38 +1,37 @@
-import { apiClient } from '@/shared/api/client';
-import { ENDPOINTS } from '@/shared/api/endpoints';
+import { File } from "expo-file-system";
+import { fetch as expoFetch } from "expo/fetch";
 
-import type { PresignedUrlRequest, PresignedUrlResponse } from './types';
+import { apiClient } from "@/shared/api/client";
+import { ENDPOINTS } from "@/shared/api/endpoints";
+import { ApiError } from "@/shared/api/error";
 
-export const getPresignedUrl = async (
-  body: PresignedUrlRequest,
-): Promise<PresignedUrlResponse> => {
-  const { data } = await apiClient.post<PresignedUrlResponse>(
+import type { PresignedUploadRequest, PresignedUploadResponse } from "./types";
+
+export async function getPresignedUpload(body: PresignedUploadRequest) {
+  const { data } = await apiClient.post<PresignedUploadResponse>(
     ENDPOINTS.uploads.presigned,
     body,
   );
 
   return data;
-};
+}
 
-/**
- * presigned URL로 파일을 직접 S3에 업로드한다. URL 유효시간은 15분.
- * apiClient를 쓰지 않는다 — baseURL/Authorization 헤더가 S3 요청에 섞이면 안 된다.
- */
-export const uploadFileToPresignedUrl = async (
-  uploadUrl: string,
-  fileUri: string,
+export async function uploadFile(
+  uri: string,
   fileType: string,
-): Promise<void> => {
-  const fileResponse = await fetch(fileUri);
-  const fileBlob = await fileResponse.blob();
-
-  const uploadResponse = await fetch(uploadUrl, {
-    body: fileBlob,
-    headers: { 'Content-Type': fileType },
-    method: 'PUT',
+  uploadType: PresignedUploadRequest["uploadType"],
+) {
+  const presigned = await getPresignedUpload({ fileType, uploadType });
+  const file = new File(uri);
+  const uploadResponse = await expoFetch(presigned.uploadUrl, {
+    body: file,
+    headers: { "Content-Type": fileType },
+    method: "PUT",
   });
 
   if (!uploadResponse.ok) {
-    throw new Error('이미지 업로드에 실패했습니다.');
+    throw new ApiError("사진을 업로드하지 못했어요.", uploadResponse.status);
   }
-};
+
+  return presigned.objectKey;
+}

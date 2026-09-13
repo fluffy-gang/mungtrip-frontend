@@ -1,4 +1,5 @@
 import { SegmentContainer, SegmentItem, OptionText } from './styles';
+
 import type { InputOption, SegmentInputProps } from '../types';
 
 export function SegmentInput<TValue extends string = string>({

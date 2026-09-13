@@ -22,3 +22,16 @@ export interface SocialLoginResponse {
   userId: number;
   provider: SocialProvider;
 }
+
+export interface AuthSession {
+  accessToken: string;
+  provider: SocialProvider;
+  refreshToken: string;
+  userId: number;
+}
+
+export interface ReissueResponse {
+  accessToken: string;
+  refreshToken: string;
+  userId: number;
+}

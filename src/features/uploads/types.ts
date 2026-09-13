@@ -1,11 +1,9 @@
-export type UploadType = 'DOG_PROFILE_IMAGE' | 'PLACE_IMAGE';
-
-export interface PresignedUrlRequest {
+export interface PresignedUploadRequest {
   fileType: string;
-  uploadType: UploadType;
+  uploadType: "DOG_PROFILE_IMAGE" | "PLACE_IMAGE" | "REVIEW_IMAGE";
 }
 
-export interface PresignedUrlResponse {
+export interface PresignedUploadResponse {
   objectKey: string;
   uploadUrl: string;
 }

@@ -1,11 +1,13 @@
-import DateTimePicker, { type DateTimePickerEvent } from '@react-native-community/datetimepicker';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { useState } from 'react';
 import { Platform } from 'react-native';
 
 import { Field } from '../field';
 import { InputShell, resolveFieldState } from '../shared-styles';
-import type { DateInputProps } from '../types';
 import { CalendarIcon, CalendarIconTop, DateValueText } from './styles';
+
+import type { DateTimePickerEvent } from '@react-native-community/datetimepicker';
+import type { DateInputProps } from '../types';
 
 function formatDate(value: Date | undefined) {
   if (!value) return undefined;

@@ -42,35 +42,17 @@
               {
                 "fontFamily": "Pretendard",
                 "fontDefinitions": [
-                  {
-                    "path": "./assets/fonts/Pretendard-Regular.otf",
-                    "weight": 400
-                  },
-                  {
-                    "path": "./assets/fonts/Pretendard-Medium.otf",
-                    "weight": 500
-                  },
-                  {
-                    "path": "./assets/fonts/Pretendard-SemiBold.otf",
-                    "weight": 600
-                  },
-                  {
-                    "path": "./assets/fonts/Pretendard-Bold.otf",
-                    "weight": 700
-                  }
+                  { "path": "./assets/fonts/Pretendard-Regular.otf", "weight": 400 },
+                  { "path": "./assets/fonts/Pretendard-Medium.otf", "weight": 500 },
+                  { "path": "./assets/fonts/Pretendard-SemiBold.otf", "weight": 600 },
+                  { "path": "./assets/fonts/Pretendard-Bold.otf", "weight": 700 }
                 ]
               },
               {
                 "fontFamily": "Hakgyoansim Dunggeunmiso",
                 "fontDefinitions": [
-                  {
-                    "path": "./assets/fonts/Hakgyoansim Dunggeunmiso OTF R.otf",
-                    "weight": 400
-                  },
-                  {
-                    "path": "./assets/fonts/Hakgyoansim Dunggeunmiso OTF B.otf",
-                    "weight": 700
-                  }
+                  { "path": "./assets/fonts/Hakgyoansim Dunggeunmiso OTF R.otf", "weight": 400 },
+                  { "path": "./assets/fonts/Hakgyoansim Dunggeunmiso OTF B.otf", "weight": 700 }
                 ]
               }
             ]
@@ -90,6 +72,14 @@
         "expo-location",
         {
           "locationWhenInUsePermission": "현재 위치를 기준으로 가까운 반려동물 동반 장소를 보여드릴게요."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "반려견 프로필 사진을 등록하려면 사진 접근 권한이 필요해요.",
+          "cameraPermission": false,
+          "microphonePermission": false
         }
       ],
       "expo-secure-store",

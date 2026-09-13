@@ -1,10 +1,15 @@
 import * as SecureStore from 'expo-secure-store';
 
+import type { AuthSession, SocialProvider } from './types';
+
 const ACCESS_TOKEN_KEY = 'accessToken';
 const REFRESH_TOKEN_KEY = 'refreshToken';
+const AUTH_IDENTITY_KEY = 'authIdentity';
 
-// 이 앱은 웹을 배포 타겟으로 지원하지 않는다(핵심 기능인 지도부터 네이티브 전용).
-// localStorage 폴백은 인증 토큰을 평문으로 노출해 XSS에 취약하므로 두지 않는다.
+interface AuthIdentity {
+  provider: SocialProvider;
+  userId: number;
+}
 
 interface AuthTokens {
   accessToken: string;
@@ -46,6 +51,42 @@ export const saveAuthTokens = async (tokens: AuthTokens) => {
   await removeRefreshToken();
 };
 
-export const removeAuthTokens = async () => {
-  await Promise.all([removeAccessToken(), removeRefreshToken()]);
+export const saveAuthSession = async (session: AuthSession) => {
+  const identity: AuthIdentity = {
+    provider: session.provider,
+    userId: session.userId,
+  };
+
+  await Promise.all([
+    saveAuthTokens(session),
+    SecureStore.setItemAsync(AUTH_IDENTITY_KEY, JSON.stringify(identity)),
+  ]);
+};
+
+export const getAuthSession = async (): Promise<AuthSession | null> => {
+  const [accessToken, refreshToken, identityValue] = await Promise.all([
+    getAccessToken(),
+    getRefreshToken(),
+    SecureStore.getItemAsync(AUTH_IDENTITY_KEY),
+  ]);
+
+  if (!accessToken || !refreshToken || !identityValue) return null;
+
+  try {
+    const identity = JSON.parse(identityValue) as AuthIdentity;
+
+    if (!identity.userId || !identity.provider) return null;
+
+    return { accessToken, refreshToken, ...identity };
+  } catch {
+    return null;
+  }
+};
+
+export const removeAuthSession = async () => {
+  await Promise.all([
+    removeAccessToken(),
+    removeRefreshToken(),
+    SecureStore.deleteItemAsync(AUTH_IDENTITY_KEY),
+  ]);
 };

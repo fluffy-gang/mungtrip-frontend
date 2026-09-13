@@ -1,0 +1,165 @@
+import { Image } from 'expo-image';
+import * as ImagePicker from 'expo-image-picker';
+import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import { Pressable, ScrollView, View } from 'react-native';
+
+import { Button } from '@/components/ui/button';
+import { Icon } from '@/components/ui/icon';
+import { TagSelectInput } from '@/components/ui/input';
+import { Text } from '@/components/ui/text';
+import {
+  BottomActions,
+  DogPlaceholder,
+  FadeSequence,
+  InlineError,
+  OnboardingPage,
+  ScreenTitle,
+  StepHeader,
+} from '@/features/onboarding/components';
+
+import { tokens } from '@/constants/tokens';
+import { useOnboarding } from '../../context';
+import { getErrorMessage } from '@/utils/error';
+import { appendObjectParticle } from '@/utils/string';
+import { styles } from './style';
+
+import type { Href } from 'expo-router';
+
+export function DogStepThreeScreen() {
+  const router = useRouter();
+  const { draft, personalities, setDraft, submitDog } = useOnboarding();
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string>();
+
+  const chooseImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      aspect: [1, 1],
+      mediaTypes: ['images'],
+      quality: 0.8,
+    });
+
+    if (!result.canceled) setDraft({ profileImage: result.assets[0] });
+  };
+
+  const submit = async (skipExtras: boolean) => {
+    if (!draft.profileImage?.uri && !draft.profileImageUrl) {
+      setError('프로필 사진을 등록해주세요.');
+      return;
+    }
+
+    try {
+      setPending(true);
+      setError(undefined);
+      await submitDog(
+        skipExtras
+          ? { isNeutered: undefined, personalities: [] }
+          : undefined,
+      );
+      router.replace('/onboarding/complete' as Href);
+    } catch (nextError) {
+      setError(getErrorMessage(nextError));
+    } finally {
+      setPending(false);
+    }
+  };
+
+  const personalityOptions = personalities.map((item) => ({
+    label: item.name,
+    value: String(item.id),
+  }));
+  const selectedPersonalities = draft.personalities.map(String);
+  const neuterValue = draft.isNeutered == null
+    ? 'unknown'
+    : draft.isNeutered
+      ? 'yes'
+      : 'no';
+
+  return (
+    <OnboardingPage>
+      <StepHeader current={3} onBack={() => router.back()} />
+      <ScrollView contentContainerStyle={styles.formContent}>
+        <FadeSequence>
+          <ScreenTitle>
+            {appendObjectParticle(draft.name)}{`\n`}더 알려주세요 (선택)
+          </ScreenTitle>
+        </FadeSequence>
+        <FadeSequence delay={80}>
+          <View style={styles.profileBlock}>
+            <Pressable
+              accessibilityLabel="프로필 사진 변경"
+              onPress={() => void chooseImage()}
+            >
+              {draft.profileImage?.uri || draft.profileImageUrl ? (
+                <Image
+                  source={{ uri: draft.profileImage?.uri ?? draft.profileImageUrl }}
+                  style={styles.profileImage}
+                />
+              ) : (
+                <DogPlaceholder />
+              )}
+              <View style={styles.editBadge}>
+                <Icon
+                  name="edit"
+                  size={16}
+                  tintColor={tokens.colors.semantic.light.textSecondary}
+                />
+              </View>
+            </Pressable>
+          </View>
+          <View style={styles.formFields}>
+            {personalityOptions.length ? (
+              <View style={styles.fieldBlock}>
+                <Text color="textSecondary" fontSize={16} fontWeight="bold" lineHeight={24}>
+                  성향 (여러개 가능)
+                </Text>
+                <TagSelectInput
+                  mode="multiple"
+                  onChange={(values) => setDraft({
+                    personalities: (values as string[]).map(Number),
+                  })}
+                  options={personalityOptions}
+                  value={selectedPersonalities}
+                />
+              </View>
+            ) : null}
+            <View style={styles.fieldBlock}>
+              <Text color="textSecondary" fontSize={16} fontWeight="bold" lineHeight={24}>
+                중성화 여부
+              </Text>
+              <TagSelectInput
+                mode="single"
+                onChange={(value) => setDraft({
+                  isNeutered: value === 'unknown' ? undefined : value === 'yes',
+                })}
+                options={[
+                  { label: '완료', value: 'yes' },
+                  { label: '미완료', value: 'no' },
+                  { label: '모름', value: 'unknown' },
+                ]}
+                value={neuterValue}
+                variant="outlined"
+              />
+            </View>
+            <InlineError message={error} />
+          </View>
+        </FadeSequence>
+      </ScrollView>
+      <BottomActions>
+        <Button disabled={pending} onPress={() => void submit(false)}>
+          {pending ? '저장 중...' : '완료'}
+        </Button>
+        <Button
+          disabled={pending}
+          fullWidth
+          labelStyle={styles.skipButtonLabel}
+          onPress={() => void submit(true)}
+          type="ghost"
+        >
+          건너뛰기
+        </Button>
+      </BottomActions>
+    </OnboardingPage>
+  );
+}

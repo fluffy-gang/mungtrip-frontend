@@ -8,6 +8,7 @@ import {
   RadioTextStack,
   RadioTitle,
 } from "./styles";
+
 import type { InputOption, RadioInputProps } from "../types";
 
 export function RadioInput<TValue extends string = string>({

@@ -1,8 +1,8 @@
 import { styled } from 'styled-components/native';
 
 import { Text } from '@/components/ui/text';
-import type { SemanticColorName } from '@/constants/tokens';
 
+import type { SemanticColorName } from '@/constants/tokens';
 import type { FieldState } from '../types';
 
 const fieldMessageColorMap = {

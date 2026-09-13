@@ -1,42 +1,93 @@
-import { DarkTheme, DefaultTheme, Stack, ThemeProvider as ExpoThemeProvider } from 'expo-router';
+import {
+  DarkTheme,
+  DefaultTheme,
+  Stack,
+  ThemeProvider as ExpoThemeProvider,
+  useRouter,
+  useSegments,
+} from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useColorScheme } from 'react-native';
 import { ThemeProvider as StyledThemeProvider } from 'styled-components/native';
 
+import { BootstrapError } from '@/features/onboarding/components';
+
 import { tokens } from '@/constants/tokens';
 import { setupAuthInterceptor } from '@/features/auth/api';
-import { useAuth } from '@/features/auth/useAuth';
+import {
+  OnboardingProvider,
+  useOnboarding,
+} from '@/features/onboarding/context';
+import { useAppFonts } from '@/hooks/use-app-fonts';
+
+import type { Href } from 'expo-router';
 
 void SplashScreen.preventAutoHideAsync();
 setupAuthInterceptor();
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const { initAuth } = useAuth();
+function OnboardingGate() {
+  const router = useRouter();
+  const segments = useSegments();
+  const { bootstrap, status } = useOnboarding();
+  const started = useRef(false);
+  const path = segments.join('/');
 
   useEffect(() => {
-    let isMounted = true;
+    if (started.current) return;
 
-    void initAuth()
-      .catch(error => {
-        console.warn('인증 초기화 중 문제가 발생했습니다.', error);
-      })
-      .finally(() => {
-        if (isMounted) {
-          void SplashScreen.hideAsync();
-        }
-      });
+    started.current = true;
+    void bootstrap().finally(() => {
+      void SplashScreen.hideAsync();
+    });
+  }, [bootstrap]);
 
-    return () => {
-      isMounted = false;
-    };
-  }, [initAuth]);
+  useEffect(() => {
+    if (status === 'initializing') return;
+
+    if (status === 'anonymous' && path !== 'onboarding/login') {
+      router.replace('/onboarding/login' as Href);
+      return;
+    }
+
+    if (status === 'agreements' && path !== 'onboarding/agreements') {
+      router.replace('/onboarding/agreements' as Href);
+      return;
+    }
+
+    if (
+      status === 'dogPrompt' &&
+      !path.startsWith('onboarding/dog') &&
+      path !== 'onboarding/complete'
+    ) {
+      router.replace('/onboarding/dog-prompt' as Href);
+      return;
+    }
+
+    if (status === 'ready' && path.startsWith('onboarding')) {
+      router.replace('/' as Href);
+    }
+  }, [path, router, status]);
+
+  if (status === 'bootstrapError') {
+    return <BootstrapError onRetry={() => void bootstrap()} />;
+  }
+
+  return <Stack screenOptions={{ headerShown: false }} />;
+}
+
+export default function RootLayout() {
+  const colorScheme = useColorScheme();
+  const fontsReady = useAppFonts();
+
+  if (!fontsReady) return null;
 
   return (
     <ExpoThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <StyledThemeProvider theme={tokens}>
-        <Stack screenOptions={{ headerShown: false }} />
+        <OnboardingProvider>
+          <OnboardingGate />
+        </OnboardingProvider>
       </StyledThemeProvider>
     </ExpoThemeProvider>
   );

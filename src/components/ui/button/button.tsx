@@ -1,4 +1,5 @@
 import { ButtonLabel, ButtonRoot, ButtonSurface } from "./styles";
+
 import type { ButtonProps } from "./types";
 
 const defaultFullWidthMap = {
@@ -13,6 +14,7 @@ export function Button({
   children,
   disabled,
   fullWidth,
+  labelStyle,
   leftAccessory,
   rightAccessory,
   size = "l",
@@ -40,7 +42,13 @@ export function Button({
           $type={type}
         >
           {leftAccessory}
-          <ButtonLabel $active={active} $disabled={disabled} $size={size} $type={type}>
+          <ButtonLabel
+            $active={active}
+            $disabled={disabled}
+            $size={size}
+            $type={type}
+            style={labelStyle}
+          >
             {children}
           </ButtonLabel>
           {rightAccessory}

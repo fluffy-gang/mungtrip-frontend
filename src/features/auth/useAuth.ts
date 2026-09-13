@@ -2,9 +2,9 @@ import { useCallback } from 'react';
 
 import { socialLogin } from './api';
 import {
-  getAccessToken,
-  removeAuthTokens,
-  saveAuthTokens,
+  getAuthSession,
+  removeAuthSession,
+  saveAuthSession,
 } from './storage';
 import { useAuthStore } from './authStore';
 
@@ -17,7 +17,7 @@ export const useAuth = () => {
   const handleSocialLogin = useCallback(async (body: SocialLoginRequest) => {
     const response = await socialLogin(body);
 
-    await saveAuthTokens(response);
+    await saveAuthSession(response);
 
     setLogin(response.accessToken, {
       id: response.userId,
@@ -28,19 +28,23 @@ export const useAuth = () => {
   }, [setLogin]);
 
   const handleLogout = useCallback(async () => {
-    await removeAuthTokens();
+    await removeAuthSession();
     setLogout();
   }, [setLogout]);
 
   const initAuth = useCallback(async () => {
-    const token = await getAccessToken();
+    const session = await getAuthSession();
 
-    if (token) {
-      setLogin(token);
-      return;
+    if (session) {
+      setLogin(session.accessToken, {
+        id: session.userId,
+        provider: session.provider,
+      });
+      return session;
     }
 
     setLogout();
+    return null;
   }, [setLogin, setLogout]);
 
   return {

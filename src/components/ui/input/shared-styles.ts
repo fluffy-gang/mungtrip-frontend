@@ -1,5 +1,6 @@
-import { styled, type DefaultTheme } from 'styled-components/native';
+import { styled } from 'styled-components/native';
 
+import type { DefaultTheme } from 'styled-components/native';
 import type { FieldState, InputSize } from './types';
 
 export type BooleanKey = 'false' | 'true';

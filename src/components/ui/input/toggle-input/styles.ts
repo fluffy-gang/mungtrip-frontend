@@ -1,9 +1,12 @@
 import { Pressable } from 'react-native';
-import { styled, type DefaultTheme } from 'styled-components/native';
+import { styled } from 'styled-components/native';
 
 import { Text } from '@/components/ui/text';
 
-import { booleanKey, getDisabledOpacity, type BooleanKey } from '../shared-styles';
+import { booleanKey, getDisabledOpacity } from '../shared-styles';
+
+import type { DefaultTheme } from 'styled-components/native';
+import type { BooleanKey } from '../shared-styles';
 
 const selectedAlignMap = {
   false: 'flex-start',

@@ -1,8 +1,9 @@
 import { Pressable } from "react-native";
-import { styled, type DefaultTheme } from "styled-components/native";
+import { styled } from "styled-components/native";
 
 import { Text } from "@/components/ui/text";
 
+import type { DefaultTheme } from "styled-components/native";
 import type { ButtonSize, ButtonType } from "./types";
 
 const buttonHeight = {

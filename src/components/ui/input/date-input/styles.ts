@@ -1,9 +1,11 @@
 import { styled } from 'styled-components/native';
 
 import { Text } from '@/components/ui/text';
-import type { SemanticColorName } from '@/constants/tokens';
 
-import { booleanKey, type BooleanKey } from '../shared-styles';
+import { booleanKey } from '../shared-styles';
+
+import type { SemanticColorName } from '@/constants/tokens';
+import type { BooleanKey } from '../shared-styles';
 
 const dateValueColorMap = {
   false: 'textPrimary',

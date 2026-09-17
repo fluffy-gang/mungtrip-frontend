@@ -7,8 +7,10 @@ import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 
 import { tokens } from '@/constants/tokens';
+import { CATEGORY_LABELS, CATEGORY_ORDER } from '../api';
 import { SavedThumbnail } from '../components/saved-thumbnail';
 import { createSavedController } from '../controller';
+import { orderCategories, userVerifiedLabel } from '../logic';
 import { savedProvider } from '../provider';
 import * as S from './styles';
 
@@ -28,7 +30,7 @@ export function SavedScreen({ provider = savedProvider, ...callbacks }: Props) {
   const current = snapshot[state.tab];
   const disabled = state.busy !== null;
   const places = controller.visiblePlaces();
-  const categories = [...new Map(snapshot.places.items.map(item => [item.category, item.categoryName])).entries()];
+  const categories = orderCategories(CATEGORY_ORDER, snapshot.places.items).map(code => [code, CATEGORY_LABELS[code]] as const);
   const selected = new Set(state.selectedIds);
   const allVisible = places.length > 0 && places.every(item => selected.has(item.id));
 
@@ -142,6 +144,7 @@ export function SavedScreen({ provider = savedProvider, ...callbacks }: Props) {
 function PlaceRow({ place, selecting, selected, disabled, onPress, onLike }: {
   place: Place; selecting: boolean; selected: boolean; disabled: boolean; onPress: () => void; onLike: () => void;
 }) {
+  const userVerified = userVerifiedLabel(place);
   return (
     <S.Row $selecting={selecting} $selected={selected}>
       <S.RowMain accessibilityRole={selecting ? 'checkbox' : 'button'} accessibilityLabel={place.name} accessibilityState={{ checked: selecting ? selected : undefined, disabled }} disabled={disabled} onPress={onPress}>
@@ -150,7 +153,18 @@ function PlaceRow({ place, selecting, selected, disabled, onPress, onLike }: {
         <S.PlaceInfo>
           <Text numberOfLines={1} fontSize={14} fontWeight="bold" lineHeight={20}>{place.name}</Text>
           <S.Tags>{[...new Set(place.tags)].slice(0, 2).map(tag => <S.Tag key={tag}><Text fontSize={11} color="textTertiary" lineHeight={14}>{tag}</Text></S.Tag>)}</S.Tags>
-          {place.isOfficial && <S.Proof><SymbolView name={{ ios: 'checkmark.seal.fill', android: 'verified', web: 'verified' }} size={12} tintColor={colors.accentBlue} /><Text fontSize={11} color="accentBlue" lineHeight={14}>공식인증</Text></S.Proof>}
+          {(place.isOfficial || userVerified) && (
+            <S.Proof>
+              {place.isOfficial && <S.ProofItem><SymbolView name={{ ios: 'checkmark.seal.fill', android: 'verified', web: 'verified' }} size={12} tintColor={colors.accentBlue} /><Text fontSize={11} color="accentBlue" lineHeight={14}>공식인증</Text></S.ProofItem>}
+              {userVerified && <S.ProofItem><SymbolView name={{ ios: 'person.fill', android: 'person', web: 'person' }} size={12} tintColor={colors.textPlaceholder} /><Text fontSize={11} color="textTertiary" lineHeight={14}>{userVerified}</Text></S.ProofItem>}
+            </S.Proof>
+          )}
+          {place.rating !== undefined && (
+            <S.Rating>
+              <SymbolView name={{ ios: 'star.fill', android: 'star', web: 'star' }} size={12} tintColor={colors.textTertiary} />
+              <Text fontSize={11} color="textTertiary" lineHeight={14}>{place.rating.toFixed(1)}</Text>
+            </S.Rating>
+          )}
         </S.PlaceInfo>
       </S.RowMain>
       {!selecting && <S.Heart accessibilityRole="button" accessibilityLabel={`${place.name} 찜 해제`} accessibilityState={{ disabled, busy: disabled }} disabled={disabled} onPress={onLike}><HeartIcon /></S.Heart>}
@@ -180,7 +194,7 @@ function EmptyState({ tab, filtered = false, onFind }: { tab: 'places' | 'course
     <S.Center>
       <Text fontSize={18} fontWeight="bold" lineHeight={26} style={{ textAlign: 'center' }}>{filtered ? '이 카테고리에는 찜한 장소가 없어요' : `아직 찜한 ${noun}가 없어요`}</Text>
       <Text fontSize={14} color="textTertiary" lineHeight={22} style={{ textAlign: 'center' }}>{filtered ? '다른 카테고리를 선택해 보세요.' : `마음에 드는 ${noun}를 찜하면\n여기서 모아볼 수 있어요`}</Text>
-      {!filtered && <S.EmptyButtonSlot><Button size="m" onPress={onFind}>지도에서 장소 찾기</Button></S.EmptyButtonSlot>}
+      {!filtered && <S.EmptyButtonSlot><Button size="m" onPress={onFind}>지도에서 {noun} 찾기</Button></S.EmptyButtonSlot>}
     </S.Center>
   );
 }

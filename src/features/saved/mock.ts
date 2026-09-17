@@ -4,6 +4,8 @@ import type { MockProviderOptions, MockScenario, RealSavedAdapter, SavedTab } fr
 
 const clonePlace = (place: Place): Place => ({ ...place, tags: [...place.tags], tagCodes: [...place.tagCodes] });
 const cloneCourse = (course: Course): Course => ({ ...course });
+/** ISO timestamp N days in the past, for a deterministic relative "N일전" label regardless of run date. */
+const daysAgo = (days: number) => new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
 const place = (id: number, name: string, overrides: Partial<Place> = {}): Place => ({
   id, name, category: 'CAFE', categoryName: '카페', address: '서울시 마포구',
   imageUrl: 'saved-fixture://place', tags: ['실내', '소형견'], tagCodes: ['INDOOR', 'SMALL_DOG'],
@@ -17,8 +19,8 @@ const course = (id: number, title: string): Course => ({
 
 function fixtures(scenario: MockScenario, options: MockProviderOptions) {
   const places = scenario === 'empty' ? [] : options.places?.map(clonePlace) ?? [
-    place(1, '소형견 동반 카페'),
-    place(2, '반려견과 함께하는 식당', { category: 'RESTAURANT', categoryName: '식당', isOfficial: false }),
+    place(1, '소형견 동반 카페', { verifiedCount: 24, rating: 4.8, lastVerifiedAt: daysAgo(3) }),
+    place(2, '반려견과 함께하는 식당', { category: 'RESTAURANT', categoryName: '식당', isOfficial: false, verifiedCount: 8, rating: 4.5, lastVerifiedAt: daysAgo(0) }),
     place(3, '반려견 산책 공원', { category: 'ATTRACTION', categoryName: '관광지', tags: ['실외', '목줄 필수'], tagCodes: ['OUTDOOR', 'LEASH_REQUIRED'] }),
   ];
   const courses = scenario === 'empty' ? [] : options.courses?.map(cloneCourse) ?? [

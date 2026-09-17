@@ -26,9 +26,15 @@ const number = (value: unknown): number | undefined => typeof value === 'number'
 const string = (value: unknown): string | undefined => typeof value === 'string' ? value : undefined;
 const strings = (value: unknown): string[] => Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : [];
 const positiveId = (id: number) => Number.isSafeInteger(id) && id > 0;
-const CATEGORY_LABELS: Record<string, string> = { RESTAURANT: '식당', CAFE: '카페', ATTRACTION: '관광지', ACCOMMODATION: '동반숙소', HOSPITAL: '동물병원', ACTIVITY: '놀거리/액티비티', GROOMING: '미용실', CARE: '돌봄', SHOPPING: '쇼핑', TRAINING: '훈련소', FACILITY: '편의시설' };
+/** Canonical taxonomy order (same codes/labels as trips/categories.ts); drives saved-screen category chip order. */
+export const CATEGORY_LABELS: Record<string, string> = { RESTAURANT: '식당', CAFE: '카페', ATTRACTION: '관광지', ACCOMMODATION: '동반숙소', HOSPITAL: '동물병원', ACTIVITY: '놀거리/액티비티', GROOMING: '미용실', CARE: '돌봄', SHOPPING: '쇼핑', TRAINING: '훈련소', FACILITY: '편의시설' };
+export const CATEGORY_ORDER = Object.keys(CATEGORY_LABELS);
 const TAG_LABELS: Record<string, string> = { SMALL_DOG: '소형견', MEDIUM_DOG: '중형견', LARGE_DOG: '대형견', INDOOR: '실내', OUTDOOR: '실외', PRIVATE_SPACE: '전용 공간', PET_MENU: '반려견 메뉴', WATER_PROVIDED: '물 제공', POOP_BAG_PROVIDED: '배변봉투 제공', POOP_BAG_REQUIRED: '배변봉투 필수', OFF_LEASH: '오프리쉬 가능', LEASH_REQUIRED: '목줄 필수', CARRIER_REQUIRED: '이동장 필수', NO_DANGEROUS_DOG: '맹견 제한', VACCINATION_RECOMMENDED: '예방접종 권장', PARKING_AVAILABLE: '주차 가능', RESERVATION_AVAILABLE: '예약 가능' };
 
+// TODO(#26): Figma (pY3MkIokNjhdgKw42zxDvN, 468:1725) shows 유저인증 N/평점/N일전 badges per card.
+// Swagger 2026-09-17 confirms /api/v1/places/me/likes returns PlaceMapResponse, which has no
+// verifiedCount/rating/lastVerifiedAt fields (unlike the sibling NearbyPlaceResponse that does).
+// Leaving these unmapped is correct until the endpoint contract adds them; do not invent the fields.
 export const mapSavedPlace = (value: unknown): Place | null => {
   const source = object(value);
   if (!source) return null;
@@ -56,6 +62,9 @@ export const mapSavedPlace = (value: unknown): Place | null => {
   };
 };
 
+// TODO(#26): Figma (pY3MkIokNjhdgKw42zxDvN, 594:3166) shows a pet-avatar pair on the course card.
+// Swagger 2026-09-17 confirms CourseCardResponse (GET /api/v1/courses) has no dog/avatar field, so
+// this cannot be rendered without a contract change; do not invent the field.
 export const mapSavedCourse = (value: unknown): Course | null => {
   const source = object(value);
   if (!source) return null;

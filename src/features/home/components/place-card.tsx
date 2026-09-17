@@ -1,3 +1,4 @@
+import { Image } from 'expo-image';
 import { Pressable, Text, View } from 'react-native';
 import { SymbolView } from 'expo-symbols';
 
@@ -7,6 +8,8 @@ import { getVerifiedDiffDays } from '../utils/place-utils';
 import { PlaceThumbnail } from './place-thumbnail';
 
 import type { Place } from '@/features/places/types';
+
+const starIcon = require('../assets/icons/star.svg');
 
 const getBadgeLabel = (place: Place): string | null => {
   if (place.rank !== undefined) {
@@ -83,7 +86,7 @@ export function PlaceCard({
           ) : null}
         </View>
         <View style={styles.placeScore}>
-          <SymbolView name={{ android: 'star', ios: 'star.fill', web: 'star' }} size={11} tintColor={colors.textTertiary} />
+          <Image contentFit="contain" source={starIcon} style={{ height: 8, width: 8 }} />
           <Text style={styles.scoreText}>{place.rating?.toFixed(1) ?? '-'}</Text>
         </View>
       </View>

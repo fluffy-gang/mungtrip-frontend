@@ -11,10 +11,6 @@ import { errorMessage } from './validation';
 import type { Place } from '../types';
 import type { NearbyResult, PlaceSource } from './types';
 
-/** Figma shows a small static pinned map under the contact info, not an interactive one; reuses
- * the shared home map canvas with a single marker but blocks touch so a page-scroll gesture that
- * starts over the preview can't pan the map away from its own pin (and so the fixed pin can't
- * drift out of view at all -- this is a preview, not a full map). */
 export function PlaceMapPreview({ place }: { place: Place }) {
   if (!Number.isFinite(place.latitude) || !Number.isFinite(place.longitude)) return null;
   const latitude = place.latitude as number;
@@ -40,7 +36,8 @@ export function PlaceInformation({ place, onError }: { place: Place; onError(mes
     } catch (cause) { onError(errorMessage(cause)); }
   };
   return <>
-    <View style={[s.section, s.wrap]}>{place.tags.map(tag => <View style={s.chip} key={tag}><Text style={s.body}>{tag}</Text></View>)}
+    <View style={s.section}>
+      <View style={s.wrap}>{place.tags.map(tag => <View style={s.chip} key={tag}><Text style={s.body}>{tag}</Text></View>)}</View>
       {place.petRestrictions && <Text style={s.body}>{place.petRestrictions}</Text>}
     </View>
     <View style={s.section}>
@@ -59,7 +56,7 @@ export function PlaceInformation({ place, onError }: { place: Place; onError(mes
         <PlaceIcon name="official" size={24} /><Text style={s.label}>반려견 공식 인증 장소</Text>
       </View>}
     </View>
-    {place.description && <View style={s.section}><Text style={s.heading}>장소 소개</Text><Text style={s.body}>{place.description}</Text></View>}
+    {place.description && <View style={s.section}><Text style={s.heading}>사장님 공지</Text><Text style={s.body}>{place.description}</Text></View>}
   </>;
 }
 export function PlaceFootnotes({ source }: { source: PlaceSource }) {

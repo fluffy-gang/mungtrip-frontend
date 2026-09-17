@@ -11,7 +11,7 @@ import { usePlaceData } from './environment';
 import { DetailHeader, DetailHero } from './hero';
 import { MOCK_HERO, PlaceIcon } from './media';
 import { NearbyPlaces, PlaceFootnotes, PlaceInformation } from './sections';
-import { placeStyles as s } from './styles';
+import { colors, placeStyles as s } from './styles';
 import { usePlaceActions } from './use-actions';
 import { displayImageUri } from './validation';
 
@@ -63,16 +63,30 @@ export function PlaceDetailView({ placeId, provider, scenario, integration, onBa
             <Pressable accessibilityRole="button" onPress={() => provider.resetForSession()} style={s.tap}><Text style={s.link}>초기화</Text></Pressable>
           </View>}
           <View style={s.section}>
-            {place.recentVisitedCount !== undefined && <Text style={s.link}>최근 7일 {place.recentVisitedCount}명이 방문인증했어요</Text>}
+            {place.recentVisitedCount !== undefined && <View style={s.row}>
+              <PlaceIcon name="users" size={18} />
+              <Text style={[s.body, { color: colors.textSecondary }]}><Text style={s.link}>최근 7일 </Text>{place.recentVisitedCount}명이 방문인증했어요</Text>
+            </View>}
             <View style={s.between}><Text style={[s.title, s.grow]}>{place.name}</Text>
               <Pressable accessibilityRole="button" accessibilityLabel="내 여행에 추가" disabled={!actions.canTrip || actions.busy}
                 style={[s.tap, s.chip, s.row, { opacity: actions.canTrip ? 1 : 0.4 }]} onPress={() => void actions.trip()}>
                 <PlaceIcon name="plus" size={16} /><Text style={s.label}>내 여행</Text></Pressable></View>
             <Text style={s.muted}>{place.categoryName}</Text>
-            <View style={s.wrap}>
-              {place.rating !== undefined && <View style={s.row}><PlaceIcon name="star" size={20} /><Text style={s.label}>{place.rating.toFixed(2)}</Text></View>}
-              {place.isOfficial && <View style={s.row}><PlaceIcon name="official" size={20} /><Text style={s.body}>공식 인증</Text></View>}
-              {place.verifiedCount !== undefined && <View style={s.row}><PlaceIcon name="users" size={20} /><Text style={s.body}>{place.verifiedCount}명 방문인증</Text></View>}
+            <View style={s.statRow}>
+              {place.rating !== undefined && <View style={s.statColumn}>
+                <Text style={s.heading}>{place.rating.toFixed(2)}</Text>
+                <View style={s.row}>{Array.from({ length: 5 }, (_, i) => (
+                  <PlaceIcon key={i} name="star" size={14} />
+                ))}</View>
+              </View>}
+              {place.isOfficial && <View style={s.statColumn}>
+                <PlaceIcon name="official" size={20} />
+                <Text style={[s.small, s.statLabel]}>사장님{`\n`}공식 인증</Text>
+              </View>}
+              {place.verifiedCount !== undefined && <View style={s.statColumn}>
+                <Text style={s.heading}>{place.verifiedCount}명</Text>
+                <Text style={s.small}>방문 인증</Text>
+              </View>}
             </View>
           </View>
           <PlaceInformation place={place} onError={actions.setMessage} />

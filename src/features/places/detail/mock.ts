@@ -57,7 +57,10 @@ export function createMockPlaceAdapter(options: MockPlaceOptions = {}): PlaceAda
     const items: ReviewItem[] = scenario === 'empty' ? [] : [{ type: 'REVIEW', reviewId: 1, rating: 5,
       content: scenario === 'long-content' ? '반려견과 편안하게 다녀왔어요. '.repeat(40) : '반려견과 편안하게 다녀왔어요. 직원분들도 친절했어요.',
       imageUrls: scenario === 'missing-image' ? [] : Array(4).fill('mock-photo:review'), userNickname: '보리와 여행', reviewerVisitCount: 5, occurredAt: TODAY,
-      dog: { name: '보리', breed: '골든리트리버', weight: 16 } }];
+      dog: { name: '보리', breed: '골든리트리버', weight: 16 } },
+      { type: 'REJECTED', reviewId: 2, imageUrls: [], userNickname: '제주멍멍이', reviewerVisitCount: 5,
+        rejectReason: 'NO_ENTRY_FOR_DOGS', rejectDetail: '정보 보고 찾아갔는데 대형견이라서 방문이 불가하다네요.',
+        occurredAt: '2026-07-12', dog: { breed: '골든리트리버', weight: 16 } }];
     if (own) items.unshift({ type: 'REVIEW', ...own, userNickname: '나', reviewerVisitCount: 1, occurredAt: TODAY });
     if (visit?.outcome === 'REJECTED') items.unshift({ type: 'REJECTED', imageUrls: [], userNickname: '나',
       rejectReason: visit.rejectReason, rejectDetail: visit.rejectDetail, occurredAt: TODAY });

@@ -3,18 +3,18 @@ import { colors, text, radius, spacing } from './style-primitives';
 export const cardsStyles = {
   placeCardRoot: {
     marginRight: spacing[10],
-    width: 142,
+    width: 148,
   },
   placeCardImageFrame: {
-    height: 104,
+    height: 132,
     position: 'relative',
-    width: 142,
+    width: 148,
   },
   placeCardImage: {
     backgroundColor: colors.surfaceMuted,
-    borderRadius: radius[8],
-    height: 104,
-    width: 142,
+    borderRadius: radius[12],
+    height: 132,
+    width: 148,
   },
   placeCardBadge: {
     alignItems: 'center',

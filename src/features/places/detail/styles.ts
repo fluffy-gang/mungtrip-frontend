@@ -32,4 +32,7 @@ export const placeStyles = StyleSheet.create({
   statLabel: { textAlign: 'center' },
   reviewRatingValue: { ...font, fontSize: 32, fontWeight: '700' },
   reviewCaption: { ...font, fontSize: 12, fontWeight: '500', lineHeight: 16, letterSpacing: -0.36, color: colors.textDisabled, textAlign: 'center' },
+  reviewListTitle: { ...font, fontSize: 16, lineHeight: 24, fontWeight: '700' },
+  reviewListLink: { ...font, fontSize: 14, lineHeight: 20, fontWeight: '600', color: colors.textPlaceholder },
+  mutedCenter: { ...font, fontSize: 14, lineHeight: 20, color: colors.textTertiary, textAlign: 'center' },
 });

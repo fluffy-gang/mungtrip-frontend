@@ -5,11 +5,11 @@ import { Button } from '@/components/ui/button';
 import { MapCanvas } from '@/features/home/components/map-canvas';
 import { PlaceCard } from '@/features/home/components/place-card';
 import { PlaceIcon } from './media';
-import { placeStyles as s } from './styles';
+import { colors, placeStyles as s } from './styles';
 import { errorMessage } from './validation';
 
 import type { Place } from '../types';
-import type { NearbyResult, PlaceSource } from './types';
+import type { NearbyResult, PlaceSource, ReviewFeed } from './types';
 
 export function PlaceMapPreview({ place }: { place: Place }) {
   if (!Number.isFinite(place.latitude) || !Number.isFinite(place.longitude)) return null;
@@ -36,10 +36,10 @@ export function PlaceInformation({ place, onError }: { place: Place; onError(mes
     } catch (cause) { onError(errorMessage(cause)); }
   };
   return <>
-    <View style={s.section}>
+    {(place.tags.length > 0 || place.petRestrictions) && <View style={s.section}>
       <View style={s.wrap}>{place.tags.map(tag => <View style={s.chip} key={tag}><Text style={s.body}>{tag}</Text></View>)}</View>
       {place.petRestrictions && <Text style={s.body}>{place.petRestrictions}</Text>}
-    </View>
+    </View>}
     <View style={s.section}>
       <View style={s.row}><PlaceIcon name="pin" size={20} /><Text style={[s.body, s.grow]}>{[place.address, place.detailAddress].filter(Boolean).join(' ')}</Text></View>
       <View style={s.row}><PlaceIcon name="clock" size={20} /><View style={s.grow}>
@@ -52,12 +52,18 @@ export function PlaceInformation({ place, onError }: { place: Place; onError(mes
       </Pressable>}
       {place.homepageUrl && <Pressable accessibilityRole="link" onPress={() => void open(place.homepageUrl ?? '')}><Text style={s.link}>홈페이지 열기</Text></Pressable>}
       <PlaceMapPreview place={place} />
-      {place.isOfficial && <View style={[s.hint, { minHeight: 100, alignItems: 'center', justifyContent: 'center', gap: 8 }]}>
-        <PlaceIcon name="official" size={24} /><Text style={s.label}>반려견 공식 인증 장소</Text>
-      </View>}
     </View>
     {place.description && <View style={s.section}><Text style={s.heading}>사장님 공지</Text><Text style={s.body}>{place.description}</Text></View>}
   </>;
+}
+export function ReviewRatingSummary({ feed }: { feed: ReviewFeed }) {
+  return <View style={{ alignItems: 'center', gap: 12 }}>
+    <View style={{ alignItems: 'center', gap: 4 }}>
+      <View style={s.row}><PlaceIcon name="star" size={32} /><Text style={s.reviewRatingValue}>{(feed.averageRating ?? 0).toFixed(2)}</Text></View>
+      <View style={s.row}><PlaceIcon name="users" size={20} /><Text style={s.label}><Text style={{ color: colors.primary }}>{feed.visitedCount ?? 0}명</Text> 방문인증</Text></View>
+    </View>
+    <Text style={s.reviewCaption}>반려견과 함께 정상적으로{`\n`}매장 방문을 인증한 사용자들의 후기예요.</Text>
+  </View>;
 }
 export function PlaceFootnotes({ source }: { source: PlaceSource }) {
   return <View style={{ gap: 24, paddingVertical: 24 }}>

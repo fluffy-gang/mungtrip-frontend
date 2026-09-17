@@ -10,7 +10,7 @@ import { PlaceVisitFlowSheet } from '../visits';
 import { usePlaceData } from './environment';
 import { DetailHeader, DetailHero } from './hero';
 import { MOCK_HERO, PlaceIcon } from './media';
-import { NearbyPlaces, PlaceFootnotes, PlaceInformation } from './sections';
+import { NearbyPlaces, PlaceFootnotes, PlaceInformation, ReviewRatingSummary } from './sections';
 import { colors, placeStyles as s } from './styles';
 import { usePlaceActions } from './use-actions';
 import { displayImageUri } from './validation';
@@ -51,7 +51,7 @@ export function PlaceDetailView({ placeId, provider, scenario, integration, onBa
   return <View style={s.root}>
     {!place ? <View style={[s.center, { paddingTop: insets.top + 48 }]}>
       {data.detail.error ? <><Text accessibilityRole="alert" style={s.error}>{data.detail.error}</Text>
-        <Button disabled={data.detail.loading} onPress={() => void provider.loadDetail(placeId)}>다시 시도</Button></>
+        <Button size="m" disabled={data.detail.loading} onPress={() => void provider.loadDetail(placeId)}>다시 시도</Button></>
         : <ActivityIndicator accessibilityLabel="장소 불러오는 중" />}
     </View> : <>
       <ScrollView onScroll={event => setSolid(event.nativeEvent.contentOffset.y > 240)} scrollEventThrottle={32}
@@ -91,24 +91,24 @@ export function PlaceDetailView({ placeId, provider, scenario, integration, onBa
           </View>
           <PlaceInformation place={place} onError={actions.setMessage} />
           <View style={s.section}>
-            <View style={s.between}><Text style={s.heading}>방문 후기</Text><Pressable accessibilityRole="button" onPress={onReviews} style={s.tap}><Text style={s.link}>전체 보기</Text></Pressable></View>
-            {feed && <View style={{ alignItems: 'center', gap: 12 }}>
-              <View style={{ alignItems: 'center', gap: 4 }}>
-                <View style={s.row}><PlaceIcon name="star" size={32} /><Text style={s.reviewRatingValue}>{(feed.averageRating ?? 0).toFixed(2)}</Text></View>
-                <View style={s.row}><PlaceIcon name="users" size={20} /><Text style={s.label}><Text style={{ color: colors.primary }}>{feed.visitedCount ?? 0}명</Text> 방문인증</Text></View>
-              </View>
-              <Text style={s.reviewCaption}>반려견과 함께 정상적으로{`\n`}매장 방문을 인증한 사용자들의 후기예요.</Text>
-            </View>}
+            {feed && <ReviewRatingSummary feed={feed} />}
             {data.reviews.loading && <ActivityIndicator accessibilityLabel="후기 불러오는 중" />}
-            {data.reviews.error && <><Text style={s.error}>{data.reviews.error}</Text><Button type="sub" disabled={data.reviews.loading} onPress={() => void provider.loadReviews(placeId)}>후기 다시 불러오기</Button></>}
-            {feed && !feed.items.length && <Text style={s.muted}>아직 후기가 없어요. 첫 방문 후기를 남겨 주세요.</Text>}
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 16 }}>
-              {feed?.items.slice(0, 3).map((item, index) => <View key={`${item.type}:${item.reviewId ?? index}`} style={{ width: 240 }}><ReviewCard item={item} source={provider.source} compact /></View>)}
-            </ScrollView>
-            <Button type="sub" onPress={() => setVisitOpen(true)}>방문 체크하고 후기 남기기</Button>
+            {data.reviews.error && <><Text style={s.error}>{data.reviews.error}</Text><Button type="sub" size="m" disabled={data.reviews.loading} onPress={() => void provider.loadReviews(placeId)}>후기 다시 불러오기</Button></>}
+            {feed && !feed.items.length && <Text style={s.mutedCenter}>아직 후기가 없어요. 첫 방문 후기를 남겨 주세요.</Text>}
+            {feed && feed.items.length > 0 && <>
+              <View style={s.between}><Text style={s.reviewListTitle}>후기</Text>
+                <Pressable accessibilityRole="button" onPress={onReviews} style={[s.tap, s.row]}>
+                  <Text style={s.reviewListLink}>전체 후기</Text><PlaceIcon name="chevron" size={12} />
+                </Pressable>
+              </View>
+              <View style={{ flexDirection: 'row', gap: 16 }}>
+                {feed.items.slice(0, 2).map((item, index) => <View key={`${item.type}:${item.reviewId ?? index}`} style={{ flex: 1 }}><ReviewCard item={item} source={provider.source} compact /></View>)}
+              </View>
+            </>}
+            <Button type="sub" size="m" onPress={() => setVisitOpen(true)}>후기 작성</Button>
           </View>
           {data.nearby.loading && <ActivityIndicator accessibilityLabel="주변 장소 불러오는 중" />}
-          {data.nearby.error && <View style={s.section}><Text style={s.error}>{data.nearby.error}</Text><Button type="sub" onPress={() => void provider.loadNearby(placeId)}>주변 장소 다시 불러오기</Button></View>}
+          {data.nearby.error && <View style={s.section}><Text style={s.error}>{data.nearby.error}</Text><Button type="sub" size="m" onPress={() => void provider.loadNearby(placeId)}>주변 장소 다시 불러오기</Button></View>}
           {data.nearby.data && <NearbyPlaces result={data.nearby.data} onPlace={onPlace} onExpand={() => void provider.loadNearby(placeId, data.nearby.data?.expandedRadiusMeters ?? 5000)} />}
           <PlaceFootnotes source={provider.source} />
         </View>

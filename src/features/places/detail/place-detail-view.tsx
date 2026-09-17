@@ -63,10 +63,11 @@ export function PlaceDetailView({ placeId, provider, scenario, integration, onBa
             <Pressable accessibilityRole="button" onPress={() => provider.resetForSession()} style={s.tap}><Text style={s.link}>초기화</Text></Pressable>
           </View>}
           <View style={s.section}>
-            {place.recentVisitedCount !== undefined && <Text style={s.link}>최근 {place.recentVisitedCount}명이 방문했어요</Text>}
+            {place.recentVisitedCount !== undefined && <Text style={s.link}>최근 7일 {place.recentVisitedCount}명이 방문인증했어요</Text>}
             <View style={s.between}><Text style={[s.title, s.grow]}>{place.name}</Text>
               <Pressable accessibilityRole="button" accessibilityLabel="내 여행에 추가" disabled={!actions.canTrip || actions.busy}
-                style={[s.tap, { opacity: actions.canTrip ? 1 : 0.4 }]} onPress={() => void actions.trip()}><PlaceIcon name="plus" /></Pressable></View>
+                style={[s.tap, s.chip, s.row, { opacity: actions.canTrip ? 1 : 0.4 }]} onPress={() => void actions.trip()}>
+                <PlaceIcon name="plus" size={16} /><Text style={s.label}>내 여행</Text></Pressable></View>
             <Text style={s.muted}>{place.categoryName}</Text>
             <View style={s.wrap}>
               {place.rating !== undefined && <View style={s.row}><PlaceIcon name="star" size={20} /><Text style={s.label}>{place.rating.toFixed(2)}</Text></View>}

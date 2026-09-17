@@ -234,11 +234,11 @@ export function useHomeScreen(initialMode: HomeMode = 'map') {
     (place: Place) => {
       // 상세로 바로 이동해 미리보기 카드가 한 프레임 노출되는 깜빡임을 막는다.
       router.push({
-        params: { id: String(place.id), source: app.source },
+        params: { id: String(place.id) },
         pathname: '/places/[id]',
       });
     },
-    [router, app.source],
+    [router],
   );
   const previewPlace = useCallback(
     (place: Place) => {

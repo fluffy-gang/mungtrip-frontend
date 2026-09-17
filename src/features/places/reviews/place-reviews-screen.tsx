@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button } from '@/components/ui/button';
 
-import { parseScenario, usePlaceData, usePlaceEnvironment } from '../detail/environment';
+import { usePlaceData, usePlaceEnvironment } from '../detail/environment';
 import { PlaceIcon } from '../detail/media';
 import { placeStyles as s } from '../detail/styles';
 import { parsePlaceId } from '../detail/validation';
@@ -39,11 +39,11 @@ export function PlaceReviewsView({ placeId, provider, onBack }: { placeId: numbe
   </View>;
 }
 export function PlaceReviewsScreen() {
-  const params = useLocalSearchParams<{ id: string; source?: string; scenario?: string }>();
+  const params = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const id = parsePlaceId(params.id);
-  const source = params.source === 'mock' ? 'mock' : 'real';
-  const { provider } = usePlaceEnvironment(source, parseScenario(params.scenario));
+  const source = 'real' as const;
+  const { provider } = usePlaceEnvironment(source, 'populated');
   const back = () => router.canGoBack() ? router.back() : router.replace('/');
   if (!id || provider.source !== source) return <View style={s.center}><Text style={s.body}>장소 정보가 올바르지 않아요.</Text><Button onPress={back}>돌아가기</Button></View>;
   return <PlaceReviewsView key={`${id}:${source}`} placeId={id} provider={provider} onBack={back} />;

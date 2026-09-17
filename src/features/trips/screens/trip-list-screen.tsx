@@ -1,12 +1,15 @@
+import { Image } from 'expo-image';
+import { StatusBar } from 'expo-status-bar';
 import { useEffect, useRef, useState } from 'react';
 import { Modal, Pressable, RefreshControl, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
+import { Toast } from '@/components/ui/toast';
 
 import { TripFlowSheet } from '../components/trip-flow-sheet';
-import { tripColors, Card, Center, Column, Content, ErrorNotice, Heading, Muted, Page, Row, Scrim, Sheet, SmallTitle, Spread, Thumbnail } from '../components/ui';
+import { tripColors, Card, Center, Column, Content, ErrorNotice, Heading, Muted, Page, Row, Scrim, Sheet, Spread, Thumbnail } from '../components/ui';
 import { useTripEnvironment, useTripSnapshot } from '../context';
 import { errorMessage } from '../provider';
 
@@ -44,62 +47,43 @@ export function TripListScreen({ onOpenTrip }: TripListScreenProps) {
       setBusy(false);
     }
   };
-  const card = (trip: TripSummary) => <Card key={trip.tripId} style={{ shadowColor: tripColors.inverse, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.08, shadowRadius: 12, elevation: 2 }}>
-
-    <Spread>
-      <Pressable accessibilityRole="button" onPress={() => onOpenTrip(trip.tripId)} style={{ flex: 1 }}>
-        <SmallTitle>{trip.title}</SmallTitle>
+  const card = (trip: TripSummary) => <Card key={trip.tripId} style={{ borderWidth: 0, boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.08)' }}>
+    <Spread style={{ alignItems: 'flex-start', gap: 16 }}>
+      <Pressable accessibilityRole="button" accessibilityLabel={`${trip.title} 상세`} onPress={() => onOpenTrip(trip.tripId)} style={{ flex: 1, gap: 8 }}>
+        <Text fontSize={16} lineHeight={24} fontWeight="bold" color="textSecondary">{trip.title}</Text>
+        <Text color="textTertiary" fontSize={14} lineHeight={20}>{trip.startDate.replaceAll('-', '.')} – {(trip.endDate.slice(0, 4) === trip.startDate.slice(0, 4) ? trip.endDate.slice(5) : trip.endDate).replaceAll('-', '.')}</Text>
       </Pressable>
       <Pressable accessibilityRole="button" accessibilityLabel={`${trip.title} 삭제`} onPress={() => { setDeleting(trip); setError(''); }} hitSlop={12}>
-        <Text color="textDisabled" fontSize={18}>×</Text>
+        <Image source={require('../assets/list-close.svg')} style={{ width: 18, height: 18 }} contentFit="contain" />
       </Pressable>
     </Spread>
-
-    <Pressable accessibilityRole="button" accessibilityLabel={`${trip.title} 상세`} onPress={() => onOpenTrip(trip.tripId)} style={{ gap: 16 }}>
-
-      <Text color="textTertiary" fontSize={14}>
-        {trip.startDate.replaceAll('-', '.')} ~
-        {trip.endDate.slice(5).replace('-', '.')}
-      </Text>
-
+    <Pressable accessibilityRole="button" accessibilityLabel={`${trip.title} 장소 보기`} onPress={() => onOpenTrip(trip.tripId)} style={{ gap: 16 }}>
       <Row>
-        {trip.thumbnailUrls.slice(0, 4).map((uri, index) => <Thumbnail key={`${uri}-${index}`} uri={uri} size={48} />)}
-        {trip.totalPlaceCount > 4 ? <View style={{ width: 48, height: 48, borderRadius: 4, backgroundColor: tripColors.surfaceSubtle, justifyContent: 'center', alignItems: 'center' }}>
-          <Muted>+{trip.totalPlaceCount - 4}</Muted>
-        </View> : null}
+        {trip.thumbnailUrls.slice(0, 4).map((uri, index) => <Thumbnail key={`${uri}-${index}`} uri={uri} size={48} radius={4} />)}
+        {trip.totalPlaceCount > 4 ? <View style={{ width: 48, height: 48, borderRadius: 4, backgroundColor: tripColors.surfaceSubtle, justifyContent: 'center', alignItems: 'center' }}><Text fontSize={12} lineHeight={16} fontWeight="semibold" color="textTertiary">+{trip.totalPlaceCount - 4}</Text></View> : null}
         {!trip.thumbnailUrls.length ? <Muted>{trip.totalPlaceCount ? '등록된 장소의 이미지가 없어요' : '장소를 추가해 일정을 완성해 보세요'}</Muted> : null}
       </Row>
-
-      <Column>
-        <Spread>
-          <Text fontSize={12}>{trip.totalPlaceCount}개 장소</Text>
-          <Muted>{trip.visitedPlaceCount}/{trip.totalPlaceCount} 방문완료</Muted>
-        </Spread>
-        <View style={{ height: 4, backgroundColor: tripColors.surfaceSubtle }}>
-          <View style={{ height: 4, width: `${trip.totalPlaceCount ? trip.visitedPlaceCount / trip.totalPlaceCount * 100 : 0}%`, backgroundColor: tripColors.primary }} />
-        </View>
+      <Column style={{ gap: 8 }}>
+        <Spread><Text fontSize={12} lineHeight={16} color="textSecondary">{trip.totalPlaceCount}개 장소</Text><Text fontSize={12} lineHeight={16} color="textTertiary">{trip.visitedPlaceCount}/{trip.totalPlaceCount} 방문완료</Text></Spread>
+        <View style={{ height: 4, borderRadius: 2, overflow: 'hidden', backgroundColor: tripColors.surfaceSubtle }}><View style={{ height: 4, width: `${trip.totalPlaceCount ? trip.visitedPlaceCount / trip.totalPlaceCount * 100 : 0}%`, backgroundColor: tripColors.primary }} /></View>
       </Column>
-
     </Pressable>
-
   </Card>;
   return <Page style={{ paddingTop: insets.top }}>
-    <Spread style={{ paddingHorizontal: 20, minHeight: 64 }}>
-      <Heading>여행</Heading>
-      <Button type="ghost" size="m" onPress={() => setCreating(true)}>새 코스 추가</Button>
+    <StatusBar style="dark" />
+    <Spread style={{ paddingHorizontal: 20, paddingTop: 20, paddingBottom: 16 }}>
+      <Text fontSize={24} lineHeight={32} fontWeight="bold">여행</Text>
+      <Pressable accessibilityRole="button" onPress={() => setCreating(true)} hitSlop={12}><Text fontSize={16} lineHeight={24}>새 코스 추가</Text></Pressable>
     </Spread>
 
     <ScrollView refreshControl={<RefreshControl refreshing={snapshot.status === 'loading'} onRefresh={() => { void provider.refresh().catch(() => undefined); }} />} contentContainerStyle={{ flexGrow: 1, paddingBottom: insets.bottom + 20 }}>
 
       <Content>
         <ErrorNotice message={snapshot.error} onRetry={() => { void provider.refresh().catch(() => undefined); }} />
-        {notice ? <Pressable onPress={() => setNotice('')} accessibilityRole="button">
-          <Text color="primary" accessibilityLiveRegion="polite">{notice}</Text>
-        </Pressable> : null}
 
-        {snapshot.upcomingTrips.length ? <Column><Muted>예정된 여행</Muted>{snapshot.upcomingTrips.map(card)}</Column> : null}
+        {snapshot.upcomingTrips.length ? <Column style={{ gap: 12 }}><Text fontSize={14} lineHeight={20} fontWeight="semibold" color="textTertiary">예정된 여행</Text>{snapshot.upcomingTrips.map(card)}</Column> : null}
 
-        {snapshot.pastTrips.length ? <Column style={{ marginTop: 24 }}><Muted>다녀온 여행</Muted>{snapshot.pastTrips.map(card)}</Column> : null}
+        {snapshot.pastTrips.length ? <Column style={{ marginTop: 32, gap: 12 }}><Text fontSize={14} lineHeight={20} fontWeight="semibold" color="textTertiary">다녀온 여행</Text>{snapshot.pastTrips.map(card)}</Column> : null}
 
       </Content>
 
@@ -137,6 +121,8 @@ export function TripListScreen({ onOpenTrip }: TripListScreenProps) {
         </Sheet>
       </Scrim>
     </Modal>
+
+    <Toast message={notice} onDismiss={() => setNotice('')} />
 
   </Page>;
 }

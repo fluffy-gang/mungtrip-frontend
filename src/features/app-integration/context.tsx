@@ -1,4 +1,4 @@
-import { useGlobalSearchParams, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import { Alert } from 'react-native';
 
@@ -28,11 +28,8 @@ export function useFeatureIntegration() {
   if (!value) throw new Error('FeatureIntegrationProvider가 필요합니다.');
   return value;
 }
-/** Route source changes remount consumers and cancel old sheets without mixing API and fixtures. */
 export function FeatureIntegrationProvider({ children }: { children: ReactNode }) {
-  const params = useGlobalSearchParams<{ source?: string }>();
-  const source = params.source === 'mock' ? 'mock' : 'real';
-  return <FeatureSession key={source} providers={getFeatureProviders(source)}>{children}</FeatureSession>;
+  return <FeatureSession providers={getFeatureProviders('real')}>{children}</FeatureSession>;
 }
 function FeatureSession({ providers, children }: { providers: FeatureProviders; children: ReactNode }) {
   const { source, saved, trips, places } = providers;
@@ -52,8 +49,8 @@ function FeatureSession({ providers, children }: { providers: FeatureProviders; 
     return () => { unsubscribe(); tripRequest.cancel(); visitRequest.cancel(); };
   }, [saved, tripRequest, visitRequest]);
   const openPlace = useCallback((placeId: number) => {
-    router.push({ pathname: '/places/[id]', params: { id: String(placeId), source } });
-  }, [router, source]);
+    router.push({ pathname: '/places/[id]', params: { id: String(placeId) } });
+  }, [router]);
   const openTrip = useCallback(async (input: TripFlowInput) => {
     if (input.source !== source || visitRequest.getSnapshot()) return 'cancelled' as const;
     const result = await tripRequest.open(input);
@@ -65,8 +62,8 @@ function FeatureSession({ providers, children }: { providers: FeatureProviders; 
   }, [source, tripRequest, visitRequest]);
   const showSavedMap = useCallback((items: Place[]) => {
     setMapPlaces(items);
-    router.push({ pathname: '/saved/map', params: { source } });
-  }, [router, source]);
+    router.push('/saved/map');
+  }, [router]);
   const value = useMemo(() => ({ ...providers, openTrip, openPlace, showSavedMap, mapPlaces }), [providers, openTrip, openPlace, showSavedMap, mapPlaces]);
   const placeIntegration = useMemo(() => ({
     provider: places, saved, onAddToTrip: openTrip,

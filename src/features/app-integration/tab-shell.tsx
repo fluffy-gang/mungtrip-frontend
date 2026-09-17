@@ -5,19 +5,17 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { HomeBottomTabs } from '@/features/home/components/home-bottom-tabs';
 import { BOTTOM_TAB_HEIGHT } from '@/features/home/constants';
 import { showComingSoon } from '@/shared/utils/show-coming-soon';
-import { useFeatureIntegration } from './context';
 
 import type { ReactNode } from 'react';
 import type { HomeBottomTab } from '@/features/home/components/home-bottom-tabs';
 
 export function useTabNavigation() {
   const router = useRouter();
-  const { source } = useFeatureIntegration();
   return (tab: HomeBottomTab) => {
     if (tab === 'my') { showComingSoon(); return; }
-    if (tab === 'trip') router.replace({ pathname: '/trips', params: { source } });
-    else if (tab === 'favorite') router.replace({ pathname: '/saved', params: { source } });
-    else router.replace({ pathname: '/', params: { source, view: tab === 'search' ? 'search' : 'home' } });
+    if (tab === 'trip') router.replace('/trips');
+    else if (tab === 'favorite') router.replace('/saved');
+    else router.replace({ pathname: '/', params: { view: tab === 'search' ? 'search' : 'home' } });
   };
 }
 /** Home owns its overlay footer; list routes reserve footer space instead of covering their actions. */

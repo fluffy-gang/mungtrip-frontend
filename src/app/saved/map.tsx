@@ -25,7 +25,7 @@ export default function SavedMapRoute() {
   return <View style={{ flex: 1, backgroundColor: '#FFFFFF', paddingTop: insets.top }}>
     <View style={{ minHeight: 56, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, gap: 20 }}>
       <Pressable accessibilityRole="button" accessibilityLabel="뒤로" hitSlop={12}
-        onPress={() => router.canGoBack() ? router.back() : router.replace({ pathname: '/saved', params: { source: app.source } })}>
+        onPress={() => router.canGoBack() ? router.back() : router.replace('/saved')}>
         <Text style={{ fontSize: 24 }}>‹</Text>
       </Pressable>
       <Text style={{ fontSize: 18, fontWeight: '700' }}>저장한 장소 {app.mapPlaces.length}곳</Text>

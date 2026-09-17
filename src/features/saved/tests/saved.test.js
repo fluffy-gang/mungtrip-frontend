@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 
 import { createSavedProvider } from '../provider.ts';
 import { createSavedController } from '../controller.ts';
-import { createRealSavedAdapter, mapSavedPlace, mapSavedCourse } from '../api.ts';
+import { createRealSavedAdapter, mapSavedPlace, mapSavedCourse, CATEGORY_ORDER } from '../api.ts';
+import { orderCategories, userVerifiedLabel } from '../logic.ts';
 import { createMockSavedAdapter } from '../mock.ts';
 import { useAuthStore } from '../../auth/authStore.ts';
 
@@ -180,6 +181,20 @@ test('course callback rejection is handled and concurrent sheet actions are lock
   await c.addCourse(p.getSnapshot().courses.items[1], async () => { count++; return 'completed'; }); assert.equal(count, 1);
   d.reject(new Error('sheet')); await first; assert.equal(c.getSnapshot().busy, null); assert.ok(c.getSnapshot().feedback);
   c.setTab('places'); assert.equal(c.getSnapshot().feedback, null);
+});
+
+test('category chips follow taxonomy order regardless of item insertion order', () => {
+  const items = [place(1, { category: 'ATTRACTION' }), place(2, { category: 'RESTAURANT' }), place(3, { category: 'CAFE' })];
+  assert.deepEqual(orderCategories(CATEGORY_ORDER, items), ['RESTAURANT', 'CAFE', 'ATTRACTION']);
+  assert.deepEqual(orderCategories(CATEGORY_ORDER, []), []);
+});
+test('userVerifiedLabel hides without verifiedCount and formats relative day suffix', () => {
+  assert.equal(userVerifiedLabel(place(1, { verifiedCount: 0 })), null);
+  assert.equal(userVerifiedLabel(place(1, { verifiedCount: 24 })), '유저인증 24');
+  const today = new Date().toISOString();
+  assert.equal(userVerifiedLabel(place(1, { verifiedCount: 24, lastVerifiedAt: today })), '유저인증 24 · 오늘');
+  const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString();
+  assert.equal(userVerifiedLabel(place(1, { verifiedCount: 24, lastVerifiedAt: threeDaysAgo })), '유저인증 24 · 3일전');
 });
 
 test('unknown auth identities reset on credential replacement rather than retaining private data', async t => {

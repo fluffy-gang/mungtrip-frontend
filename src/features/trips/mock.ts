@@ -4,9 +4,9 @@ import { parseTrip, positive, uniqueIds, validateCreate, validatePositions } fro
 import type { MockScenario, Trip, TripAdapter, TripPlaceSelection, TripSummary, TripVisitResult } from './types';
 const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value));
 export const MOCK_PLACES: TripPlaceSelection[] = [
-  { id: 101, thumbnailUrl: 'mock://fixture-1', name: '제주 반려견 동반 카페', category: 'CAFE', address: '제주 제주시 애월읍', latitude: 33.462, longitude: 126.31, tags: ['실내 동반'], distanceMeters: 320 },
-  { id: 102, thumbnailUrl: 'mock://fixture-2', name: '애월 해안 산책길', category: 'ATTRACTION', address: '제주 제주시 애월읍', latitude: 33.465, longitude: 126.315, tags: ['야외 동반'], distanceMeters: 650 },
-  { id: 103, thumbnailUrl: 'mock://fixture-3', name: '반려견과 함께하는 식당', category: 'RESTAURANT', address: '제주 제주시 한림읍', latitude: 33.46, longitude: 126.32, tags: ['테라스'], distanceMeters: 980 },
+  { id: 101, thumbnailUrl: 'mock://fixture-1', name: '제주 반려견 동반 카페', category: 'CAFE', address: '제주 제주시 애월읍', latitude: 33.462, longitude: 126.31, tags: ['실내 동반'], distanceMeters: 320, isOfficial: true, averageRating: 4.8, visitCount: 24 },
+  { id: 102, thumbnailUrl: 'mock://fixture-2', name: '애월 해안 산책길', category: 'ATTRACTION', address: '제주 제주시 애월읍', latitude: 33.465, longitude: 126.315, tags: ['야외 동반'], distanceMeters: 650, isOfficial: true, averageRating: 4.6, visitCount: 18 },
+  { id: 103, thumbnailUrl: 'mock://fixture-3', name: '반려견과 함께하는 식당', category: 'RESTAURANT', address: '제주 제주시 한림읍', latitude: 33.46, longitude: 126.32, tags: ['테라스'], distanceMeters: 980, isOfficial: false, averageRating: 4.7, visitCount: 12 },
 ];
 /** Deterministic, isolated fixtures. No mock path can call the real transport. */
 export function createMockAdapter(initial: MockScenario = 'populated', today = '2026-09-17') {

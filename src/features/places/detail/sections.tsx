@@ -1,13 +1,35 @@
-import { Linking, Pressable, Text, View } from 'react-native';
+import { Linking, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { Button } from '@/components/ui/button';
 
-import { PlaceIcon, PlacePhoto } from './media';
-import { colors, placeStyles as s } from './styles';
-import { displayImageUri, errorMessage } from './validation';
+import { MapCanvas } from '@/features/home/components/map-canvas';
+import { PlaceCard } from '@/features/home/components/place-card';
+import { PlaceIcon } from './media';
+import { placeStyles as s } from './styles';
+import { errorMessage } from './validation';
 
 import type { Place } from '../types';
 import type { NearbyResult, PlaceSource } from './types';
+
+/** Figma shows a small static pinned map under the contact info, not an interactive one; reuses
+ * the shared home map canvas with a single marker but blocks touch so a page-scroll gesture that
+ * starts over the preview can't pan the map away from its own pin (and so the fixed pin can't
+ * drift out of view at all -- this is a preview, not a full map). */
+export function PlaceMapPreview({ place }: { place: Place }) {
+  if (!Number.isFinite(place.latitude) || !Number.isFinite(place.longitude)) return null;
+  const latitude = place.latitude as number;
+  const longitude = place.longitude as number;
+  return <View style={{ height: 160, borderRadius: 12, overflow: 'hidden' }} pointerEvents="none">
+    <MapCanvas
+      mapCamera={{ latitude, longitude, zoom: 15 }}
+      onSelectPlace={() => undefined}
+      places={[place]}
+      setMapBounds={() => undefined}
+      setMapCamera={() => undefined}
+      userCoordinate={null}
+    />
+  </View>;
+}
 
 export function PlaceInformation({ place, onError }: { place: Place; onError(message: string): void }) {
   const open = async (url: string, phone = false) => {
@@ -32,6 +54,7 @@ export function PlaceInformation({ place, onError }: { place: Place; onError(mes
         <PlaceIcon name="phone" size={20} /><Text style={s.body}>{place.phoneNumber}</Text>
       </Pressable>}
       {place.homepageUrl && <Pressable accessibilityRole="link" onPress={() => void open(place.homepageUrl ?? '')}><Text style={s.link}>홈페이지 열기</Text></Pressable>}
+      <PlaceMapPreview place={place} />
       {place.isOfficial && <View style={[s.hint, { minHeight: 100, alignItems: 'center', justifyContent: 'center', gap: 8 }]}>
         <PlaceIcon name="official" size={24} /><Text style={s.label}>반려견 공식 인증 장소</Text>
       </View>}
@@ -49,12 +72,11 @@ export function PlaceFootnotes({ source }: { source: PlaceSource }) {
   </View>;
 }
 export function NearbyPlaces({ result, onPlace, onExpand }: { result: NearbyResult; onPlace(id: number): void; onExpand(): void }) {
-  return <View style={s.section}><Text style={s.heading}>주변 장소</Text>
+  return <View style={s.section}><Text style={s.heading}>여기와 비슷한 장소</Text>
     {!result.places.length && <Text style={s.muted}>가까운 장소가 없어요.</Text>}
-    {result.places.map(place => <Pressable key={place.id} style={s.row} onPress={() => onPlace(place.id)} accessibilityRole="button">
-      <PlacePhoto source={place.imageUrl && displayImageUri(place.imageUrl) ? { uri: place.imageUrl } : undefined} style={{ width: 96, height: 80, borderRadius: 8 }} />
-      <View style={[s.grow, { gap: 4 }]}><Text style={s.label}>{place.name}</Text><Text style={s.small} numberOfLines={2}>{place.address}</Text><Text style={[s.small, { color: colors.primary }]}>{place.distanceLabel}</Text></View>
-    </Pressable>)}
+    {result.places.length > 0 && <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12 }}>
+      {result.places.map(place => <PlaceCard key={place.id} onPress={selected => onPlace(selected.id)} place={place} />)}
+    </ScrollView>}
     {!result.places.length && (result.expandedCount ?? 0) > 0 && <Button type="sub" onPress={onExpand}>5km 안의 장소 {result.expandedCount}곳 보기</Button>}
   </View>;
 }

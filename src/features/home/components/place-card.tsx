@@ -48,7 +48,7 @@ export function PlaceCard({
             <Text style={styles.placeCardBadgeText}>{badgeLabel}</Text>
           </View>
         ) : null}
-        <PlaceLikeButton place={place} style={styles.placeCardLikeBadge} size={14} />
+        <PlaceLikeButton place={place} style={styles.placeCardLikeBadge} size={24} />
       </View>
       <View style={styles.placeCardBody}>
         <Text numberOfLines={1} style={styles.placeName}>

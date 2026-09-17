@@ -1,10 +1,19 @@
 import { normalizeVisit, requireId, validateReview } from './validation';
 
 import type { Place } from '../types';
-import type { FixtureScenario, PlaceAdapter, PlaceReview, PlaceVisit, ReviewFeed, ReviewItem } from './types';
+import type { DogChoice, FixtureScenario, PlaceAdapter, PlaceReview, PlaceVisit, ReviewDog, ReviewFeed, ReviewItem } from './types';
 
 export interface MockPlaceOptions { scenario?: FixtureScenario; delayMs?: number; catalog?: Place[] }
 const TODAY = '2026-09-09';
+/** Account-level dog list (matches the same mock account's dogs used by the trips fixture); not place-specific. */
+const MOCK_DOGS: DogChoice[] = [
+  { id: 1, name: '보리', breed: '골든리트리버', weight: 16 },
+  { id: 2, name: '콩이', breed: '포메라니안', weight: 3 },
+];
+const dogFor = (dogId?: number): ReviewDog | undefined => {
+  const dog = MOCK_DOGS.find(item => item.id === dogId);
+  return dog ? { name: dog.name, breed: dog.breed, weight: dog.weight } : undefined;
+};
 /** Stateful fixture store: one visit and review per place, all reads share the same mutations. */
 export function createMockPlaceAdapter(options: MockPlaceOptions = {}): PlaceAdapter {
   const scenario = options.scenario ?? 'populated';
@@ -24,7 +33,7 @@ export function createMockPlaceAdapter(options: MockPlaceOptions = {}): PlaceAda
     if (!place) return {};
     return { name: place.name, category: place.category, categoryName: place.categoryName, address: place.address,
       imageUrl: place.imageUrl, images: place.images, tags: place.tags, tagCodes: place.tagCodes,
-      isOfficial: place.isOfficial, latitude: place.latitude, longitude: place.longitude };
+      isOfficial: place.isOfficial, isLiked: place.isLiked, latitude: place.latitude, longitude: place.longitude };
   };
   const sample = (id: number): Place => ({
     id, name: scenario === 'long-content' ? '반려견과 함께하는 멍멍판교베이커리와 정원 카페' : '멍멍판교베이커리',
@@ -77,7 +86,7 @@ export function createMockPlaceAdapter(options: MockPlaceOptions = {}): PlaceAda
       if (visits.get(id)?.outcome !== 'VISITED') throw new Error('먼저 방문 체크를 완료해 주세요.');
       if (reviews.has(id)) throw new Error('이미 작성한 후기가 있어요. 수정 화면을 다시 열어 주세요.');
       const result: PlaceReview = { ...input, placeId: id, reviewId: nextId++, createdAt: TODAY,
-        dog: input.dogId ? { name: '보리', breed: '골든리트리버', weight: 16 } : undefined };
+        dog: dogFor(input.dogId) };
       reviews.set(id, result); return { ...result };
     },
     updateReview: async (reviewId, input) => {
@@ -90,7 +99,7 @@ export function createMockPlaceAdapter(options: MockPlaceOptions = {}): PlaceAda
       if (scenario === 'upload-failure' && uploadAttempts === 1) throw new Error('사진 업로드에 실패했어요. 다시 시도해 주세요.');
       return `review-image/mock-${nextId++}.jpg`;
     },
-    dogs: async () => [{ id: 1, name: '보리', breed: '골든리트리버', weight: 16 }],
+    dogs: async () => MOCK_DOGS,
     reset: () => { generation += 1; visits = new Map(); reviews = new Map(); nextId = 100; attempts = 0; uploadAttempts = 0; },
   };
 }

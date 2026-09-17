@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Pressable, ScrollView, Text, View, useWindowDimensions } from 'react-native';
 
+import { LikeButton } from '@/components/ui/like-button';
+
 import { PlaceIcon, PlacePhoto } from './media';
 import { colors, placeStyles as s } from './styles';
 
@@ -31,10 +33,8 @@ export function DetailHeader({ title, top, solid, liked, disabled, onBack, onSha
       <Pressable accessibilityRole="button" accessibilityLabel="뒤로 가기" onPress={onBack} style={actionStyle}><PlaceIcon name="back" /></Pressable>
       {solid && <Text style={[s.label, s.grow]} numberOfLines={1}>{title}</Text>}
       <View style={s.row}><Pressable accessibilityRole="button" accessibilityLabel="장소 공유" style={actionStyle} onPress={onShare}><PlaceIcon name="share" /></Pressable>
-        <Pressable accessibilityRole="button" accessibilityLabel={liked ? '저장 해제' : '장소 저장'} accessibilityState={{ selected: liked, disabled }}
-          disabled={disabled} style={[actionStyle, liked && { backgroundColor: colors.accentOrangeMuted }, disabled && { opacity: 0.45 }]} onPress={onLike}>
-          <PlaceIcon name="heart" />
-        </Pressable></View>
+        <LikeButton liked={liked} size={28} variant="outline" disabled={disabled} busy={disabled}
+          style={actionStyle} onPress={onLike} /></View>
     </View>
   </View>;
 }

@@ -67,7 +67,7 @@ export function FadeSequence({ children, delay = 0, style }: FadeSequenceProps) 
   const [translateY] = useState(() => new Animated.Value(8));
 
   useEffect(() => {
-    Animated.parallel([
+    const animation = Animated.parallel([
       Animated.timing(opacity, {
         delay,
         duration: 220,
@@ -80,7 +80,12 @@ export function FadeSequence({ children, delay = 0, style }: FadeSequenceProps) 
         toValue: 0,
         useNativeDriver: true,
       }),
-    ]).start();
+    ]);
+    animation.start();
+    // Stops the native-driven animation before unmount; otherwise a late native
+    // commit can race a Fabric view removal (e.g. on navigation) and crash with
+    // "addViewAt: ... already has a parent".
+    return () => animation.stop();
   }, [delay, opacity, translateY]);
 
   return (
@@ -95,6 +100,11 @@ export function BottomActions({ children }: ChildrenProps) {
 }
 
 export function BottomSheet({ children, onClose, visible }: BottomSheetProps) {
+  // Mounting a native Modal in the same frame as a navigation transition (e.g. router.replace
+  // landing on a screen that renders this closed) can race Fabric's own mount items and crash
+  // with "addViewAt: ... already has a parent". Skipping the mount while closed avoids that.
+  if (!visible) return null;
+
   return (
     <Modal animationType="fade" onRequestClose={onClose} transparent visible={visible}>
       <View style={styles.modalRoot}>

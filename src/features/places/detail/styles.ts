@@ -30,4 +30,6 @@ export const placeStyles = StyleSheet.create({
   statRow: { flexDirection: 'row' },
   statColumn: { flex: 1, alignItems: 'center', gap: 4 },
   statLabel: { textAlign: 'center' },
+  reviewRatingValue: { ...font, fontSize: 32, fontWeight: '700' },
+  reviewCaption: { ...font, fontSize: 12, fontWeight: '500', lineHeight: 16, letterSpacing: -0.36, color: colors.textDisabled, textAlign: 'center' },
 });

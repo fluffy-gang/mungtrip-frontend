@@ -92,7 +92,13 @@ export function PlaceDetailView({ placeId, provider, scenario, integration, onBa
           <PlaceInformation place={place} onError={actions.setMessage} />
           <View style={s.section}>
             <View style={s.between}><Text style={s.heading}>방문 후기</Text><Pressable accessibilityRole="button" onPress={onReviews} style={s.tap}><Text style={s.link}>전체 보기</Text></Pressable></View>
-            {feed && <View style={s.row}><PlaceIcon name="star" size={24} /><Text style={s.heading}>{(feed.averageRating ?? 0).toFixed(2)}</Text><Text style={s.small}>{feed.visitedCount ?? 0}명 방문인증</Text></View>}
+            {feed && <View style={{ alignItems: 'center', gap: 12 }}>
+              <View style={{ alignItems: 'center', gap: 4 }}>
+                <View style={s.row}><PlaceIcon name="star" size={32} /><Text style={s.reviewRatingValue}>{(feed.averageRating ?? 0).toFixed(2)}</Text></View>
+                <View style={s.row}><PlaceIcon name="users" size={20} /><Text style={s.label}><Text style={{ color: colors.primary }}>{feed.visitedCount ?? 0}명</Text> 방문인증</Text></View>
+              </View>
+              <Text style={s.reviewCaption}>반려견과 함께 정상적으로{`\n`}매장 방문을 인증한 사용자들의 후기예요.</Text>
+            </View>}
             {data.reviews.loading && <ActivityIndicator accessibilityLabel="후기 불러오는 중" />}
             {data.reviews.error && <><Text style={s.error}>{data.reviews.error}</Text><Button type="sub" disabled={data.reviews.loading} onPress={() => void provider.loadReviews(placeId)}>후기 다시 불러오기</Button></>}
             {feed && !feed.items.length && <Text style={s.muted}>아직 후기가 없어요. 첫 방문 후기를 남겨 주세요.</Text>}

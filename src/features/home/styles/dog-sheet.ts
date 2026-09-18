@@ -49,6 +49,10 @@ export const dogsheetStyles = {
     height: 72,
     width: 72,
   },
+  dogOptionImagePlaceholder: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   dogOptionBody: {
     flex: 1,
     gap: spacing[6],

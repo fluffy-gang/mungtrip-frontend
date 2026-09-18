@@ -20,16 +20,37 @@ interface BottomTabBarProps {
 }
 
 const TAB_ITEMS = [
-  { icon: { android: 'home', ios: 'house.fill', web: 'home' }, key: 'home', label: '홈' },
-  { icon: { android: 'route', ios: 'map', web: 'route' }, key: 'travel', label: '여행' },
-  { icon: { android: 'search', ios: 'magnifyingglass', web: 'search' }, key: 'search', label: '검색' },
-  { icon: { android: 'favorite', ios: 'heart', web: 'favorite' }, key: 'saved', label: '저장' },
   {
-    icon: { android: 'person', ios: 'person.crop.circle', web: 'person' },
+    activeIcon: { android: 'home', ios: 'house.fill', web: 'home' },
+    icon: { android: 'home', ios: 'house', web: 'home' },
+    key: 'home',
+    label: '홈',
+  },
+  {
+    activeIcon: { android: 'flag', ios: 'flag.fill', web: 'flag' },
+    icon: { android: 'flag', ios: 'flag', web: 'flag' },
+    key: 'travel',
+    label: '여행',
+  },
+  { icon: { android: 'search', ios: 'magnifyingglass', web: 'search' }, key: 'search', label: '검색' },
+  {
+    activeIcon: { android: 'favorite', ios: 'heart.fill', web: 'favorite' },
+    icon: { android: 'favorite_border', ios: 'heart', web: 'favorite_border' },
+    key: 'saved',
+    label: '저장',
+  },
+  {
+    activeIcon: { android: 'person', ios: 'person.fill', web: 'person' },
+    icon: { android: 'person', ios: 'person', web: 'person' },
     key: 'profile',
     label: '프로필',
   },
-] as const satisfies { icon: unknown; key: BottomTabKey; label: string }[];
+] as const satisfies {
+  activeIcon?: unknown;
+  icon: unknown;
+  key: BottomTabKey;
+  label: string;
+}[];
 
 export function BottomTabBar({
   active,
@@ -61,9 +82,9 @@ export function BottomTabBar({
             style={styles.tabButton}
           >
             <SymbolView
-              name={item.icon}
-              size={22}
-              tintColor={isActive ? colors.primary : '#8B95A1'}
+              name={isActive && 'activeIcon' in item ? item.activeIcon : item.icon}
+              size={26}
+              tintColor={isActive ? colors.primary : '#333D4B'}
             />
             <Text style={isActive ? styles.tabLabelActive : styles.tabLabel}>{item.label}</Text>
           </Pressable>
@@ -94,15 +115,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   tabLabel: {
-    color: colors.textTertiary,
+    color: colors.textSecondary,
     fontFamily: tokens.fonts.sansSerif,
-    fontSize: tokens.typography.fontSize[11].fontSize,
+    fontSize: 12,
     fontWeight: tokens.typography.fontWeight.medium,
   },
   tabLabelActive: {
     color: colors.primary,
     fontFamily: tokens.fonts.sansSerif,
-    fontSize: tokens.typography.fontSize[11].fontSize,
+    fontSize: 12,
     fontWeight: tokens.typography.fontWeight.bold,
   },
 });

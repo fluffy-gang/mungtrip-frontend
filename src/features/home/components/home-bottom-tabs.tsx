@@ -46,6 +46,7 @@ interface HomeBottomTabsProps {
   height: number;
   onOpenSearch: () => void;
   onShowHome: () => void;
+  onShowProfile: () => void;
   paddingBottom: number;
   onSelectTab?: (tab: HomeBottomTab) => void;
   selectedTab?: HomeBottomTab;
@@ -55,6 +56,7 @@ export function HomeBottomTabs({
   height,
   onOpenSearch,
   onShowHome,
+  onShowProfile,
   paddingBottom,
   onSelectTab,
   selectedTab = 'home',
@@ -69,7 +71,9 @@ export function HomeBottomTabs({
             ? onShowHome
             : key === 'search'
               ? onOpenSearch
-              : undefined;
+              : key === 'my'
+                ? onShowProfile
+                : undefined;
         const homeIconStyle = isSelected
           ? { height: 18.5909, left: 3, position: 'absolute' as const, top: 2.41, width: 18 }
           : { height: 19.3674, left: 2.63, position: 'absolute' as const, top: 2.0326, width: 18.7412 };

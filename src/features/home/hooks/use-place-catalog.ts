@@ -20,11 +20,13 @@ export function usePlaceCatalog(reloadKey: number) {
     async isMounted => {
       setIsLoaded(false);
 
-      const [nextCategories, nextTags, nextPopularKeywords] = await Promise.all([
+      const [nextCategories, nextTags] = await Promise.all([
         getPlaceCategories(),
         getPlaceTags(),
-        getPopularKeywords(),
       ]);
+      // Popular search terms enrich only the search sheet. A failure there must
+      // not prevent the map and feed from rendering with their core catalog.
+      const nextPopularKeywords = await getPopularKeywords().catch(() => []);
 
       if (isMounted()) {
         setCategories(nextCategories);

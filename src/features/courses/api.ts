@@ -3,12 +3,6 @@ import { ENDPOINTS } from '@/shared/api/endpoints';
 
 import type { Course } from './types';
 
-interface ApiEnvelope<T> {
-  code: string;
-  data: T;
-  message: string;
-}
-
 interface CourseListResponse {
   courses: Course[];
   page: number;
@@ -17,10 +11,10 @@ interface CourseListResponse {
 }
 
 export const getCourses = async (limit = 10): Promise<Course[]> => {
-  const { data } = await apiClient.get<ApiEnvelope<CourseListResponse>>(
+  const { data } = await apiClient.get<CourseListResponse>(
     ENDPOINTS.courses.list,
     { params: { size: limit } },
   );
 
-  return data.data.courses;
+  return data.courses;
 };

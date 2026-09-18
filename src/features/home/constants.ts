@@ -102,3 +102,13 @@ export const JEJU_MAP_CAMERA: MapCamera = {
   longitude: 126.5312,
   zoom: 10,
 };
+
+/** 현재 위치 자동 이동은 서비스 지역인 제주 지도 경계 안에서만 허용한다. */
+export const isWithinJejuMapBounds = (latitude: number, longitude: number) => {
+  return (
+    latitude >= JEJU_MAP_BOUNDS.swLat &&
+    latitude <= JEJU_MAP_BOUNDS.neLat &&
+    longitude >= JEJU_MAP_BOUNDS.swLng &&
+    longitude <= JEJU_MAP_BOUNDS.neLng
+  );
+};

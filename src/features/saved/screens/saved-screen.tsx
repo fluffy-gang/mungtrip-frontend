@@ -2,8 +2,8 @@ import { useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useMemo, useSyncExternalStore } from 'react';
 import { ActivityIndicator, BackHandler, FlatList, Pressable, RefreshControl } from 'react-native';
 import { SymbolView } from 'expo-symbols';
-import { Image } from 'expo-image';
 
+import { LikeButton } from '@/components/ui/like-button';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 
@@ -170,12 +170,9 @@ function PlaceRow({ place, selecting, selected, disabled, onPress, onLike }: {
           )}
         </S.PlaceInfo>
       </S.RowMain>
-      {!selecting && <S.Heart accessibilityRole="button" accessibilityLabel={`${place.name} 찜 해제`} accessibilityState={{ disabled, busy: disabled }} disabled={disabled} onPress={onLike}><HeartIcon /></S.Heart>}
+      {!selecting && <LikeButton liked size={24} accessibilityLabel={`${place.name} 찜 해제`} busy={disabled} onPress={onLike} style={{ width: 36, height: 44 }} />}
     </S.Row>
   );
-}
-function HeartIcon() {
-  return <Image source={require('../assets/heart-saved.svg')} style={{ width: 24, height: 24 }} />;
 }
 function CourseRow({ course, disabled, onPress, onLike, onTrip }: { course: Course; disabled: boolean; onPress: () => void; onLike: () => void; onTrip: () => void }) {
   return (
@@ -186,7 +183,7 @@ function CourseRow({ course, disabled, onPress, onLike, onTrip }: { course: Cour
         <S.Badge><Text fontSize={11} color="onInverse" lineHeight={14}>{course.placeCount}곳 · {course.totalDistanceKm}km</Text></S.Badge>
         <S.CourseInfo><Text fontSize={12} color="onInverse" numberOfLines={1}>{course.region}</Text><Text fontSize={16} fontWeight="bold" color="onInverse" lineHeight={22} numberOfLines={1}>{course.title}</Text></S.CourseInfo>
       </S.CourseMain>
-      <S.CourseHeart accessibilityRole="button" accessibilityLabel={`${course.title} 찜 해제`} accessibilityState={{ disabled, busy: disabled }} disabled={disabled} onPress={onLike}><HeartIcon /></S.CourseHeart>
+      <LikeButton liked size={28} variant="muted" accessibilityLabel={`${course.title} 찜 해제`} busy={disabled} onPress={onLike} style={{ position: 'absolute', top: 8, right: 8 }} />
       <S.TripButton accessibilityRole="button" accessibilityLabel={`${course.title} 내 여행에 추가`} accessibilityState={{ disabled }} disabled={disabled} onPress={onTrip}><SymbolView name={{ ios: 'plus', android: 'add', web: 'add' }} size={12} tintColor={colors.textSecondary} /><Text fontSize={11} color="textSecondary">내 여행</Text></S.TripButton>
     </S.CourseCard>
   );

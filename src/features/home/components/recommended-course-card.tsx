@@ -1,7 +1,7 @@
 import { Pressable, Text, View } from 'react-native';
 import { SymbolView } from 'expo-symbols';
 
-
+import { CourseLikeButton } from '@/features/app-integration/place-actions';
 import { colors, styles } from '../styles';
 import { PlaceThumbnail } from './place-thumbnail';
 
@@ -27,13 +27,7 @@ export function RecommendedCourseCard({
             {course.placeCount}곳 · {course.totalDistanceKm}km
           </Text>
         </View>
-        <View style={styles.courseCardLikeBadge}>
-          <SymbolView
-            name={{ android: 'favorite', ios: course.isLiked ? 'heart.fill' : 'heart', web: 'favorite' }}
-            size={15}
-            tintColor={colors.onInverse}
-          />
-        </View>
+        <CourseLikeButton course={course} style={styles.courseCardLikeBadge} />
         <View style={styles.courseCardOverlay}>
           <Text numberOfLines={1} style={styles.courseCardTitle}>
             {course.title}

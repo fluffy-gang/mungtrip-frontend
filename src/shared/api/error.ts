@@ -49,6 +49,10 @@ export const getApiErrorMessage = (error: unknown): string => {
   }
 
   if (isAxiosError(error)) {
+    if (error.response && error.response.status >= 500) {
+      return '서버에 일시적인 문제가 발생했어요. 잠시 후 다시 시도해 주세요.';
+    }
+
     return (
       getMessageFromResponseData(error.response?.data) ??
       '요청 처리 중 문제가 발생했습니다.'

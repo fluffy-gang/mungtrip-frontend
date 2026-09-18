@@ -1,12 +1,15 @@
+import { Image } from 'expo-image';
 import { Pressable, Text, View } from 'react-native';
 import { SymbolView } from 'expo-symbols';
 
-
+import { PlaceLikeButton } from '@/features/app-integration/place-actions';
 import { colors, styles } from '../styles';
 import { getVerifiedDiffDays } from '../utils/place-utils';
 import { PlaceThumbnail } from './place-thumbnail';
 
 import type { Place } from '@/features/places/types';
+
+const starIcon = require('../assets/icons/star.svg');
 
 const getBadgeLabel = (place: Place): string | null => {
   if (place.rank !== undefined) {
@@ -48,13 +51,7 @@ export function PlaceCard({
             <Text style={styles.placeCardBadgeText}>{badgeLabel}</Text>
           </View>
         ) : null}
-        <View style={styles.placeCardLikeBadge}>
-          <SymbolView
-            name={{ android: 'favorite', ios: place.isLiked ? 'heart.fill' : 'heart', web: 'favorite' }}
-            size={14}
-            tintColor={colors.onInverse}
-          />
-        </View>
+        <PlaceLikeButton place={place} style={styles.placeCardLikeBadge} size={24} />
       </View>
       <View style={styles.placeCardBody}>
         <Text numberOfLines={1} style={styles.placeName}>
@@ -89,7 +86,7 @@ export function PlaceCard({
           ) : null}
         </View>
         <View style={styles.placeScore}>
-          <SymbolView name={{ android: 'star', ios: 'star.fill', web: 'star' }} size={11} tintColor={colors.textTertiary} />
+          <Image contentFit="contain" source={starIcon} style={{ height: 8, width: 8 }} />
           <Text style={styles.scoreText}>{place.rating?.toFixed(1) ?? '-'}</Text>
         </View>
       </View>

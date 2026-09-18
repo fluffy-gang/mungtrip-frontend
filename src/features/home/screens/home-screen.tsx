@@ -1,5 +1,8 @@
 import { StatusBar, View } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+import { useEffect } from 'react';
 
+import { useTabNavigation } from '@/features/app-integration/tab-shell';
 import { showComingSoon } from '@/shared/utils/show-coming-soon';
 import { BOTTOM_TAB_HEIGHT } from '../constants';
 import { CategoryRail } from '../components/category-rail';
@@ -17,7 +20,12 @@ import { styles } from '../styles';
 import { isNativeMapAvailable } from '../utils/native-modules';
 
 export function HomeScreen() {
-  const home = useHomeScreen();
+  const { view } = useLocalSearchParams<{ view?: string }>();
+  // Search routes must not mount and immediately tear down a native map during initialization.
+  const home = useHomeScreen(view === 'search' ? 'search' : 'map');
+  const navigate = useTabNavigation();
+  const { openSearch } = home;
+  useEffect(() => { if (view === 'search') openSearch(); }, [view, openSearch]);
   const bottomTabHeight = home.insets.bottom + BOTTOM_TAB_HEIGHT;
 
   return (
@@ -53,6 +61,7 @@ export function HomeScreen() {
             <MapCanvas
               mapCamera={home.mapCamera}
               onSelectPlace={home.previewPlace}
+              onUserMove={home.handleMapUserMove}
               places={home.mapPlaces}
               selectedCategory={home.selectedCategory}
               selectedPlaceId={home.selectedPlace?.id}
@@ -112,6 +121,12 @@ export function HomeScreen() {
             onOpenSearch={home.openSearch}
             onShowHome={home.showHomeFeed}
             paddingBottom={home.insets.bottom}
+            selectedTab="home"
+            onSelectTab={tab => {
+              if (tab === 'home') home.showHomeFeed();
+              else if (tab === 'search') home.openSearch();
+              else navigate(tab);
+            }}
           />
           {home.isDogSheetVisible ? (
             <DogSelectorSheet

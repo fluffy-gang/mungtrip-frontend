@@ -3,32 +3,27 @@ import { useCallback, useMemo, useState } from 'react';
 import { useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-
-import {
-  HEADER_CONTENT_HEIGHT,
-  JEJU_MAP_BOUNDS,
-  MAP_MAX_ZOOM,
-  MAP_MIN_ZOOM,
-  MAP_ZOOM_STEP,
-} from '../constants';
+import { useFeatureIntegration } from '@/features/app-integration/context';
+import { HEADER_CONTENT_HEIGHT, JEJU_MAP_BOUNDS } from '../constants';
 import { areMapBoundsEqual } from '../utils/map-bounds';
 import { filterPlaces } from '../utils/place-utils';
 import { useCurrentLocation } from './use-current-location';
 import { useHomeData } from './use-home-data';
-import { useHomeMode } from './use-home-mode';
 import { useHomeBackHandler } from './use-home-back-handler';
 import { useHomeViewer } from './use-home-viewer';
 import { useMapSheetController } from './use-map-sheet-controller';
+import { useMapZoom } from './use-map-zoom';
 import { useRecentSearches } from './use-recent-searches';
 
-import type { MapBounds, PlaceListSource } from '../types';
+import type { HomeMode, MapBounds, PlaceListSource } from '../types';
 import type { Place, PlaceCategory } from '@/features/places/types';
 
-export function useHomeScreen() {
+export function useHomeScreen(initialMode: HomeMode = 'map') {
+  const app = useFeatureIntegration();
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { height: windowHeight } = useWindowDimensions();
-  const { mode, setMode } = useHomeMode();
+  const [mode, setMode] = useState<HomeMode>(initialMode);
   const [query, setQuery] = useState('');
   const [listSource, setListSource] = useState<PlaceListSource>('recommendation');
   const headerHeight = insets.top + HEADER_CONTENT_HEIGHT;
@@ -41,7 +36,7 @@ export function useHomeScreen() {
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
   const [selectedCategoryCode, setSelectedCategoryCode] =
     useState<string | null>(null);
-  const homeViewer = useHomeViewer();
+  const homeViewer = useHomeViewer(app.source === 'real');
   const { addRecentSearch, recentSearches, removeRecentSearch } =
     useRecentSearches();
   const {
@@ -60,12 +55,12 @@ export function useHomeScreen() {
     searchResults,
     topCafePlaces,
     topRestaurantPlaces,
-  } = useHomeData(mapBounds, homeViewer.dogIds);
+  } = useHomeData(mapBounds, homeViewer.dogIds, app.catalog);
 
   const handleLocated = useCallback(() => {
     mapSheet.showMap();
     setMode('map');
-  }, [mapSheet, setMode]);
+  }, [mapSheet]);
 
   const { mapCamera, moveToCurrentLocation, setMapCamera, userCoordinate } =
     useCurrentLocation({ onLocated: handleLocated });
@@ -91,18 +86,18 @@ export function useHomeScreen() {
           return currentBounds;
         }
 
-        // 지도 이동 시 검색 결과 고정을 해제하고 위치 기준 목록으로 복귀한다.
-        if (isSearchList) {
-          setQuery('');
-          clearSearchResults();
-          setListSource('recommendation');
-        }
-
         return nextBounds;
       });
     },
-    [clearSearchResults, isSearchList],
+    [],
   );
+  // Initial/programmatic camera-idle events must not discard a just-submitted search.
+  const handleMapUserMove = useCallback(() => {
+    if (!isSearchList) return;
+    setQuery('');
+    clearSearchResults();
+    setListSource('recommendation');
+  }, [clearSearchResults, isSearchList]);
   const filterCategory = query.trim() ? undefined : selectedCategory;
   const filteredPlaces = useMemo(() => {
     if (isSearchList && searchResults) {
@@ -124,24 +119,7 @@ export function useHomeScreen() {
 
     return [selectedPlace, ...places];
   }, [places, selectedPlace]);
-  const updateMapZoom = useCallback(
-    (zoomDelta: number) => {
-      setMapCamera(currentCamera => ({
-        ...currentCamera,
-        zoom: Math.min(
-          MAP_MAX_ZOOM,
-          Math.max(MAP_MIN_ZOOM, currentCamera.zoom + zoomDelta),
-        ),
-      }));
-    },
-    [setMapCamera],
-  );
-  const zoomIn = useCallback(() => {
-    updateMapZoom(MAP_ZOOM_STEP);
-  }, [updateMapZoom]);
-  const zoomOut = useCallback(() => {
-    updateMapZoom(-MAP_ZOOM_STEP);
-  }, [updateMapZoom]);
+  const { zoomIn, zoomOut } = useMapZoom(setMapCamera);
   const selectCategory = useCallback(
     (category: PlaceCategory) => {
       const isSameCategory = selectedCategoryCode === category.code;
@@ -176,7 +154,7 @@ export function useHomeScreen() {
       addRecentSearch(nextKeyword);
       void searchPlaces({ keyword: nextKeyword });
     },
-    [addRecentSearch, mapSheet, searchPlaces, setMode],
+    [addRecentSearch, mapSheet, searchPlaces],
   );
   const showCategoryPlaces = useCallback(
     (categoryCode: string) => {
@@ -188,7 +166,7 @@ export function useHomeScreen() {
       mapSheet.showPlacesExpanded();
       setMode('map');
     },
-    [clearSearchResults, mapSheet, setMode],
+    [clearSearchResults, mapSheet],
   );
   const showRecommendationList = useCallback(() => {
     setQuery('');
@@ -197,7 +175,7 @@ export function useHomeScreen() {
     setListSource('recommendation');
     mapSheet.showPlacesExpanded();
     setMode('map');
-  }, [clearSearchResults, mapSheet, setMode]);
+  }, [clearSearchResults, mapSheet]);
   const showHomeFeed = useCallback(() => {
     setQuery('');
     clearSearchResults();
@@ -206,14 +184,14 @@ export function useHomeScreen() {
     setListSource('recommendation');
     mapSheet.showContentCollapsed();
     setMode('map');
-  }, [clearSearchResults, mapSheet, setMode]);
+  }, [clearSearchResults, mapSheet]);
   const showMapView = useCallback(() => {
     mapSheet.showMap();
     setMode('map');
-  }, [mapSheet, setMode]);
+  }, [mapSheet]);
   const openSearch = useCallback(() => {
     setMode('search');
-  }, [setMode]);
+  }, []);
   const handleMapFloatingAction = useCallback(() => {
     if (mapSheet.isExpanded) {
       mapSheet.showMap();
@@ -223,17 +201,20 @@ export function useHomeScreen() {
 
     setSelectedPlace(null);
     setMode('map');
-  }, [mapSheet, setMode]);
+  }, [mapSheet]);
   const closeSearch = useCallback(() => {
     setQuery('');
     clearSearchResults();
     setSelectedPlace(null);
     setMode('map');
-  }, [clearSearchResults, setMode]);
+  }, [clearSearchResults]);
   const selectPlace = useCallback(
     (place: Place) => {
       // 상세로 바로 이동해 미리보기 카드가 한 프레임 노출되는 깜빡임을 막는다.
-      router.push({ pathname: '/places/[id]', params: { id: String(place.id) } });
+      router.push({
+        params: { id: String(place.id) },
+        pathname: '/places/[id]',
+      });
     },
     [router],
   );
@@ -243,11 +224,12 @@ export function useHomeScreen() {
       mapSheet.showMap();
       setMode('map');
     },
-    [mapSheet, setMode],
+    [mapSheet],
   );
   const closeSelectedPlace = useCallback(() => {
     setSelectedPlace(null);
   }, []);
+
   const clearPlaceFilters = () => {
     homeViewer.saveDogSelection([]);
     setSelectedCategoryCode(null);
@@ -314,6 +296,7 @@ export function useHomeScreen() {
     topCafePlaces,
     topRestaurantPlaces,
     updateMapBounds,
+    handleMapUserMove,
     userCoordinate,
     zoomControlBottom: mapSheet.zoomControlBottom,
     zoomIn,

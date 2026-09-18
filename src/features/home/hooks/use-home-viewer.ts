@@ -25,15 +25,17 @@ const toHomeDogProfile = (dog: Dog): HomeDogProfile => ({
   sizeTagCode: dogSizeTagCodes[dog.size],
 });
 
-export function useHomeViewer(): HomeViewer {
+export function useHomeViewer(enabled = true): HomeViewer {
   const isLoggedIn = useAuthStore(state => state.isLoggedIn);
+  const session = useAuthStore(state => `${state.isLoggedIn}:${state.user?.provider ?? ''}:${state.user?.id ?? state.accessToken ?? ''}`);
   const [viewerDogs, setViewerDogs] = useState<HomeDogProfile[]>([]);
   const [selectedDogIds, setSelectedDogIds] = useState<number[]>([]);
+  const [loadedSession, setLoadedSession] = useState('');
 
   useEffect(() => {
     let isMounted = true;
 
-    if (!isLoggedIn) {
+    if (!isLoggedIn || !enabled) {
       return;
     }
 
@@ -47,10 +49,15 @@ export function useHomeViewer(): HomeViewer {
         const nextDogIds = nextDogs.map(dog => dog.id);
 
         setViewerDogs(nextDogs);
-        // ADR 0002: 등록만으로 동행 필터를 켜지 않고 사용자가 선택한 반려견만 유지한다.
-        setSelectedDogIds(currentDogIds =>
-          currentDogIds.filter(dogId => nextDogIds.includes(dogId)),
-        );
+        setLoadedSession(session);
+        setSelectedDogIds(currentDogIds => {
+          const retainedDogIds = currentDogIds.filter(dogId =>
+            nextDogIds.includes(dogId),
+          );
+
+          // ADR 0002: 동행 조건은 직접 선택한 반려견에만 적용한다.
+          return retainedDogIds;
+        });
       })
       .catch(() => {
         if (isMounted) {
@@ -62,9 +69,10 @@ export function useHomeViewer(): HomeViewer {
     return () => {
       isMounted = false;
     };
-  }, [isLoggedIn]);
+  }, [isLoggedIn, enabled, session]);
 
-  const dogs = isLoggedIn ? viewerDogs : EMPTY_HOME_DOGS;
+  const currentSession = isLoggedIn && enabled && loadedSession === session;
+  const dogs = currentSession ? viewerDogs : EMPTY_HOME_DOGS;
   const selectedDogs = useMemo(
     () => dogs.filter(dog => selectedDogIds.includes(dog.id)),
     [dogs, selectedDogIds],
@@ -77,7 +85,7 @@ export function useHomeViewer(): HomeViewer {
   return {
     activeDog,
     dogs,
-    dogIds: isLoggedIn ? selectedDogIds : EMPTY_DOG_IDS,
+    dogIds: currentSession ? selectedDogIds : EMPTY_DOG_IDS,
     isLoggedIn,
     saveDogSelection,
     selectedDogIds,

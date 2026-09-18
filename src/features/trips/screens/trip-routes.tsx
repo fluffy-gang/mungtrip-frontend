@@ -1,7 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 
-import { MainTabScreen } from '@/features/home/components/main-tab-screen';
 import { TripFlowSheet } from '../components/trip-flow-sheet';
 import { Content, ErrorNotice, Header, Page } from '../components/ui';
 import { useTripEnvironment } from '../context';
@@ -14,7 +13,6 @@ import { TripReplacementScreen } from './trip-replacement-screen';
 
 import type { TripItem } from '../types';
 
-/** Root selects a source-bound environment from route params, so every new route preserves it. */
 function useTripNavigation() {
   const { provider } = useTripEnvironment();
   const source = provider.source;
@@ -23,22 +21,22 @@ function useTripNavigation() {
     source,
     back: () => {
       if (router.canGoBack()) router.back();
-      else router.replace({ pathname: '/trips', params: { source } });
+      else router.replace('/trips');
     },
-    replaceDetail: (id: number) => router.replace({ pathname: '/trips/[id]', params: { id, source } }),
+    replaceDetail: (id: number) => router.replace({ pathname: '/trips/[id]', params: { id } }),
   };
 }
 export function TripListRoute() {
-  const { source } = useTripNavigation();
-  return <MainTabScreen tab="trip"><TripListScreen onOpenTrip={id => router.push({ pathname: '/trips/[id]', params: { id, source } })} /></MainTabScreen>;
+  useTripNavigation();
+  return <TripListScreen onOpenTrip={id => router.push({ pathname: '/trips/[id]', params: { id } })} />;
 }
 export function TripDetailRoute() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { source, back } = useTripNavigation();
+  const { back } = useTripNavigation();
   return <TripDetailScreen tripId={Number(id)} onBack={back}
-    onEdit={() => router.push({ pathname: '/trips/[id]/edit', params: { id, source } })}
-    onAdd={day => router.push({ pathname: '/trips/[id]/add', params: { id, day, source } })}
-    onReplace={item => router.push({ pathname: '/trips/[id]/replace', params: { id, itemId: item.tripItemId, source } })} />;
+    onEdit={() => router.push({ pathname: '/trips/[id]/edit', params: { id } })}
+    onAdd={day => router.push({ pathname: '/trips/[id]/add', params: { id, day } })}
+    onReplace={item => router.push({ pathname: '/trips/[id]/replace', params: { id, itemId: item.tripItemId } })} />;
 }
 export function TripEditRoute() {
   const { id } = useLocalSearchParams<{ id: string }>();

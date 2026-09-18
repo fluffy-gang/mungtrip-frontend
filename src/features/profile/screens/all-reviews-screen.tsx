@@ -1,91 +1,141 @@
-import { useRouter } from 'expo-router';
-import { useState } from 'react';
-import { Alert, ScrollView, Text, View } from 'react-native';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useState } from 'react';
+import { ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { BOTTOM_TAB_HEIGHT, BottomTabBar } from '@/components/navigation/bottom-tab-bar';
+import { showDialog } from '@/components/ui/dialog';
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { StatePanel } from '@/components/ui/state-panel';
 
+import { EmptyReviewCard } from '../components/empty-review-card';
+import { ReviewActionMenu, ReviewDeleteDialog } from '../components/review-manage-dialog';
 import { ReviewCard } from '../components/review-card';
-import { useReviewsMockStore } from '../mock/reviews-store';
+import { useReviews } from '../hooks/use-reviews';
 import { reviewStyles } from '../review-styles';
+import { useReviewsStore } from '../store/reviews-store';
 import { styles } from '../styles';
 
-import type { MockReview } from '../mock/reviews';
+import type { ReviewMenuAnchor } from '../components/review-manage-dialog';
+import type { Review } from '../types';
 
-const showComingSoon = () => {
-  Alert.alert('아직 지원되지 않는 기능이에요', '곧 만나보실 수 있어요.');
-};
+interface OpenReviewMenu {
+  anchor: ReviewMenuAnchor;
+  review: Review;
+}
 
 export function AllReviewsScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const reviews = useReviewsMockStore(state => state.reviews);
-  const removeReview = useReviewsMockStore(state => state.removeReview);
+  const { hasError, loading, retry, reviews } = useReviews();
+  const commitPendingReview = useReviewsStore(state => state.commitPendingReview);
+  const removeReview = useReviewsStore(state => state.removeReview);
+  const [openMenu, setOpenMenu] = useState<OpenReviewMenu | null>(null);
+  const [reviewToDelete, setReviewToDelete] = useState<Review | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const bottomTabHeight = insets.bottom + BOTTOM_TAB_HEIGHT;
+
+  useFocusEffect(
+    useCallback(() => {
+      commitPendingReview();
+    }, [commitPendingReview]),
+  );
 
   const showToast = (message: string) => {
     setToastMessage(message);
     setTimeout(() => setToastMessage(null), 2000);
   };
 
-  const confirmDeleteReview = (review: MockReview) => {
-    Alert.alert('리뷰를 삭제할까요?', '삭제 후엔 복구나 재작성이 불가능해요.', [
-      { style: 'cancel', text: '취소' },
-      {
-        style: 'destructive',
-        text: '삭제',
-        onPress: () => {
-          removeReview(review.id);
-          showToast('리뷰가 삭제되었어요');
-        },
-      },
-    ]);
+  const openReviewMenu = (review: Review, anchor?: ReviewMenuAnchor) => {
+    if (!anchor) return;
+
+    setOpenMenu({ anchor, review });
   };
 
-  const openReviewMenu = (review: MockReview) => {
-    Alert.alert(review.placeName, undefined, [
-      { style: 'cancel', text: '취소' },
-      { onPress: showComingSoon, text: '수정하기' },
-      { onPress: () => confirmDeleteReview(review), style: 'destructive', text: '삭제하기' },
-    ]);
+  const editReview = () => {
+    if (!openMenu) return;
+
+    const { review } = openMenu;
+    setOpenMenu(null);
+    // The action menu's Modal must finish unmounting before the stack push starts,
+    // or Android Fabric can try to reparent a view that is still attached to it
+    // (react-native-screens#2803).
+    requestAnimationFrame(() => {
+      router.push({
+        params: { reviewId: String(review.reviewId) },
+        pathname: '/profile/reviews/[reviewId]/edit',
+      });
+    });
+  };
+
+  const openDeleteConfirmation = () => {
+    if (!openMenu) return;
+
+    setReviewToDelete(openMenu.review);
+    setOpenMenu(null);
+  };
+
+  const deleteReview = async () => {
+    if (!reviewToDelete || deleting) return;
+
+    setDeleting(true);
+    try {
+      await removeReview(reviewToDelete.reviewId);
+      setReviewToDelete(null);
+      setOpenMenu(null);
+      showToast('리뷰가 삭제되었어요');
+    } catch {
+      showDialog('리뷰를 삭제하지 못했어요', '잠시 후 다시 시도해주세요.');
+    } finally {
+      setDeleting(false);
+    }
   };
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
-      <ScrollView
-        contentContainerStyle={[styles.content, { paddingBottom: bottomTabHeight + 16 }]}
-      >
-        <ScreenHeader onBack={() => router.back()} title="전체 리뷰" />
+      <ScrollView contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 40 }]}>
+        <ScreenHeader onBack={() => router.back()} title={openMenu ? '리뷰 관리' : '전체 리뷰'} />
         <Text style={reviewStyles.reviewCountLabel}>내가 쓴 리뷰 {reviews.length}개</Text>
-
-        {reviews.length === 0 ? (
+        {loading ? (
+          <StatePanel loading title="리뷰를 불러오는 중이에요" />
+        ) : hasError ? (
           <StatePanel
-            description="다음 여행에서 다녀간 곳을 기록해보세요"
-            icon={{ android: 'chat_bubble_outline', ios: 'bubble.left', web: 'chat_bubble_outline' }}
-            title="아직 작성한 리뷰가 없어요"
+            description="잠시 후 다시 시도해주세요."
+            onRetry={retry}
+            title="리뷰를 불러오지 못했어요"
           />
+        ) : reviews.length === 0 ? (
+          <EmptyReviewCard />
         ) : (
-          <View style={styles.section}>
+          <View style={reviewStyles.reviewList}>
             {reviews.map(review => (
-              <ReviewCard key={review.id} onPressMenu={openReviewMenu} review={review} />
+              <ReviewCard
+                contentNumberOfLines={2}
+                key={review.reviewId}
+                onPressMenu={openReviewMenu}
+                review={review}
+              />
             ))}
           </View>
         )}
       </ScrollView>
       {toastMessage ? (
-        <View style={[reviewStyles.toast, { bottom: bottomTabHeight + insets.bottom + 12 }]}>
+        <View pointerEvents="none" style={[reviewStyles.toast, { bottom: insets.bottom + 100 }]}>
           <Text style={reviewStyles.toastText}>{toastMessage}</Text>
         </View>
       ) : null}
-      <BottomTabBar
-        active="profile"
-        height={bottomTabHeight}
-        onPressHome={() => router.push('/')}
-        onPressProfile={() => router.push('/profile')}
-        paddingBottom={insets.bottom}
+      {openMenu ? (
+        <ReviewActionMenu
+          anchor={openMenu.anchor}
+          onClose={() => setOpenMenu(null)}
+          onDelete={openDeleteConfirmation}
+          onEdit={editReview}
+        />
+      ) : null}
+      <ReviewDeleteDialog
+        deleting={deleting}
+        onClose={() => !deleting && setReviewToDelete(null)}
+        onDelete={() => void deleteReview()}
+        visible={reviewToDelete !== null}
       />
     </View>
   );

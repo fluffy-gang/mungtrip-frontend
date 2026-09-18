@@ -4,12 +4,15 @@ import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { tokens } from '@/constants/tokens';
 import { Button } from './button';
 
+import type { ReactNode } from 'react';
+
 const colors = tokens.colors.semantic.light;
 const { spacing } = tokens;
 
 interface StatePanelProps {
   description?: string;
   icon?: Parameters<typeof SymbolView>[0]['name'];
+  iconElement?: ReactNode;
   loading?: boolean;
   onRetry?: () => void;
   title: string;
@@ -19,11 +22,12 @@ interface StatePanelProps {
  * 로딩/빈/오류 상태를 한 화면 안에서 공통으로 보여주는 패널.
  * 화면 전체, 바텀시트, 목록 내부 등 어디서든 재사용한다.
  */
-export function StatePanel({ description, icon, loading, onRetry, title }: StatePanelProps) {
+export function StatePanel({ description, icon, iconElement, loading, onRetry, title }: StatePanelProps) {
   return (
     <View style={styles.stateBox}>
       {loading ? <ActivityIndicator color={colors.primary} /> : null}
-      {icon && !loading ? <SymbolView name={icon} size={32} tintColor="#8B95A1" /> : null}
+      {iconElement && !loading ? iconElement : null}
+      {icon && !iconElement && !loading ? <SymbolView name={icon} size={32} tintColor="#8B95A1" /> : null}
       <Text style={styles.stateTitle}>{title}</Text>
       {description ? <Text style={styles.stateText}>{description}</Text> : null}
       {onRetry ? (

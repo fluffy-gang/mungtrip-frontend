@@ -1,18 +1,22 @@
-import { SymbolView } from 'expo-symbols';
+import { Image } from 'expo-image';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { tokens } from '@/constants/tokens';
 
+import type { ReactNode } from 'react';
+
 const colors = tokens.colors.semantic.light;
 const { spacing } = tokens;
+const BACK_ICON = require('./assets/screen-header-back.svg');
 
 interface ScreenHeaderProps {
   onBack?: () => void;
+  rightAction?: ReactNode;
   title: string;
 }
 
 /** 뒤로가기(선택)와 가운데 정렬 제목을 가진 화면 상단 헤더. */
-export function ScreenHeader({ onBack, title }: ScreenHeaderProps) {
+export function ScreenHeader({ onBack, rightAction, title }: ScreenHeaderProps) {
   return (
     <View style={styles.header}>
       {onBack ? (
@@ -22,17 +26,13 @@ export function ScreenHeader({ onBack, title }: ScreenHeaderProps) {
           onPress={onBack}
           style={styles.backButton}
         >
-          <SymbolView
-            name={{ android: 'arrow_back', ios: 'chevron.left', web: 'arrow_back' }}
-            size={24}
-            tintColor="#191F28"
-          />
+          <Image contentFit="contain" source={BACK_ICON} style={styles.backIcon} />
         </Pressable>
       ) : (
         <View style={styles.headerSpacer} />
       )}
       <Text style={styles.headerTitle}>{title}</Text>
-      <View style={styles.headerSpacer} />
+      <View style={styles.headerAction}>{rightAction}</View>
     </View>
   );
 }
@@ -50,6 +50,7 @@ const styles = StyleSheet.create({
     marginLeft: -spacing[8],
     width: 40,
   },
+  backIcon: { height: 24, width: 24 },
   headerTitle: {
     color: colors.textPrimary,
     flex: 1,
@@ -59,4 +60,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   headerSpacer: { width: 40 },
+  headerAction: { alignItems: 'flex-end', justifyContent: 'center', minWidth: 40 },
 });

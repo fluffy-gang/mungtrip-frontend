@@ -1,22 +1,23 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button } from '@/components/ui/button';
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { StatePanel } from '@/components/ui/state-panel';
 
-import { deleteDog } from '@/features/dogs/api';
 import { DogAvatar } from '../components/dog-avatar';
+import { DogDeleteDialog } from '../components/dog-delete-dialog';
+import { useDogDeletion } from '../hooks/use-dog-deletion';
 import { useDogs } from '../hooks/use-dogs';
 import { styles } from '../styles';
 
-import type { DogSize } from '@/features/dogs/types';
+import type { ProfileDog } from '@/features/dogs/types';
 
-const sizeLabels: Record<DogSize, string> = {
-  L: '대형견',
-  M: '중형견',
-  S: '소형견',
+const sizeLabels: Record<ProfileDog['size'], string> = {
+  LARGE: '대형견',
+  MEDIUM: '중형견',
+  SMALL: '소형견',
 };
 
 export function DogDetailScreen() {
@@ -26,24 +27,18 @@ export function DogDetailScreen() {
   const dogId = Number(params.dogId);
   const { dogs, hasError, loading, retry } = useDogs();
   const dog = dogs.find(item => item.dogId === dogId);
+  const {
+    closeDeleteDialog,
+    confirmDeletion,
+    deleting,
+    deleteDialogVisible,
+    requestDeletion,
+  } = useDogDeletion(dogId, () => router.replace('/profile'));
 
   const confirmDelete = () => {
     if (!dog) return;
 
-    Alert.alert('반려견 정보를 삭제할까요?', '삭제한 정보는 복구할 수 없습니다.', [
-      { style: 'cancel', text: '취소' },
-      {
-        style: 'destructive',
-        text: '삭제',
-        onPress: () => {
-          void deleteDog(dog.dogId)
-            .then(() => router.replace('/profile'))
-            .catch(() => {
-              Alert.alert('삭제하지 못했어요', '잠시 후 다시 시도해주세요.');
-            });
-        },
-      },
-    ]);
+    requestDeletion();
   };
 
   return (
@@ -59,18 +54,21 @@ export function DogDetailScreen() {
         ) : (
           <>
             <View style={styles.detailImageWrap}>
-              <DogAvatar imageUrl={dog.profileImageUrl} large />
+              <DogAvatar imageUrl={dog.imageUrl} large />
               <Text style={[styles.profileName, { marginTop: 12 }]}>{dog.name}</Text>
             </View>
             <View style={styles.infoList}>
-              <InfoRow label="견종" value={dog.breed} />
-              <InfoRow label="크기" value={sizeLabels[dog.size]} />
-              <InfoRow label="몸무게" value={`${dog.weight}kg`} />
+              <InfoRow label="견종" value={dog.breed.name} />
+              <InfoRow label="사이즈" value={sizeLabels[dog.size]} />
+              <InfoRow label="몸무게" value={dog.weight ? `${dog.weight}kg` : '없음'} />
               <InfoRow
                 label="성격"
                 value={dog.personalities.map(item => item.name).join(', ') || '없음'}
               />
-              <InfoRow label="중성화" value={dog.isNeutered ? '완료' : '미완료'} />
+              <InfoRow
+                label="중성화"
+                value={dog.isNeutered == null ? '모름' : dog.isNeutered ? '완료' : '미완료'}
+              />
               <InfoRow
                 label="맹견 여부"
                 value={dog.isDangerousDog ? '해당' : '해당 없음'}
@@ -87,13 +85,19 @@ export function DogDetailScreen() {
               >
                 정보 수정
               </Button>
-              <Pressable accessibilityRole="button" onPress={confirmDelete}>
+              <Pressable accessibilityRole="button" disabled={deleting} onPress={confirmDelete}>
                 <Text style={styles.dangerText}>반려견 정보 삭제</Text>
               </Pressable>
             </View>
           </>
         )}
       </ScrollView>
+      <DogDeleteDialog
+        deleting={deleting}
+        onClose={closeDeleteDialog}
+        onDelete={() => void confirmDeletion()}
+        visible={deleteDialogVisible}
+      />
     </View>
   );
 }

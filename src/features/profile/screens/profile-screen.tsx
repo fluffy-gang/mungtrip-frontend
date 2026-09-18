@@ -1,113 +1,157 @@
 import { Image } from 'expo-image';
-import { SymbolView } from 'expo-symbols';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { BOTTOM_TAB_HEIGHT, BottomTabBar } from '@/components/navigation/bottom-tab-bar';
-import { Button } from '@/components/ui/button';
-import { ScreenHeader } from '@/components/ui/screen-header';
+import {
+  BOTTOM_TAB_HEIGHT,
+  BottomTabBar,
+} from '@/components/navigation/bottom-tab-bar';
+import { showDialog } from '@/components/ui/dialog';
 import { StatePanel } from '@/components/ui/state-panel';
 
 import { useAuthStore } from '@/features/auth/authStore';
-import { MOCK_USER } from '@/features/auth/mock/user';
 import { useAuth } from '@/features/auth/useAuth';
+import { useOnboarding } from '@/features/onboarding/context';
 import { DogAvatar } from '../components/dog-avatar';
 import { NameChangeModal } from '../components/name-change-modal';
 import { useDogs } from '../hooks/use-dogs';
 import { styles } from '../styles';
 
-const showComingSoon = () => {
-  Alert.alert('아직 지원되지 않는 기능이에요', '곧 만나보실 수 있어요.');
-};
+const PROFILE_DEFAULT_ICON = require("../assets/profile-default-user.svg");
+const PROFILE_CHEVRON_ICON = require("../assets/profile-chevron-right.svg");
+const REVIEW_ICON = require("../assets/review-icon.svg");
+const TERMS_ICON = require("../assets/profile-terms.svg");
+
+const DOG_SIZE_LABELS = {
+  LARGE: "대형견",
+  MEDIUM: "중형견",
+  SMALL: "소형견",
+} as const;
 
 export function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const user = useAuthStore(state => state.user);
-  const isLoggedIn = useAuthStore(state => state.isLoggedIn);
-  const setMockLogin = useAuthStore(state => state.setMockLogin);
-  const { handleLogout } = useAuth();
+  const user = useAuthStore((state) => state.user);
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+  const { handleLogout, handleWithdrawAccount } = useAuth();
+  const { bootstrap, resetDraft } = useOnboarding();
   const { dogs, hasError, loading, retry } = useDogs(isLoggedIn);
   const [isNameModalVisible, setIsNameModalVisible] = useState(false);
-  const displayName = user?.nickname ?? user?.name ?? '프로필';
+  const [withdrawing, setWithdrawing] = useState(false);
+  const displayName = user?.nickname ?? user?.name ?? "프로필";
   const bottomTabHeight = insets.bottom + BOTTOM_TAB_HEIGHT;
 
+  const openLogin = async () => {
+    const status = await bootstrap();
+
+    if (status === "anonymous") {
+      router.replace("/onboarding/login");
+    }
+  };
+
   const confirmLogout = () => {
-    Alert.alert('로그아웃할까요?', '현재 기기에 저장된 로그인 정보가 삭제됩니다.', [
-      { style: 'cancel', text: '취소' },
-      {
-        style: 'destructive',
-        text: '로그아웃',
-        onPress: () => {
-          void handleLogout().then(() => router.replace('/'));
+    showDialog(
+      "로그아웃할까요?",
+      "현재 기기에 저장된 로그인 정보가 삭제됩니다.",
+      [
+        { style: "cancel", text: "취소" },
+        {
+          style: "destructive",
+          text: "로그아웃",
+          onPress: () => {
+            void handleLogout().then(() => router.replace("/"));
+          },
         },
-      },
-    ]);
+      ],
+    );
+  };
+
+  const withdraw = async () => {
+    if (withdrawing) return;
+
+    setWithdrawing(true);
+    try {
+      await handleWithdrawAccount();
+      showDialog(
+        "탈퇴 요청이 완료되었어요.",
+        "30일 이내 다시 로그인하면 계정을 복구할 수 있어요.",
+        [{ text: "확인", onPress: () => router.replace("/") }],
+      );
+    } catch {
+      showDialog("탈퇴 요청에 실패했어요.", "잠시 후 다시 시도해주세요.");
+    } finally {
+      setWithdrawing(false);
+    }
+  };
+
+  const confirmWithdraw = () => {
+    showDialog(
+      "회원 탈퇴하시겠어요?",
+      "탈퇴 요청 즉시 로그아웃하고, 30일 동안 계정 복구가 가능해요.",
+      [
+        { style: "cancel", text: "취소" },
+        {
+          style: "destructive",
+          text: withdrawing ? "처리 중..." : "탈퇴하기",
+          onPress: () => void withdraw(),
+        },
+      ],
+    );
   };
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
       <ScrollView
-        contentContainerStyle={[styles.content, { paddingBottom: bottomTabHeight + 16 }]}
+        contentContainerStyle={[
+          styles.content,
+          { paddingBottom: bottomTabHeight + 16 },
+        ]}
       >
-        <ScreenHeader title="프로필" />
+        <Text style={styles.profileTitle}>프로필</Text>
 
         {isLoggedIn ? (
           <View style={styles.profileCard}>
-            {user?.profileImageUrl ? (
-              <Image
-                contentFit="cover"
-                source={{ uri: user.profileImageUrl }}
-                style={styles.profileImage}
-              />
-            ) : (
-              <View style={styles.profileImagePlaceholder}>
-                <SymbolView
-                  name={{ android: 'person', ios: 'person.fill', web: 'person' }}
-                  size={32}
-                  tintColor="#8B95A1"
-                />
-              </View>
-            )}
+            <ProfileAvatar imageUrl={user?.profileImageUrl} />
             <View style={styles.profileBody}>
               <Text style={styles.profileName}>{displayName}</Text>
-              <Text style={styles.profileMeta}>{user?.email ?? '로그인 사용자'}</Text>
+              <Text style={styles.profileMeta}>
+                {user?.email ?? "로그인 사용자"}
+              </Text>
             </View>
-            <Button
-              fullWidth={false}
+            <Pressable
+              accessibilityRole="button"
               onPress={() => setIsNameModalVisible(true)}
-              size="m"
               style={styles.nameChangeButton}
-              type="sub"
             >
-              이름 변경
-            </Button>
+              <Text style={styles.nameChangeText}>이름 변경</Text>
+            </Pressable>
           </View>
         ) : null}
 
         {!isLoggedIn ? (
-          // TODO(#9): 온보딩/로그인 라우트가 머지되면 목로그인 대신 로그인 화면으로 연결한다.
           <Pressable
             accessibilityRole="button"
-            onPress={() => setMockLogin(MOCK_USER)}
+            onPress={() => void openLogin()}
             style={styles.loginBanner}
           >
             <View style={styles.loginBannerBody}>
-              <Text style={styles.loginBannerTitle}>댕댕트립 로그인 및 회원가입</Text>
+              <Text style={styles.loginBannerTitle}>
+                멍멍트립 로그인 및 회원가입
+              </Text>
               <Text style={styles.loginBannerSubtitle}>
-                내 반려견을 등록하고 맞춤 장소를 찾아보세요
+                반려견을 등록하고 맞춤 장소를 찾아보세요
               </Text>
             </View>
-            <SymbolView
-              name={{ android: 'chevron_right', ios: 'chevron.right', web: 'chevron_right' }}
-              size={20}
-              tintColor="#8B95A1"
+            <Image
+              contentFit="contain"
+              source={PROFILE_CHEVRON_ICON}
+              style={styles.menuChevron}
             />
           </Pressable>
         ) : (
-          <View style={styles.section}>
+          <View style={styles.dogSection}>
             {loading ? (
               <StatePanel loading title="반려견 정보를 불러오는 중이에요" />
             ) : hasError ? (
@@ -117,80 +161,92 @@ export function ProfileScreen() {
                 title="반려견 정보를 불러오지 못했어요"
               />
             ) : (
-              <>
-                {dogs.map(dog => (
+              <View style={styles.dogListCard}>
+                {dogs.map((dog) => (
                   <Pressable
                     accessibilityRole="button"
                     key={dog.dogId}
                     onPress={() =>
                       router.push({
-                        pathname: '/profile/dogs/[dogId]',
+                        pathname: "/profile/dogs/[dogId]",
                         params: { dogId: String(dog.dogId) },
                       })
                     }
                     style={styles.dogCard}
                   >
-                    <DogAvatar imageUrl={dog.profileImageUrl} />
+                    <DogAvatar imageUrl={dog.imageUrl} />
                     <View style={styles.dogBody}>
                       <Text style={styles.dogName}>{dog.name}</Text>
                       <Text style={styles.dogMeta}>
-                        {dog.breed} · {dog.weight}kg
+                        {[
+                          dog.breed.name,
+                          DOG_SIZE_LABELS[dog.size],
+                          dog.weight ? `${dog.weight}kg` : undefined,
+                        ]
+                          .filter(Boolean)
+                          .join(" · ")}
                       </Text>
                     </View>
-                    <SymbolView
-                      name={{ android: 'chevron_right', ios: 'chevron.right', web: 'chevron_right' }}
-                      size={20}
-                      tintColor="#8B95A1"
+                    <Image
+                      contentFit="contain"
+                      source={PROFILE_CHEVRON_ICON}
+                      style={styles.menuChevron}
                     />
                   </Pressable>
                 ))}
-                <Button onPress={showComingSoon} style={styles.addDogButton} type="sub">
-                  반려견 추가
-                </Button>
-              </>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => {
+                    resetDraft();
+                    router.push("/profile/dogs/new");
+                  }}
+                  style={styles.addDogButton}
+                >
+                  <Text style={styles.addDogText}>반려견 추가</Text>
+                </Pressable>
+              </View>
             )}
           </View>
         )}
 
-        <View style={styles.section}>
+        <View
+          style={[styles.section, !isLoggedIn && styles.loggedOutMenuSection]}
+        >
           <View style={styles.menuCard}>
-            <Pressable accessibilityRole="button" onPress={showComingSoon} style={styles.menuRow}>
-              <SymbolView
-                name={{ android: 'notifications', ios: 'bell', web: 'notifications' }}
-                size={18}
-                tintColor="#8B95A1"
-              />
-              <Text style={styles.menuText}>알림 설정</Text>
-            </Pressable>
             {isLoggedIn ? (
               <Pressable
                 accessibilityRole="button"
-                onPress={() => router.push('/profile/reviews')}
+                onPress={() => router.push("/profile/reviews")}
                 style={styles.menuRow}
               >
-                <SymbolView
-                  name={{ android: 'rate_review', ios: 'text.bubble', web: 'rate_review' }}
-                  size={18}
-                  tintColor="#8B95A1"
+                <Image
+                  contentFit="contain"
+                  source={REVIEW_ICON}
+                  style={styles.menuIcon}
                 />
                 <Text style={styles.menuText}>방문 장소/리뷰</Text>
+                <Image
+                  contentFit="contain"
+                  source={PROFILE_CHEVRON_ICON}
+                  style={styles.menuChevron}
+                />
               </Pressable>
             ) : null}
             <Pressable
               accessibilityRole="button"
-              onPress={() => router.push('/profile/settings')}
-              style={[styles.menuRow, styles.menuRowLast]}
+              onPress={() => router.push("/profile/settings")}
+              style={styles.menuRow}
             >
-              <SymbolView
-                name={{ android: 'description', ios: 'doc.text', web: 'description' }}
-                size={18}
-                tintColor="#8B95A1"
+              <Image
+                contentFit="contain"
+                source={TERMS_ICON}
+                style={styles.menuIcon}
               />
               <Text style={styles.menuText}>약관 및 정책</Text>
-              <SymbolView
-                name={{ android: 'chevron_right', ios: 'chevron.right', web: 'chevron_right' }}
-                size={18}
-                tintColor="#8B95A1"
+              <Image
+                contentFit="contain"
+                source={PROFILE_CHEVRON_ICON}
+                style={styles.menuChevron}
               />
             </Pressable>
           </View>
@@ -199,7 +255,11 @@ export function ProfileScreen() {
               <Pressable accessibilityRole="button" onPress={confirmLogout}>
                 <Text style={styles.bottomLinkText}>로그아웃</Text>
               </Pressable>
-              <Pressable accessibilityRole="button" onPress={showComingSoon}>
+              <Pressable
+                accessibilityRole="button"
+                disabled={withdrawing}
+                onPress={confirmWithdraw}
+              >
                 <Text style={styles.bottomLinkText}>회원탈퇴</Text>
               </Pressable>
             </View>
@@ -209,7 +269,8 @@ export function ProfileScreen() {
       <BottomTabBar
         active="profile"
         height={bottomTabHeight}
-        onPressHome={() => router.push('/')}
+        onPressHome={() => router.navigate("/")}
+        onPressProfile={() => router.navigate("/profile")}
         paddingBottom={insets.bottom}
       />
       {isLoggedIn ? (
@@ -219,6 +280,26 @@ export function ProfileScreen() {
           visible={isNameModalVisible}
         />
       ) : null}
+    </View>
+  );
+}
+
+function ProfileAvatar({ imageUrl }: { imageUrl?: string }) {
+  return (
+    <View style={styles.profileImage}>
+      {imageUrl ? (
+        <Image
+          contentFit="cover"
+          source={{ uri: imageUrl }}
+          style={styles.profileImageContent}
+        />
+      ) : (
+        <Image
+          contentFit="contain"
+          source={PROFILE_DEFAULT_ICON}
+          style={styles.profileDefaultIcon}
+        />
+      )}
     </View>
   );
 }

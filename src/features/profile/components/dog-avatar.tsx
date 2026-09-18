@@ -4,6 +4,8 @@ import { View } from 'react-native';
 
 import { styles } from '../styles';
 
+const DOG_PLACEHOLDER = require('../assets/dog-placeholder.svg');
+
 interface DogAvatarProps {
   imageUrl?: string;
   large?: boolean;
@@ -17,6 +19,10 @@ export function DogAvatar({ imageUrl, large = false }: DogAvatarProps) {
 
   if (imageUrl) {
     return <Image contentFit="cover" source={{ uri: imageUrl }} style={imageStyle} />;
+  }
+
+  if (!large) {
+    return <Image contentFit="contain" source={DOG_PLACEHOLDER} style={styles.dogImage} />;
   }
 
   return (

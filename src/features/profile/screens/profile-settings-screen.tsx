@@ -1,12 +1,14 @@
-import { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
-import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { showDialog } from '@/components/ui/dialog';
 import { ScreenHeader } from '@/components/ui/screen-header';
 
 import { getMyAgreements } from '@/features/agreements/api';
 import { useAuthStore } from '@/features/auth/authStore';
+import { useAuth } from '@/features/auth/useAuth';
 import { styles } from '../styles';
 
 import type { Agreement, AgreementType } from '@/features/agreements/types';
@@ -24,25 +26,14 @@ export function ProfileSettingsScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const isLoggedIn = useAuthStore(state => state.isLoggedIn);
-  const isMockSession = useAuthStore(state => state.isMockSession);
+  const { handleWithdrawAccount } = useAuth();
   const [agreements, setAgreements] = useState<Agreement[]>([]);
   const [loading, setLoading] = useState(isLoggedIn);
+  const [withdrawing, setWithdrawing] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
     if (!isLoggedIn) return;
-
-    // TODO(#11): 실제 로그인 화면(#9)이 머지되면 이 분기를 제거한다.
-    // 목로그인 상태에는 진짜 토큰이 없으니 실제 API를 아예 호출하지 않는다.
-    if (isMockSession) {
-      void Promise.resolve().then(() => {
-        if (!isMounted) return;
-
-        setAgreements([]);
-        setLoading(false);
-      });
-      return;
-    }
 
     void getMyAgreements()
       .then(response => {
@@ -58,7 +49,40 @@ export function ProfileSettingsScreen() {
     return () => {
       isMounted = false;
     };
-  }, [isLoggedIn, isMockSession]);
+  }, [isLoggedIn]);
+
+  const withdraw = async () => {
+    if (withdrawing) return;
+
+    setWithdrawing(true);
+    try {
+      await handleWithdrawAccount();
+      showDialog(
+        '탈퇴 신청이 완료됐어요',
+        '30일 이내 다시 로그인하면 계정을 복구할 수 있어요.',
+        [{ text: '확인', onPress: () => router.replace('/') }],
+      );
+    } catch {
+      showDialog('탈퇴 신청에 실패했어요', '잠시 후 다시 시도해주세요.');
+    } finally {
+      setWithdrawing(false);
+    }
+  };
+
+  const confirmWithdraw = () => {
+    showDialog(
+      '정말 탈퇴할까요?',
+      '탈퇴 신청 즉시 로그아웃되며, 30일 동안 계정 복구가 가능해요.',
+      [
+        { style: 'cancel', text: '취소' },
+        {
+          style: 'destructive',
+          text: withdrawing ? '처리 중...' : '탈퇴하기',
+          onPress: () => void withdraw(),
+        },
+      ],
+    );
+  };
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
@@ -85,6 +109,18 @@ export function ProfileSettingsScreen() {
               );
             })}
           </View>
+          {isLoggedIn ? (
+            <Pressable
+              accessibilityRole="button"
+              disabled={withdrawing}
+              onPress={confirmWithdraw}
+              style={styles.withdrawButton}
+            >
+              <Text style={styles.dangerText}>
+                {withdrawing ? '탈퇴 처리 중...' : '회원탈퇴'}
+              </Text>
+            </Pressable>
+          ) : null}
         </View>
       </ScrollView>
     </View>

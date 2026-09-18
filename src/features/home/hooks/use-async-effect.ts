@@ -1,5 +1,6 @@
-import type { DependencyList } from 'react';
 import { useEffect, useState } from 'react';
+
+import type { DependencyList } from 'react';
 
 /**
  * 마운트 해제 이후의 setState를 막아주는 loading/hasError 상태를 가진

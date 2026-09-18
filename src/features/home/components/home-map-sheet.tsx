@@ -14,13 +14,14 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import type { Course } from '@/features/courses/types';
-import type { Place } from '@/features/places/types';
-
 import { colors, styles } from '../styles';
-import type { HomeDogProfile } from '../types';
 import { FeedContent } from './feed-content';
 import { PlaceList } from './place-list';
+
+import type { Course } from '@/features/courses/types';
+import type { Place } from '@/features/places/types';
+import type { HomeDogProfile } from '../types';
+
 
 interface HomeMapSheetProps {
   bottom: number;

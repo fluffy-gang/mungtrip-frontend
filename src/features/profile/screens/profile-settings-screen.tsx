@@ -4,11 +4,12 @@ import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ScreenHeader } from '@/components/ui/screen-header';
-import { getMyAgreements } from '@/features/agreements/api';
-import type { Agreement, AgreementType } from '@/features/agreements/types';
-import { useAuthStore } from '@/features/auth/authStore';
 
+import { getMyAgreements } from '@/features/agreements/api';
+import { useAuthStore } from '@/features/auth/authStore';
 import { styles } from '../styles';
+
+import type { Agreement, AgreementType } from '@/features/agreements/types';
 
 const agreementLabels: Record<AgreementType, string> = {
   ELECTRONIC_FINANCE: '전자금융거래 이용약관',

@@ -15,27 +15,22 @@ import {
 } from '@/components/ui/input';
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { StatePanel } from '@/components/ui/state-panel';
-import { getDogPersonalities } from '@/features/dog-personalities/api';
-import type { DogPersonality } from '@/features/dog-personalities/types';
-import { updateDog } from '@/features/dogs/api';
-import type { Dog, DogSize } from '@/features/dogs/types';
-import { getPresignedUrl, uploadFileToPresignedUrl } from '@/features/uploads/api';
 
+import { getDogPersonalities } from '@/features/dog-personalities/api';
+import { updateDog } from '@/features/dogs/api';
+import { uploadFile } from '@/features/uploads/api';
 import { DogAvatar } from '../components/dog-avatar';
 import { useDogs } from '../hooks/use-dogs';
 import { styles } from '../styles';
+
+import type { Dog, DogSize } from '@/features/dogs/types';
+import type { DogPersonality } from '@/features/dog-personalities/types';
 
 const sizeOptions = [
   { label: '소형견', value: 'S' },
   { label: '중형견', value: 'M' },
   { label: '대형견', value: 'L' },
 ] as const;
-
-const toFormSize: Record<Dog['size'], DogSize> = {
-  LARGE: 'L',
-  MEDIUM: 'M',
-  SMALL: 'S',
-};
 
 export function DogEditScreen() {
   const insets = useSafeAreaInsets();
@@ -74,16 +69,16 @@ export function DogEditScreen() {
 function DogEditForm({ dog, onSaved }: { dog: Dog; onSaved: () => void }) {
   const [name, setName] = useState(dog.name);
   const [weight, setWeight] = useState(String(dog.weight));
-  const [size, setSize] = useState<DogSize>(toFormSize[dog.size]);
+  const [size, setSize] = useState<DogSize>(dog.size);
   const [personalityIds, setPersonalityIds] = useState<string[]>(
     dog.personalities.map(item => String(item.id)),
   );
-  const [isNeutered, setIsNeutered] = useState(dog.isNeutered);
-  const [isDangerousDog, setIsDangerousDog] = useState(dog.isDangerousDog);
+  const [isNeutered, setIsNeutered] = useState(dog.isNeutered ?? false);
+  const [isDangerousDog, setIsDangerousDog] = useState(dog.isDangerousDog ?? false);
   const [personalities, setPersonalities] = useState<DogPersonality[]>([]);
   const [saving, setSaving] = useState(false);
   const [pendingImageUri, setPendingImageUri] = useState<string | undefined>();
-  const [profileImageKey, setProfileImageKey] = useState<string | undefined>();
+  const [profileImageUrl, setProfileImageUrl] = useState<string | undefined>();
   const [uploadingImage, setUploadingImage] = useState(false);
   const personalityOptions = useMemo(
     () => personalities.map(item => ({ label: item.name, value: String(item.id) })),
@@ -126,12 +121,12 @@ function DogEditForm({ dog, onSaved }: { dog: Dog; onSaved: () => void }) {
     setPendingImageUri(asset.uri);
     setUploadingImage(true);
     try {
-      const { objectKey, uploadUrl } = await getPresignedUrl({
+      const uploadedProfileImageUrl = await uploadFile(
+        asset.uri,
         fileType,
-        uploadType: 'DOG_PROFILE_IMAGE',
-      });
-      await uploadFileToPresignedUrl(uploadUrl, asset.uri, fileType);
-      setProfileImageKey(objectKey);
+        'DOG_PROFILE_IMAGE',
+      );
+      setProfileImageUrl(uploadedProfileImageUrl);
     } catch {
       setPendingImageUri(undefined);
       Alert.alert('이미지를 업로드하지 못했어요', '잠시 후 다시 시도해주세요.');
@@ -146,12 +141,12 @@ function DogEditForm({ dog, onSaved }: { dog: Dog; onSaved: () => void }) {
     setSaving(true);
     try {
       await updateDog(dog.dogId, {
-        breedId: dog.breed.breedId,
+        breed: dog.breed,
         isDangerousDog,
         isNeutered,
         name: name.trim(),
         personalityIds: personalityIds.map(Number),
-        ...(profileImageKey ? { profileImageKey } : {}),
+        profileImageUrl: profileImageUrl ?? dog.profileImageUrl,
         size,
         weight: parsedWeight,
       });
@@ -173,7 +168,7 @@ function DogEditForm({ dog, onSaved }: { dog: Dog; onSaved: () => void }) {
           onPress={() => void pickImage()}
           style={styles.avatarEditWrap}
         >
-          <DogAvatar imageUrl={pendingImageUri ?? dog.imageUrl} large />
+          <DogAvatar imageUrl={pendingImageUri ?? dog.profileImageUrl} large />
           {uploadingImage ? (
             <View style={styles.avatarUploadOverlay}>
               <ActivityIndicator color="#FFFFFF" />
@@ -201,7 +196,7 @@ function DogEditForm({ dog, onSaved }: { dog: Dog; onSaved: () => void }) {
         helperText="견종 변경은 추후 지원할 예정이에요."
         label="견종"
         onChange={() => undefined}
-        value={dog.breed.name}
+        value={dog.breed}
       />
       <View>
         <Text style={styles.fieldLabel}>크기</Text>

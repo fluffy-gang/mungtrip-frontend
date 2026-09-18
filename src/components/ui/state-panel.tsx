@@ -2,7 +2,6 @@ import { SymbolView } from 'expo-symbols';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 import { tokens } from '@/constants/tokens';
-
 import { Button } from './button';
 
 const colors = tokens.colors.semantic.light;

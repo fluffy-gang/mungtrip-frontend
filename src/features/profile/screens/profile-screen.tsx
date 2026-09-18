@@ -9,10 +9,10 @@ import { BOTTOM_TAB_HEIGHT, BottomTabBar } from '@/components/navigation/bottom-
 import { Button } from '@/components/ui/button';
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { StatePanel } from '@/components/ui/state-panel';
+
 import { useAuthStore } from '@/features/auth/authStore';
 import { MOCK_USER } from '@/features/auth/mock/user';
 import { useAuth } from '@/features/auth/useAuth';
-
 import { DogAvatar } from '../components/dog-avatar';
 import { NameChangeModal } from '../components/name-change-modal';
 import { useDogs } from '../hooks/use-dogs';
@@ -130,11 +130,11 @@ export function ProfileScreen() {
                     }
                     style={styles.dogCard}
                   >
-                    <DogAvatar imageUrl={dog.imageUrl} />
+                    <DogAvatar imageUrl={dog.profileImageUrl} />
                     <View style={styles.dogBody}>
                       <Text style={styles.dogName}>{dog.name}</Text>
                       <Text style={styles.dogMeta}>
-                        {dog.breed.name} · {dog.weight}kg
+                        {dog.breed} · {dog.weight}kg
                       </Text>
                     </View>
                     <SymbolView

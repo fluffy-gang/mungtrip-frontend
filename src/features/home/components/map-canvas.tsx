@@ -1,17 +1,18 @@
 import { Image } from "expo-image";
 import { SymbolView } from "expo-symbols";
 import { useMemo } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Platform, StyleSheet, Text, View } from "react-native";
 
-import type { Place, PlaceCategory } from "@/features/places/types";
 
 import { JEJU_MAP_CAMERA } from "../constants";
 import { styles as homeStyles } from "../styles";
-import type { LocationCoordinate, MapBounds, MapCamera } from "../types";
 import { toMapBounds } from "../utils/map-utils";
 import { loadNativeMapModule } from "../utils/native-modules";
 import { hasPlaceCoordinate } from "../utils/place-utils";
 import { PlaceMarker } from "./place-marker";
+
+import type { LocationCoordinate, MapBounds, MapCamera } from "../types";
+import type { Place, PlaceCategory } from "@/features/places/types";
 
 const nativeMapModule = loadNativeMapModule();
 
@@ -78,7 +79,8 @@ export function MapCanvas({
 
             return (
               <PlaceMarker
-                key={`${place.id}-${isSelected ? "selected" : "default"}-${isCategoryMatch ? "match" : "dim"}`}
+                // Android tracks updates; replacing a selected marker recycles its active bitmap.
+                key={Platform.OS === 'ios' ? `${place.id}-${isSelected ? "selected" : "default"}-${isCategoryMatch ? "match" : "dim"}` : place.id}
                 MarkerOverlay={NaverMapMarkerOverlay}
                 onSelect={onSelectPlace}
                 place={place}

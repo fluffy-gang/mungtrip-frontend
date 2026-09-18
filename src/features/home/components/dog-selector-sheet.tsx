@@ -4,8 +4,9 @@ import { Image } from 'expo-image';
 import { SymbolView } from 'expo-symbols';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import type { HomeDogProfile } from '../types';
 import { colors, styles } from '../styles';
+
+import type { HomeDogProfile } from '../types';
 
 interface DogSelectorSheetProps {
   dogs: HomeDogProfile[];

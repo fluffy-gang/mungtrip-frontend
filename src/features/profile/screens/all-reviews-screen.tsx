@@ -8,9 +8,11 @@ import { ScreenHeader } from '@/components/ui/screen-header';
 import { StatePanel } from '@/components/ui/state-panel';
 
 import { ReviewCard } from '../components/review-card';
-import type { MockReview } from '../mock/reviews';
 import { useReviewsMockStore } from '../mock/reviews-store';
+import { reviewStyles } from '../review-styles';
 import { styles } from '../styles';
+
+import type { MockReview } from '../mock/reviews';
 
 const showComingSoon = () => {
   Alert.alert('아직 지원되지 않는 기능이에요', '곧 만나보실 수 있어요.');
@@ -57,7 +59,7 @@ export function AllReviewsScreen() {
         contentContainerStyle={[styles.content, { paddingBottom: bottomTabHeight + 16 }]}
       >
         <ScreenHeader onBack={() => router.back()} title="전체 리뷰" />
-        <Text style={styles.reviewCountLabel}>내가 쓴 리뷰 {reviews.length}개</Text>
+        <Text style={reviewStyles.reviewCountLabel}>내가 쓴 리뷰 {reviews.length}개</Text>
 
         {reviews.length === 0 ? (
           <StatePanel
@@ -74,8 +76,8 @@ export function AllReviewsScreen() {
         )}
       </ScrollView>
       {toastMessage ? (
-        <View style={[styles.toast, { bottom: bottomTabHeight + insets.bottom + 12 }]}>
-          <Text style={styles.toastText}>{toastMessage}</Text>
+        <View style={[reviewStyles.toast, { bottom: bottomTabHeight + insets.bottom + 12 }]}>
+          <Text style={reviewStyles.toastText}>{toastMessage}</Text>
         </View>
       ) : null}
       <BottomTabBar

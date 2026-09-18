@@ -1,11 +1,12 @@
 import { Pressable, Text, View } from 'react-native';
 import { SymbolView } from 'expo-symbols';
 
-import type { Place } from '@/features/places/types';
 
 import { colors, styles } from '../styles';
 import { getVerifiedDiffDays } from '../utils/place-utils';
 import { PlaceThumbnail } from './place-thumbnail';
+
+import type { Place } from '@/features/places/types';
 
 const getBadgeLabel = (place: Place): string | null => {
   if (place.rank !== undefined) {

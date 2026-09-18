@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useAuthStore } from '@/features/auth/authStore';
 import { getMyDogs } from '@/features/dogs/api';
 import { MOCK_DOGS } from '@/features/dogs/mock/dogs';
+
 import type { Dog } from '@/features/dogs/types';
 
 export function useDogs(enabled = true) {

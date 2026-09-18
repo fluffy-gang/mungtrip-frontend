@@ -5,17 +5,18 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button } from '@/components/ui/button';
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { StatePanel } from '@/components/ui/state-panel';
-import { deleteDog } from '@/features/dogs/api';
-import type { Dog } from '@/features/dogs/types';
 
+import { deleteDog } from '@/features/dogs/api';
 import { DogAvatar } from '../components/dog-avatar';
 import { useDogs } from '../hooks/use-dogs';
 import { styles } from '../styles';
 
-const sizeLabels: Record<Dog['size'], string> = {
-  LARGE: '대형견',
-  MEDIUM: '중형견',
-  SMALL: '소형견',
+import type { DogSize } from '@/features/dogs/types';
+
+const sizeLabels: Record<DogSize, string> = {
+  L: '대형견',
+  M: '중형견',
+  S: '소형견',
 };
 
 export function DogDetailScreen() {
@@ -58,11 +59,11 @@ export function DogDetailScreen() {
         ) : (
           <>
             <View style={styles.detailImageWrap}>
-              <DogAvatar imageUrl={dog.imageUrl} large />
+              <DogAvatar imageUrl={dog.profileImageUrl} large />
               <Text style={[styles.profileName, { marginTop: 12 }]}>{dog.name}</Text>
             </View>
             <View style={styles.infoList}>
-              <InfoRow label="견종" value={dog.breed.name} />
+              <InfoRow label="견종" value={dog.breed} />
               <InfoRow label="크기" value={sizeLabels[dog.size]} />
               <InfoRow label="몸무게" value={`${dog.weight}kg`} />
               <InfoRow

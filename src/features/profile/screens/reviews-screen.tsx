@@ -10,6 +10,7 @@ import { StatePanel } from '@/components/ui/state-panel';
 import { ReviewCard } from '../components/review-card';
 import { MOCK_VISITED_PLACES } from '../mock/reviews';
 import { useReviewsMockStore } from '../mock/reviews-store';
+import { reviewStyles } from '../review-styles';
 import { styles } from '../styles';
 
 const showComingSoon = () => {
@@ -29,15 +30,15 @@ export function ReviewsScreen() {
       >
         <ScreenHeader onBack={() => router.back()} title="방문 장소/리뷰" />
 
-        <View style={styles.reviewCountRow}>
-          <Text style={[styles.reviewCountLabel, { marginTop: 0 }]}>
+        <View style={reviewStyles.reviewCountRow}>
+          <Text style={[reviewStyles.reviewCountLabel, { marginTop: 0 }]}>
             내가 쓴 리뷰 {reviews.length}개
           </Text>
           {reviews.length > 0 ? (
             <Text
               accessibilityRole="link"
               onPress={() => router.push('/profile/reviews/all')}
-              style={styles.viewAllLink}
+              style={reviewStyles.viewAllLink}
             >
               전체보기
             </Text>
@@ -54,7 +55,7 @@ export function ReviewsScreen() {
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            style={styles.reviewPreviewScroll}
+            style={reviewStyles.reviewPreviewScroll}
           >
             {reviews.map(review => (
               <ReviewCard
@@ -62,20 +63,20 @@ export function ReviewsScreen() {
                 key={review.id}
                 onPressMenu={() => router.push('/profile/reviews/all')}
                 review={review}
-                style={styles.reviewPreviewCard}
+                style={reviewStyles.reviewPreviewCard}
               />
             ))}
           </ScrollView>
         )}
 
         {MOCK_VISITED_PLACES.length > 0 ? (
-          <View style={styles.visitedSection}>
-            <Text style={styles.reviewCountLabel}>내가 방문한 곳</Text>
+          <View style={reviewStyles.visitedSection}>
+            <Text style={reviewStyles.reviewCountLabel}>내가 방문한 곳</Text>
             {MOCK_VISITED_PLACES.map(place => (
-              <View key={place.id} style={styles.visitedRow}>
-                <View style={styles.visitedBody}>
-                  <Text style={styles.visitedPlaceName}>{place.placeName}</Text>
-                  <Text style={styles.visitedDate}>{place.visitedAt}</Text>
+              <View key={place.id} style={reviewStyles.visitedRow}>
+                <View style={reviewStyles.visitedBody}>
+                  <Text style={reviewStyles.visitedPlaceName}>{place.placeName}</Text>
+                  <Text style={reviewStyles.visitedDate}>{place.visitedAt}</Text>
                 </View>
                 <Button fullWidth={false} onPress={showComingSoon} size="m" type="sub">
                   리뷰 작성

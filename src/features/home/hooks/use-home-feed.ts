@@ -1,11 +1,12 @@
 import { useState } from 'react';
 
 import { getCourses } from '@/features/courses/api';
-import type { Course } from '@/features/courses/types';
 import { getRecentlyVerifiedPlaces, getTopPlaces } from '@/features/places/api';
+import { useAsyncEffect } from './use-async-effect';
+
+import type { Course } from '@/features/courses/types';
 import type { Place, PlaceCategory, PlaceTag } from '@/features/places/types';
 
-import { useAsyncEffect } from './use-async-effect';
 
 interface UseHomeFeedOptions {
   categories: PlaceCategory[];

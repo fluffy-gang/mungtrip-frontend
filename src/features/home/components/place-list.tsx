@@ -1,11 +1,12 @@
 import { SymbolView } from "expo-symbols";
 import { Pressable, ScrollView, Text, View } from "react-native";
 
-import type { Place } from "@/features/places/types";
-
 import { styles } from "../styles";
-import type { HomeDogProfile } from "../types";
 import { PlaceListRow } from "./place-list-row";
+
+import type { Place } from "@/features/places/types";
+import type { HomeDogProfile } from "../types";
+
 
 interface PlaceListProps {
   dogs?: HomeDogProfile[];

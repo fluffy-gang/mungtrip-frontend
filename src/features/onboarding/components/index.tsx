@@ -25,11 +25,13 @@ export function OnboardingPage({ children }: ChildrenProps) {
   return <SafeAreaView style={styles.page}>{children}</SafeAreaView>;
 }
 
-export function BackButton({ onPress }: BackButtonProps) {
+export function BackButton({ disabled = false, onPress }: BackButtonProps) {
   return (
     <Pressable
       accessibilityLabel="이전 화면"
       accessibilityRole="button"
+      accessibilityState={{ disabled }}
+      disabled={disabled}
       hitSlop={8}
       onPress={onPress}
       style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}
@@ -43,10 +45,10 @@ export function BackButton({ onPress }: BackButtonProps) {
   );
 }
 
-export function StepHeader({ current, onBack }: StepHeaderProps) {
+export function StepHeader({ current, disabled = false, onBack }: StepHeaderProps) {
   return (
     <View>
-      <BackButton onPress={onBack} />
+      <BackButton disabled={disabled} onPress={onBack} />
       <View
         accessibilityLabel={`반려견 등록 ${current}단계, 총 4단계`}
         accessibilityRole="progressbar"

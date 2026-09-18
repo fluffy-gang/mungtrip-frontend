@@ -1,11 +1,11 @@
 import { SymbolView } from 'expo-symbols';
 import { Text, View } from 'react-native';
 
-import { styles } from '../styles';
+import { reviewStyles } from '../review-styles';
 
 export function StarRating({ rating }: { rating: number }) {
   return (
-    <View style={styles.reviewRatingRow}>
+    <View style={reviewStyles.reviewRatingRow}>
       {[1, 2, 3, 4, 5].map(position => (
         <SymbolView
           key={position}
@@ -18,7 +18,7 @@ export function StarRating({ rating }: { rating: number }) {
           tintColor="#FE6A20"
         />
       ))}
-      <Text style={styles.reviewRatingText}>{rating.toFixed(1)}</Text>
+      <Text style={reviewStyles.reviewRatingText}>{rating.toFixed(1)}</Text>
     </View>
   );
 }

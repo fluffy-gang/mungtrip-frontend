@@ -1,34 +1,27 @@
-import { useFocusEffect, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
-import { BackHandler, useWindowDimensions } from 'react-native';
+import { useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import type { Place, PlaceCategory } from '@/features/places/types';
 
 import {
   HEADER_CONTENT_HEIGHT,
   JEJU_MAP_BOUNDS,
-  MAP_BOUNDS_EPSILON,
   MAP_MAX_ZOOM,
   MAP_MIN_ZOOM,
   MAP_ZOOM_STEP,
 } from '../constants';
-import type { HomeMode, MapBounds, PlaceListSource } from '../types';
+import { areMapBoundsEqual } from '../utils/map-bounds';
 import { filterPlaces } from '../utils/place-utils';
 import { useCurrentLocation } from './use-current-location';
 import { useHomeData } from './use-home-data';
+import { useHomeBackHandler } from './use-home-back-handler';
 import { useHomeViewer } from './use-home-viewer';
 import { useMapSheetController } from './use-map-sheet-controller';
 import { useRecentSearches } from './use-recent-searches';
 
-const areMapBoundsEqual = (firstBounds: MapBounds, secondBounds: MapBounds) => {
-  return (
-    Math.abs(firstBounds.swLng - secondBounds.swLng) < MAP_BOUNDS_EPSILON &&
-    Math.abs(firstBounds.swLat - secondBounds.swLat) < MAP_BOUNDS_EPSILON &&
-    Math.abs(firstBounds.neLng - secondBounds.neLng) < MAP_BOUNDS_EPSILON &&
-    Math.abs(firstBounds.neLat - secondBounds.neLat) < MAP_BOUNDS_EPSILON
-  );
-};
+import type { HomeMode, MapBounds, PlaceListSource } from '../types';
+import type { Place, PlaceCategory } from '@/features/places/types';
 
 export function useHomeScreen() {
   const insets = useSafeAreaInsets();
@@ -36,8 +29,7 @@ export function useHomeScreen() {
   const { height: windowHeight } = useWindowDimensions();
   const [mode, setMode] = useState<HomeMode>('map');
   const [query, setQuery] = useState('');
-  const [listSource, setListSource] =
-    useState<PlaceListSource>('recommendation');
+  const [listSource, setListSource] = useState<PlaceListSource>('recommendation');
   const headerHeight = insets.top + HEADER_CONTENT_HEIGHT;
   const mapSheet = useMapSheetController({
     areaHeight: windowHeight - headerHeight,
@@ -98,8 +90,7 @@ export function useHomeScreen() {
           return currentBounds;
         }
 
-        // 사용자가 지도를 직접 움직이면 이전 검색 결과 고정을 풀고
-        // 다시 위치 기준 목록을 보여준다.
+        // 지도 이동 시 검색 결과 고정을 해제하고 위치 기준 목록으로 복귀한다.
         if (isSearchList) {
           setQuery('');
           clearSearchResults();
@@ -165,8 +156,7 @@ export function useHomeScreen() {
 
       setListSource(nextCategoryCode ? 'category' : 'recommendation');
 
-      // 콘텐츠(피드) 화면에서 고른 경우에만 필터링된 리스트로 전환한다.
-      // 이미 리스트 화면이면(선택이든 해제든) 화면 전환 없이 필터만 바뀐다.
+      // 피드에서 고른 경우만 필터 목록으로 전환하고 목록에서는 화면을 유지한다.
       if (!mapSheet.isPlaceList) {
         mapSheet.showPlacesCollapsed();
       }
@@ -241,9 +231,7 @@ export function useHomeScreen() {
   }, [clearSearchResults]);
   const selectPlace = useCallback(
     (place: Place) => {
-      // 상세로 바로 이동하는 흐름이라 미리보기 카드(selectedPlace)를 거치지 않는다.
-      // 여기서 selectedPlace를 세팅하면 전환되는 한 프레임 동안 바텀시트가
-      // PlacePreviewCard로 바뀌었다 사라지는 깜빡임이 생긴다.
+      // 상세로 바로 이동해 미리보기 카드가 한 프레임 노출되는 깜빡임을 막는다.
       router.push({
         params: { id: String(place.id) },
         pathname: '/places/[id]',
@@ -263,32 +251,12 @@ export function useHomeScreen() {
     setSelectedPlace(null);
   }, []);
 
-  // 안드로이드 하드웨어 뒤로가기가 검색/장소 미리보기 오버레이를 건너뛰고
-  // 바로 앱을 종료시키지 않도록, 열려있는 오버레이부터 닫는다.
-  // 홈 화면이 포커스된 동안에만 등록해야, 상세 화면으로 push된 뒤에도
-  // 백그라운드의 홈 리스너가 뒤로가기를 가로채 스택 pop을 막는 것을 방지한다.
-  useFocusEffect(
-    useCallback(() => {
-      if (mode !== 'search' && !selectedPlace) {
-        return;
-      }
-
-      const subscription = BackHandler.addEventListener(
-        'hardwareBackPress',
-        () => {
-          if (mode === 'search') {
-            closeSearch();
-          } else {
-            closeSelectedPlace();
-          }
-
-          return true;
-        },
-      );
-
-      return () => subscription.remove();
-    }, [mode, selectedPlace, closeSearch, closeSelectedPlace]),
-  );
+  useHomeBackHandler({
+    closePlacePreview: closeSelectedPlace,
+    closeSearch,
+    mode,
+    selectedPlace,
+  });
 
   return {
     activeCategoryCode,

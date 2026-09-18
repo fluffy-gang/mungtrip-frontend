@@ -1,10 +1,11 @@
-import type { LocationObject } from 'expo-location';
 import { useCallback, useState } from 'react';
 import { Alert } from 'react-native';
 
 import { JEJU_MAP_CAMERA } from '../constants';
-import type { LocationCoordinate, MapCamera } from '../types';
 import { loadLocationModule } from '../utils/native-modules';
+
+import type { LocationCoordinate, MapCamera } from '../types';
+import type { LocationObject } from 'expo-location';
 
 const locationModule = loadLocationModule();
 

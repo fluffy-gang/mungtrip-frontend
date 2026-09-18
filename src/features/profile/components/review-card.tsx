@@ -1,10 +1,11 @@
 import { SymbolView } from 'expo-symbols';
 import { Pressable, Text, View } from 'react-native';
-import type { StyleProp, ViewStyle } from 'react-native';
 
-import type { MockReview } from '../mock/reviews';
-import { styles } from '../styles';
+import { reviewStyles } from '../review-styles';
 import { StarRating } from './star-rating';
+
+import type { StyleProp, ViewStyle } from 'react-native';
+import type { MockReview } from '../mock/reviews';
 
 interface ReviewCardProps {
   contentNumberOfLines?: number;
@@ -15,9 +16,9 @@ interface ReviewCardProps {
 
 export function ReviewCard({ contentNumberOfLines, onPressMenu, review, style }: ReviewCardProps) {
   return (
-    <View style={[styles.reviewCard, style]}>
-      <View style={styles.reviewCardHeader}>
-        <Text style={styles.reviewPlaceName}>{review.placeName}</Text>
+    <View style={[reviewStyles.reviewCard, style]}>
+      <View style={reviewStyles.reviewCardHeader}>
+        <Text style={reviewStyles.reviewPlaceName}>{review.placeName}</Text>
         <Pressable
           accessibilityLabel="리뷰 관리"
           accessibilityRole="button"
@@ -31,10 +32,10 @@ export function ReviewCard({ contentNumberOfLines, onPressMenu, review, style }:
         </Pressable>
       </View>
       <StarRating rating={review.rating} />
-      <Text style={styles.reviewMeta}>
+      <Text style={reviewStyles.reviewMeta}>
         {review.date} · {review.dogName}
       </Text>
-      <Text numberOfLines={contentNumberOfLines} style={styles.reviewContent}>
+      <Text numberOfLines={contentNumberOfLines} style={reviewStyles.reviewContent}>
         {review.content}
       </Text>
     </View>

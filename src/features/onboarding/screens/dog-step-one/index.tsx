@@ -16,6 +16,8 @@ import {
 import { BREEDS } from '../../constants';
 import { useOnboarding } from '../../context';
 import { styles } from './style';
+import { getBreedPreset } from '../../preset-assets';
+import { SafeImage } from '../../components/safe-image';
 
 import type { Href } from 'expo-router';
 
@@ -27,12 +29,14 @@ export function DogStepOneScreen() {
   const router = useRouter();
   const { width } = useWindowDimensions();
   const { draft, loadPersonalities, setDraft } = useOnboarding();
-  const initialBreedId = draft.breedId ?? BREEDS.find((item) => item.name === draft.breed)?.id;
-  const initialIndex = BREEDS.length
-    + Math.max(BREEDS.findIndex((item) => item.id === initialBreedId), 0);
+  const initialBreed = BREEDS.find((item) => item.id === draft.breedId)
+    ?? BREEDS.find((item) => item.name === draft.breed)
+    ?? BREEDS[0];
+  const initialBreedId = initialBreed.id;
+  const initialIndex = BREEDS.length + BREEDS.indexOf(initialBreed);
   const listRef = useRef<FlatList<(typeof LOOP_BREEDS)[number]>>(null);
   const [carouselWidth, setCarouselWidth] = useState(width);
-  const [selectedId, setSelectedId] = useState(initialBreedId ?? BREEDS[0].id);
+  const [selectedId, setSelectedId] = useState(initialBreedId);
   const selectedBreed = BREEDS.find((item) => item.id === selectedId);
 
   useEffect(() => {
@@ -64,7 +68,9 @@ export function DogStepOneScreen() {
       </View>
       <FadeSequence delay={80} style={styles.breedSection}>
         <View style={styles.breedPreview}>
-          <DogPlaceholder style={styles.breedPreviewImage} />
+          {getBreedPreset(selectedId, 'selected') ? (
+            <SafeImage contentFit="contain" source={getBreedPreset(selectedId, 'selected')?.cover} fallback={<DogPlaceholder style={styles.breedPreviewImage} />} style={styles.breedPreviewImage} />
+          ) : <DogPlaceholder style={styles.breedPreviewImage} />}
         </View>
         <FlatList
           contentContainerStyle={[
@@ -112,7 +118,9 @@ export function DogStepOneScreen() {
                 style={styles.breedItem}
               >
                 <View style={[styles.breedCard, selected && styles.breedCardSelected]}>
-                  <DogPlaceholder compact style={styles.breedThumbnail} />
+                  {getBreedPreset(item.id, 'selected') ? (
+                    <SafeImage contentFit="contain" source={getBreedPreset(item.id, 'selected')?.profile} fallback={<DogPlaceholder compact style={styles.breedThumbnail} />} style={styles.breedThumbnail} />
+                  ) : <DogPlaceholder compact style={styles.breedThumbnail} />}
                 </View>
                 <Text
                   color={selected ? 'primary' : 'textSecondary'}

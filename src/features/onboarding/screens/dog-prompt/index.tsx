@@ -3,10 +3,12 @@ import { View } from 'react-native';
 
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
-import { BottomActions, OnboardingPage, ScreenTitle } from '@/features/onboarding/components';
+import { BottomActions, DogPlaceholder, OnboardingPage, ScreenTitle } from '@/features/onboarding/components';
 
 import { useOnboarding } from '../../context';
 import { styles } from './style';
+import { getHeroPreset } from '../../preset-assets';
+import { SafeImage } from '../../components/safe-image';
 
 import type { Href } from 'expo-router';
 
@@ -16,7 +18,7 @@ export function DogPromptScreen() {
 
   return (
     <OnboardingPage>
-      <View style={styles.promptHero} />
+      <SafeImage contentFit="contain" source={getHeroPreset()} fallback={<DogPlaceholder style={styles.promptHero} />} style={styles.promptHero} />
       <View style={styles.promptCopy}>
         <ScreenTitle style={styles.centerText}>
           우리 아이 등록하고{`\n`}딱 맞는 곳 찾아볼까요?

@@ -1,4 +1,3 @@
-import { Image } from 'expo-image';
 import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -17,6 +16,8 @@ import {
 
 import { tokens } from '@/constants/tokens';
 import { useOnboarding } from '../../context';
+import { isRenderableImageUri } from '../../preset-assets';
+import { SafeImage } from '../../components/safe-image';
 import { appendSubjectParticle } from '@/utils/string';
 import { styles } from './style';
 
@@ -28,8 +29,8 @@ function DogSummaryCard({ dog, onEdit }: DogSummaryCardProps) {
 
   return (
     <View style={styles.dogCard}>
-      {dog.profileImageUrl ? (
-        <Image source={{ uri: dog.profileImageUrl }} style={styles.dogCardImage} />
+      {isRenderableImageUri(dog.profileImageUrl) ? (
+        <SafeImage fallback={<DogPlaceholder compact style={styles.dogCardImage} />} source={{ uri: dog.profileImageUrl }} style={styles.dogCardImage} />
       ) : (
         <DogPlaceholder compact />
       )}
@@ -136,8 +137,9 @@ export function CompletionScreen() {
       </BottomActions>
       <BottomSheet onClose={() => setLocationSheet(false)} visible={locationSheet}>
         <View style={styles.locationSheet}>
-          {dogs[0]?.profileImageUrl ? (
-            <Image
+          {isRenderableImageUri(dogs[0]?.profileImageUrl) ? (
+            <SafeImage
+              fallback={<DogPlaceholder compact style={styles.locationImage} />}
               source={{ uri: dogs[0].profileImageUrl }}
               style={styles.locationImage}
             />

@@ -10,11 +10,13 @@ export interface ScreenTitleProps extends ChildrenProps {
 }
 
 export interface BackButtonProps {
+  disabled?: boolean;
   onPress: () => void;
 }
 
 export interface StepHeaderProps {
   current: number;
+  disabled?: boolean;
   onBack: () => void;
 }
 

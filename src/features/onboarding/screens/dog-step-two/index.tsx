@@ -31,7 +31,13 @@ import { styles } from './style';
 
 import type { Href } from 'expo-router';
 
-export function DogStepTwoScreen() {
+interface DogStepTwoScreenProps {
+  nextPath?: Href;
+}
+
+export function DogStepTwoScreen({
+  nextPath = '/onboarding/dog/step-3' as Href,
+}: DogStepTwoScreenProps = {}) {
   const router = useRouter();
   const { draft, setDraft } = useOnboarding();
   const [dangerSheet, setDangerSheet] = useState(false);
@@ -119,7 +125,7 @@ export function DogStepTwoScreen() {
         <BottomActions>
           <Button
             disabled={!weightValid}
-            onPress={() => router.push('/onboarding/dog/step-3' as Href)}
+            onPress={() => router.push(nextPath)}
           >
             다음
           </Button>

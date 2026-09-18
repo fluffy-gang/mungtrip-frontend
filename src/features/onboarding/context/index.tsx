@@ -35,7 +35,7 @@ import type {
 const OnboardingContext = createContext<OnboardingContextValue | null>(null);
 
 export function OnboardingProvider({ children }: OnboardingProviderProps) {
-  const { handleSocialLogin, initAuth } = useAuth();
+  const { handleRestoreAccount, handleSocialLogin, initAuth } = useAuth();
   const [status, setStatus] = useState<BootstrapStatus>('initializing');
   const [session, setSession] = useState<AuthSession | null>(null);
   const [dogs, setDogs] = useState<Dog[]>([]);
@@ -83,14 +83,13 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
   }, [initAuth, resolveStatus]);
 
   const login = useCallback(
-    async (provider: LoginProvider) => {
+    async (provider: LoginProvider, restoreToken?: string) => {
       const providerToken = await getProviderToken(provider);
       const deviceId = await getDeviceId();
-      const response = await handleSocialLogin({
-        deviceId,
-        provider,
-        providerToken,
-      });
+      const body = { deviceId, provider, providerToken };
+      const response = restoreToken
+        ? await handleRestoreAccount(restoreToken, body)
+        : await handleSocialLogin(body);
       const nextSession: AuthSession = {
         accessToken: response.accessToken,
         provider: response.provider,
@@ -105,7 +104,7 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
         throw error;
       }
     },
-    [handleSocialLogin, resolveStatus],
+    [handleRestoreAccount, handleSocialLogin, resolveStatus],
   );
 
   const setDraft = useCallback((patch: Partial<OnboardingDraft>) => {

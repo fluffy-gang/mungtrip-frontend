@@ -11,7 +11,7 @@ interface AuthState {
 
   setLogin: (accessToken: string, user?: User) => void;
   setLogout: () => void;
-  setMockLogin: (user: User) => void;
+  updateUser: (user: Partial<User>) => void;
 }
 
 export const useAuthStore = create<AuthState>(set => ({
@@ -36,11 +36,8 @@ export const useAuthStore = create<AuthState>(set => ({
       user: null,
     }),
 
-  setMockLogin: user =>
-    set({
-      isLoggedIn: true,
-      isMockSession: true,
-      accessToken: 'mock-session-token',
-      user,
-    }),
+  updateUser: user =>
+    set(state => ({
+      user: state.user ? { ...state.user, ...user } : null,
+    })),
 }));

@@ -20,7 +20,7 @@ export interface OnboardingContextValue {
   draft: OnboardingDraft;
   loadDogs: () => Promise<Dog[]>;
   loadPersonalities: () => Promise<Personality[]>;
-  login: (provider: LoginProvider) => Promise<BootstrapStatus>;
+  login: (provider: LoginProvider, restoreToken?: string) => Promise<BootstrapStatus>;
   personalities: Personality[];
   resetDraft: () => void;
   session: AuthSession | null;

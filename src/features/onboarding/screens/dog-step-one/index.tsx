@@ -25,7 +25,13 @@ const BREED_ITEM_WIDTH = 96;
 const BREED_ITEM_INTERVAL = 100;
 const LOOP_BREEDS = [...BREEDS, ...BREEDS, ...BREEDS];
 
-export function DogStepOneScreen() {
+interface DogStepOneScreenProps {
+  nextPath?: Href;
+}
+
+export function DogStepOneScreen({
+  nextPath = '/onboarding/dog/step-2' as Href,
+}: DogStepOneScreenProps = {}) {
   const router = useRouter();
   const { width } = useWindowDimensions();
   const { draft, loadPersonalities, setDraft } = useOnboarding();
@@ -55,7 +61,7 @@ export function DogStepOneScreen() {
     } else {
       setDraft({ breed: '', breedId: undefined, breedInputMode: mode });
     }
-    router.push('/onboarding/dog/step-2' as Href);
+    router.push(nextPath);
   };
 
   return (

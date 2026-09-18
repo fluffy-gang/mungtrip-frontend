@@ -11,9 +11,12 @@ import {
 } from "./storage";
 
 import type {
+  LogoutRequest,
   ReissueResponse,
+  RestoreAccountResponse,
   SocialLoginRequest,
   SocialLoginResponse,
+  UpdateMyProfileRequest,
 } from "./types";
 
 let requestInterceptorId: number | null = null;
@@ -101,4 +104,35 @@ export const socialLogin = async (
   );
 
   return data;
+};
+
+export const logout = async (body: LogoutRequest): Promise<void> => {
+  await apiClient.post(ENDPOINTS.auth.logout, body);
+};
+
+export const withdrawAccount = async (): Promise<void> => {
+  await apiClient.delete(ENDPOINTS.users.me);
+};
+
+export const restoreAccount = async (
+  restoreToken: string,
+): Promise<RestoreAccountResponse> => {
+  const { data } = await apiClient.post<RestoreAccountResponse>(
+    ENDPOINTS.auth.restore,
+    undefined,
+    {
+      headers: { Authorization: `Bearer ${restoreToken}` },
+    },
+  );
+
+  return data;
+};
+
+export const updateMyProfile = async (
+  body: UpdateMyProfileRequest,
+): Promise<void> => {
+  await apiClient.patch(
+    ENDPOINTS.users.nickname,
+    body,
+  );
 };

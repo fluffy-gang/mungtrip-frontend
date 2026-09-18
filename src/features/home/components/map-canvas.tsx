@@ -3,15 +3,16 @@ import { SymbolView } from "expo-symbols";
 import { useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
-import type { Place, PlaceCategory } from "@/features/places/types";
 
 import { JEJU_MAP_CAMERA } from "../constants";
 import { styles as homeStyles } from "../styles";
-import type { LocationCoordinate, MapBounds, MapCamera } from "../types";
 import { toMapBounds } from "../utils/map-utils";
 import { loadNativeMapModule } from "../utils/native-modules";
 import { hasPlaceCoordinate } from "../utils/place-utils";
 import { PlaceMarker } from "./place-marker";
+
+import type { LocationCoordinate, MapBounds, MapCamera } from "../types";
+import type { Place, PlaceCategory } from "@/features/places/types";
 
 const nativeMapModule = loadNativeMapModule();
 

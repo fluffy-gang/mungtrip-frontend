@@ -1,7 +1,6 @@
 import { StatusBar, View } from 'react-native';
 
 import { showComingSoon } from '@/shared/utils/show-coming-soon';
-
 import { BOTTOM_TAB_HEIGHT } from '../constants';
 import { CategoryRail } from '../components/category-rail';
 import { DogSelectorSheet } from '../components/dog-selector-sheet';

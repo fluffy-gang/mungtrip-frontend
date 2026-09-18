@@ -1,11 +1,12 @@
 import { useCallback, useState } from "react";
 
 import { JEJU_MAP_BOUNDS } from "../constants";
-import type { MapBounds } from "../types";
 import { useHomeFeed } from "./use-home-feed";
 import { useMapPlaces } from "./use-map-places";
 import { usePlaceCatalog } from "./use-place-catalog";
 import { usePlaceSearch } from "./use-place-search";
+
+import type { MapBounds } from "../types";
 
 export function useHomeData(
   mapBounds: MapBounds = JEJU_MAP_BOUNDS,

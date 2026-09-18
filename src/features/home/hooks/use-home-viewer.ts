@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useAuthStore } from '@/features/auth/authStore';
 import { getMyDogs } from '@/features/dogs/api';
+
 import type { Dog } from '@/features/dogs/types';
 import type { DogSizeTagCode, HomeDogProfile, HomeViewer } from '../types';
 

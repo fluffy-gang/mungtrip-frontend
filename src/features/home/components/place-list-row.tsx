@@ -2,12 +2,13 @@ import { Pressable, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 import { SymbolView } from 'expo-symbols';
 
-import type { Place } from '@/features/places/types';
 
 import { styles } from '../styles';
-import type { HomeDogProfile } from '../types';
 import { getVerifiedDiffDays } from '../utils/place-utils';
 import { PlaceThumbnail } from './place-thumbnail';
+
+import type { HomeDogProfile } from '../types';
+import type { Place } from '@/features/places/types';
 
 const DOG_SIZE_TAG_CODES = new Set(['SMALL_DOG', 'MEDIUM_DOG', 'LARGE_DOG']);
 

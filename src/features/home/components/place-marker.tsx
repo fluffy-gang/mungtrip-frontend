@@ -1,10 +1,11 @@
 import { SymbolView } from 'expo-symbols';
 import { View } from 'react-native';
 
-import type { Place, PlaceCategory } from '@/features/places/types';
 
 import { PLACE_CATEGORY_META } from '../constants';
 import { styles } from '../styles';
+
+import type { Place, PlaceCategory } from '@/features/places/types';
 import type { NativeMapModule } from '../types';
 
 const DIMMED_MARKER_BACKGROUND = '#F1F5F9';

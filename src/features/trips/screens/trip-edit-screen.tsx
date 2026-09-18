@@ -78,8 +78,8 @@ function Editor({ trip, onBack, onComplete, onReload }: {
     }
     catch (reason) {
       setError(errorMessage(reason));
-    }
-    finally {
+      // Only unlock on failure -- unlocking after a successful onComplete() would re-enable "완료"
+      // while its navigation is still settling, letting a fast repeat tap re-run save() mid-teardown.
       lock.current = false;
       setBusy(false);
     }

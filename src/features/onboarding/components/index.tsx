@@ -25,11 +25,13 @@ export function OnboardingPage({ children }: ChildrenProps) {
   return <SafeAreaView style={styles.page}>{children}</SafeAreaView>;
 }
 
-export function BackButton({ onPress }: BackButtonProps) {
+export function BackButton({ disabled = false, onPress }: BackButtonProps) {
   return (
     <Pressable
       accessibilityLabel="이전 화면"
       accessibilityRole="button"
+      accessibilityState={{ disabled }}
+      disabled={disabled}
       hitSlop={8}
       onPress={onPress}
       style={({ pressed }) => [styles.backButton, pressed && styles.pressed]}
@@ -43,10 +45,10 @@ export function BackButton({ onPress }: BackButtonProps) {
   );
 }
 
-export function StepHeader({ current, onBack }: StepHeaderProps) {
+export function StepHeader({ current, disabled = false, onBack }: StepHeaderProps) {
   return (
     <View>
-      <BackButton onPress={onBack} />
+      <BackButton disabled={disabled} onPress={onBack} />
       <View
         accessibilityLabel={`반려견 등록 ${current}단계, 총 4단계`}
         accessibilityRole="progressbar"
@@ -65,7 +67,7 @@ export function FadeSequence({ children, delay = 0, style }: FadeSequenceProps) 
   const [translateY] = useState(() => new Animated.Value(8));
 
   useEffect(() => {
-    Animated.parallel([
+    const animation = Animated.parallel([
       Animated.timing(opacity, {
         delay,
         duration: 220,
@@ -78,7 +80,9 @@ export function FadeSequence({ children, delay = 0, style }: FadeSequenceProps) 
         toValue: 0,
         useNativeDriver: true,
       }),
-    ]).start();
+    ]);
+    animation.start();
+    return () => animation.stop();
   }, [delay, opacity, translateY]);
 
   return (
@@ -93,6 +97,8 @@ export function BottomActions({ children }: ChildrenProps) {
 }
 
 export function BottomSheet({ children, onClose, visible }: BottomSheetProps) {
+  if (!visible) return null;
+
   return (
     <Modal animationType="fade" onRequestClose={onClose} transparent visible={visible}>
       <View style={styles.modalRoot}>

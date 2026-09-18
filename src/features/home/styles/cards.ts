@@ -3,18 +3,18 @@ import { colors, text, radius, spacing } from './style-primitives';
 export const cardsStyles = {
   placeCardRoot: {
     marginRight: spacing[10],
-    width: 142,
+    width: 148,
   },
   placeCardImageFrame: {
-    height: 104,
+    height: 132,
     position: 'relative',
-    width: 142,
+    width: 148,
   },
   placeCardImage: {
     backgroundColor: colors.surfaceMuted,
-    borderRadius: radius[8],
-    height: 104,
-    width: 142,
+    borderRadius: radius[12],
+    height: 132,
+    width: 148,
   },
   placeCardBadge: {
     alignItems: 'center',
@@ -28,17 +28,7 @@ export const cardsStyles = {
     top: spacing[6],
   },
   placeCardBadgeText: text(11, 'bold', 'onInverse'),
-  placeCardLikeBadge: {
-    alignItems: 'center',
-    backgroundColor: 'rgba(25, 31, 40, 0.58)',
-    borderRadius: radius.full,
-    height: 24,
-    justifyContent: 'center',
-    position: 'absolute',
-    right: spacing[6],
-    top: spacing[6],
-    width: 24,
-  },
+  placeCardLikeBadge: { position: 'absolute', right: spacing[6], top: spacing[6] },
   placeCardBody: {
     paddingTop: spacing[8],
   },
@@ -85,17 +75,7 @@ export const cardsStyles = {
     top: spacing[8],
   },
   courseCardBadgeText: text(11, 'bold', 'onInverse'),
-  courseCardLikeBadge: {
-    alignItems: 'center',
-    backgroundColor: 'rgba(25, 31, 40, 0.58)',
-    borderRadius: radius.full,
-    height: 28,
-    justifyContent: 'center',
-    position: 'absolute',
-    right: spacing[8],
-    top: spacing[8],
-    width: 28,
-  },
+  courseCardLikeBadge: { position: 'absolute', right: spacing[8], top: spacing[8] },
   courseCardOverlay: {
     backgroundColor: 'rgba(17, 24, 28, 0.42)',
     bottom: 0,

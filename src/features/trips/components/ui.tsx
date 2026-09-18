@@ -46,10 +46,10 @@ export function Header({ title, onBack, right }: {
   onBack?: () => void;
   right?: ReactNode;
 }) {
-  return <Spread style={{ minHeight: 56, paddingHorizontal: 20 }}>
+  return <Spread style={{ height: 48, paddingLeft: 8, paddingRight: 12 }}>
 
-    {onBack ? <Pressable accessibilityRole="button" accessibilityLabel="뒤로" onPress={onBack} hitSlop={12}>
-      <Icon name="chevronLeft" size={24} />
+    {onBack ? <Pressable accessibilityRole="button" accessibilityLabel="뒤로" onPress={onBack} style={{ width: 48, height: 48, alignItems: 'center', justifyContent: 'center' }}>
+      <Image source={require('../assets/back.svg')} style={{ width: 24, height: 24 }} contentFit="contain" />
     </Pressable> : <View />}
 
     {title ? <Heading>{title}</Heading> : null}
@@ -73,23 +73,29 @@ const fixtureImages: Record<string, number> = {
   'mock://fixture-2': require('../assets/fixture-2.webp'),
   'mock://fixture-3': require('../assets/fixture-3.webp'),
 };
-export function Thumbnail({ uri, size = 88 }: {
+export function Thumbnail({ uri, size = 88, radius = 8 }: {
   uri?: string;
   size?: number;
+  radius?: number;
 }) {
-  return uri ? <Image source={fixtureImages[uri] ?? { uri }} contentFit="cover" style={{ width: size, height: size, borderRadius: 8 }} />
-    : <View accessibilityLabel="이미지 없음" style={{ width: size, height: size, borderRadius: 8, backgroundColor: tripColors.surfaceSubtle, alignItems: 'center', justifyContent: 'center' }}>
+  return uri ? <Image source={fixtureImages[uri] ?? { uri }} contentFit="cover" style={{ width: size, height: size, borderRadius: radius }} />
+    : <View accessibilityLabel="이미지 없음" style={{ width: size, height: size, borderRadius: radius, backgroundColor: tripColors.surfaceSubtle, alignItems: 'center', justifyContent: 'center' }}>
       <Icon name="paw" size={Math.min(size / 2, 24)} tintColor={tripColors.textDisabled} />
     </View>;
 }
 
 
+/** Mirrors the official/user/rating badges trip-detail-screen renders inline, so every place
+ * row across the trip feature (list, picker, replacement) uses the same Figma icon assets
+ * instead of text glyphs. */
 export function PlaceFacts({ place }: { place?: TripPlaceSelection }) {
   if (!place) return null;
   return <Column style={{ gap: 4 }}>
     {place.tags?.length ? <Row style={{ flexWrap: 'wrap' }}>{place.tags.map(tag => <View key={tag} style={{ borderRadius: 4, paddingHorizontal: 4, backgroundColor: tripColors.surfaceSubtle }}><Muted>{tagLabel(tag)}</Muted></View>)}</Row> : null}
-    {place.isOfficial ? <Text fontSize={12} color="accentBlue">✓ 공식인증</Text> : null}
-    {place.averageRating !== undefined ? <Muted>★ {place.averageRating.toFixed(1)}</Muted> : null}
-    {place.visitCount !== undefined ? <Muted>방문 {place.visitCount}회</Muted> : null}
+    <Row style={{ gap: 4, flexWrap: 'wrap' }}>
+      {place.isOfficial ? <Row style={{ gap: 2 }}><Image source={require('../assets/official.svg')} style={{ width: 16, height: 16 }} /><Text fontSize={11} lineHeight={16.5} color="accentBlue" fontWeight="semibold">공식인증</Text></Row> : null}
+      {place.visitCount !== undefined ? <Row style={{ gap: 2 }}><Image source={require('../assets/user.svg')} style={{ width: 16, height: 16 }} /><Text fontSize={11} lineHeight={16.5} color="textPlaceholder" fontWeight="semibold">유저인증 {place.visitCount}</Text></Row> : null}
+    </Row>
+    {place.averageRating !== undefined ? <Row style={{ gap: 2 }}><Image source={require('../assets/star.svg')} style={{ width: 8, height: 8 }} /><Text fontSize={10} lineHeight={12} color="textTertiary">{place.averageRating.toFixed(1)}</Text></Row> : null}
   </Column>;
 }

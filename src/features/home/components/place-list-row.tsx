@@ -2,7 +2,7 @@ import { Pressable, Text, View } from 'react-native';
 import { Image } from 'expo-image';
 import { SymbolView } from 'expo-symbols';
 
-
+import { PlaceLikeButton, usePlaceActions } from '@/features/app-integration/place-actions';
 import { styles } from '../styles';
 import { getVerifiedDiffDays } from '../utils/place-utils';
 import { PlaceThumbnail } from './place-thumbnail';
@@ -52,6 +52,7 @@ export function PlaceListRow({
   onPress?: (place: Place) => void;
   place: Place;
 }) {
+  const actions = usePlaceActions(place);
   const compatibleDogs = getCompatibleDogs(place, dogs);
   const displayTags = place.tags.slice(0, compact ? 2 : 3);
   const relativeVerifiedTime = formatRelativeVerifiedTime(
@@ -71,13 +72,7 @@ export function PlaceListRow({
     >
       <View style={styles.placeRowImageFrame}>
         <PlaceThumbnail imageUrl={place.imageUrl} style={styles.placeRowImage} />
-        <View style={styles.placeLikeBadge}>
-          <SymbolView
-            name={{ android: 'favorite', ios: place.isLiked ? 'heart.fill' : 'heart', web: 'favorite' }}
-            size={18}
-            tintColor="#FFFFFF"
-          />
-        </View>
+        <PlaceLikeButton place={place} style={styles.placeLikeBadge} />
         {compatibleDogs.length > 0 ? (
           <View style={styles.compatibleDogStack}>
             {compatibleDogs.slice(0, 2).map((dog, index) => (
@@ -99,7 +94,8 @@ export function PlaceListRow({
           <Text numberOfLines={1} style={styles.placeRowTitle}>
             {place.name}
           </Text>
-          <Pressable accessibilityRole="button" style={styles.addTripButton}>
+          <Pressable accessibilityRole="button" style={styles.addTripButton}
+            onPress={event => { event.stopPropagation(); void actions.addToTrip(); }}>
             <SymbolView
               name={{ android: 'add', ios: 'plus', web: 'add' }}
               size={13}

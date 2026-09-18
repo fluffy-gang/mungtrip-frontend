@@ -17,12 +17,13 @@ export const tabssearchStyles = {
   bottomTabs: {
     alignItems: 'center',
     backgroundColor: colors.surface,
-    borderTopColor: colors.border,
+    borderTopColor: colors.surfaceSubtle,
     borderTopWidth: borderWidth.hairline,
     bottom: 0,
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     left: 0,
+    paddingHorizontal: spacing[16],
     position: 'absolute',
     right: 0,
     zIndex: 30,
@@ -30,11 +31,28 @@ export const tabssearchStyles = {
   tabButton: {
     alignItems: 'center',
     flex: 1,
-    gap: spacing[2],
+    gap: spacing[4],
     justifyContent: 'center',
+    maxWidth: 60,
+    minHeight: 44,
+    minWidth: 44,
   },
-  tabLabel: text(11, 'medium', 'textTertiary'),
-  tabLabelActive: text(11, 'bold', 'primary'),
+  tabLabel: {
+    color: colors.textSecondary,
+    fontFamily: tokens.fonts.sansSerif,
+    fontSize: 10,
+    fontWeight: tokens.typography.fontWeight.medium,
+    letterSpacing: 0,
+    // Figma navbar typography is a local 10px label, while shared text tokens start at 11px.
+  },
+  tabLabelActive: {
+    color: colors.primary,
+    fontFamily: tokens.fonts.sansSerif,
+    fontSize: 10,
+    fontWeight: tokens.typography.fontWeight.bold,
+    letterSpacing: 0,
+    // Figma navbar typography is a local 10px label, while shared text tokens start at 11px.
+  },
   searchRoot: {
     backgroundColor: colors.background,
     flex: 1,

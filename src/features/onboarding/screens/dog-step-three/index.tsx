@@ -1,4 +1,3 @@
-import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
@@ -20,6 +19,9 @@ import {
 
 import { tokens } from '@/constants/tokens';
 import { useOnboarding } from '../../context';
+import { getBreedPreset, isRenderableImageUri } from '../../preset-assets';
+import { selectProfileSource } from '../../preset-rules';
+import { SafeImage } from '../../components/safe-image';
 import { getErrorMessage } from '@/utils/error';
 import { appendObjectParticle } from '@/utils/string';
 import { styles } from './style';
@@ -33,25 +35,28 @@ export function DogStepThreeScreen() {
   const [error, setError] = useState<string>();
 
   const chooseImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      allowsEditing: true,
-      aspect: [1, 1],
-      mediaTypes: ['images'],
-      quality: 0.8,
-    });
-
-    if (!result.canceled) setDraft({ profileImage: result.assets[0] });
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        allowsEditing: true,
+        aspect: [1, 1],
+        mediaTypes: ['images'],
+        quality: 0.8,
+      });
+      if (!result.canceled) setDraft({ profileImage: result.assets[0] });
+    } catch (nextError) {
+      setError(getErrorMessage(nextError));
+    }
   };
 
   const submit = async (skipExtras: boolean) => {
-    if (!draft.profileImage?.uri && !draft.profileImageUrl) {
+    if (!draft.profileImage?.uri && !draft.profileImageUrl && !getBreedPreset(draft.breedId, draft.breedInputMode)) {
       setError('프로필 사진을 등록해주세요.');
       return;
     }
 
+    setPending(true);
+    setError(undefined);
     try {
-      setPending(true);
-      setError(undefined);
       await submitDog(
         skipExtras
           ? { isNeutered: undefined, personalities: [] }
@@ -60,7 +65,6 @@ export function DogStepThreeScreen() {
       router.replace('/onboarding/complete' as Href);
     } catch (nextError) {
       setError(getErrorMessage(nextError));
-    } finally {
       setPending(false);
     }
   };
@@ -69,6 +73,16 @@ export function DogStepThreeScreen() {
     label: item.name,
     value: String(item.id),
   }));
+  const preset = getBreedPreset(draft.breedId, draft.breedInputMode);
+  const selectedProfile = selectProfileSource({
+    userPhotoUri: draft.profileImage?.uri,
+    savedImageValue: draft.profileImageUrl,
+    presetSource: preset?.profile,
+  });
+  const imageSource = selectedProfile.kind === 'saved'
+    ? (isRenderableImageUri(selectedProfile.source) ? selectedProfile.source : undefined)
+    : selectedProfile.source;
+  const savedImageUnavailable = selectedProfile.kind === 'saved' && !isRenderableImageUri(selectedProfile.source);
   const selectedPersonalities = draft.personalities.map(String);
   const neuterValue = draft.isNeutered == null
     ? 'unknown'
@@ -78,7 +92,7 @@ export function DogStepThreeScreen() {
 
   return (
     <OnboardingPage>
-      <StepHeader current={3} onBack={() => router.back()} />
+      <StepHeader current={3} disabled={pending} onBack={() => router.back()} />
       <ScrollView contentContainerStyle={styles.formContent}>
         <FadeSequence>
           <ScreenTitle>
@@ -89,12 +103,17 @@ export function DogStepThreeScreen() {
           <View style={styles.profileBlock}>
             <Pressable
               accessibilityLabel="프로필 사진 변경"
+              accessibilityState={{ disabled: pending }}
+              disabled={pending}
               onPress={() => void chooseImage()}
             >
-              {draft.profileImage?.uri || draft.profileImageUrl ? (
-                <Image
-                  source={{ uri: draft.profileImage?.uri ?? draft.profileImageUrl }}
+              {imageSource || savedImageUnavailable ? (
+                <SafeImage
+                  contentFit="contain"
+                  fallback={<DogPlaceholder style={styles.profileImage} />}
+                  source={typeof imageSource === 'string' ? { uri: imageSource } : imageSource}
                   style={styles.profileImage}
+                  unavailableLabel="저장된 반려견 이미지를 불러올 수 없어요."
                 />
               ) : (
                 <DogPlaceholder />

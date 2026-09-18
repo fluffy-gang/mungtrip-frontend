@@ -1,5 +1,6 @@
+import { Image } from 'expo-image';
 import { useEffect, useState } from 'react';
-import { BackHandler, ScrollView } from 'react-native';
+import { BackHandler, Pressable, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button } from '@/components/ui/button';
@@ -10,6 +11,7 @@ import { Card, Column, Content, ErrorNotice, Footer, Header, Heading, Muted, Pag
 import { useTripEnvironment } from '../context';
 import { createReplacementController } from '../flow';
 import { errorMessage } from '../provider';
+import { rejectReasonLabel } from '../visit-status';
 
 import type { TripItem, TripNearbyResult } from '../types';
 export function TripReplacementScreen({ tripId, item, onBack, onComplete }: {
@@ -47,8 +49,9 @@ export function TripReplacementScreen({ tripId, item, onBack, onComplete }: {
     }
     catch (reason) {
       setError(errorMessage(reason));
-    }
-    finally {
+      // Only re-enable on failure. Clearing busy after a successful onComplete() would let a
+      // stray extra tap re-fire submit() while the navigation triggered by onComplete is still
+      // settling -- the same double-submit pattern behind the Fabric mount-conflict crash.
       setBusy(false);
     }
   };
@@ -63,7 +66,7 @@ export function TripReplacementScreen({ tripId, item, onBack, onComplete }: {
           <Muted>거절된 장소</Muted>
           <Heading>{item.placeName}</Heading>
           <Text color="primaryPressed" fontSize={14}>
-            {item.rejectDetail || item.rejectReason || '방문 거절'}
+            {item.rejectDetail || rejectReasonLabel(item.rejectReason)}
           </Text>
         </Card>
         <SmallTitle>추천 장소</SmallTitle>
@@ -82,9 +85,9 @@ export function TripReplacementScreen({ tripId, item, onBack, onComplete }: {
                 <PlaceFacts place={place} />
               {place.address ? <Muted>{place.address}</Muted> : null}
             </Column>
-            <Button accessibilityLabel={`${place.name} 선택`} type="ghost" size="m" disabled={busy || controller.partial} onPress={() => setSelected(place.id)}>
-              {selected === place.id ? '●' : '○'}
-            </Button>
+            <Pressable accessibilityRole="radio" accessibilityLabel={`${place.name} 선택`} accessibilityState={{ checked: selected === place.id, disabled: busy || controller.partial }} disabled={busy || controller.partial} onPress={() => setSelected(place.id)} style={{ width: 30, height: 30, alignItems: 'center', justifyContent: 'center' }}>
+              <Image source={selected === place.id ? require('../assets/radio-selected.svg') : require('../assets/radio-empty.svg')} style={{ width: 24, height: 24 }} contentFit="contain" />
+            </Pressable>
           </Row>
         </Column>)}
 

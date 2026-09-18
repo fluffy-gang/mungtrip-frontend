@@ -1,0 +1,24 @@
+{
+  "places": [
+    { "id": 2401, "name": "식당", "category": "RESTAURANT", "latitude": 33.5, "longitude": 126.53 },
+    { "id": 2402, "name": "카페", "category": "CAFE", "latitude": 33.5001, "longitude": 126.5301 },
+    { "id": 2403, "name": "관광명소", "category": "ATTRACTION", "latitude": 33.5002, "longitude": 126.5302 },
+    { "id": 2404, "name": "동반숙소", "category": "ACCOMMODATION", "latitude": 33.5003, "longitude": 126.5303 },
+    { "id": 2405, "name": "동물병원", "category": "HOSPITAL", "latitude": 33.5004, "longitude": 126.5304 },
+    { "id": 2406, "name": "놀거리", "category": "ACTIVITY", "latitude": 33.5005, "longitude": 126.5305 },
+    { "id": 2407, "name": "미용실", "category": "GROOMING", "latitude": 33.5006, "longitude": 126.5306 },
+    { "id": 2408, "name": "돌봄", "category": "CARE", "latitude": 33.5007, "longitude": 126.5307 },
+    { "id": 2409, "name": "쇼핑", "category": "SHOPPING", "latitude": 33.5008, "longitude": 126.5308 },
+    { "id": 2410, "name": "트레이닝센터", "category": "TRAINING", "latitude": 33.5009, "longitude": 126.5309 },
+    { "id": 2411, "name": "편의시설", "category": "FACILITY", "latitude": 33.501, "longitude": 126.531 },
+    { "id": 2498, "name": "알 수 없는 장소", "category": "UNKNOWN_CATEGORY", "latitude": 33.5011, "longitude": 126.5311 },
+    { "id": 2499, "name": "__proto__ 안전성 확인용 긴 장소 이름입니다", "category": "__proto__", "latitude": 33.5011, "longitude": 126.5311 }
+  ],
+  "states": [
+    { "selectedPlaceId": null, "selectedCategory": null },
+    { "selectedPlaceId": 2401, "selectedCategory": null },
+    { "selectedPlaceId": null, "selectedCategory": "CAFE" },
+    { "selectedPlaceId": 2401, "selectedCategory": "CAFE" }
+  ],
+  "reset": "remount fixture to reset state"
+}

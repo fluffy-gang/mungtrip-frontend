@@ -1,6 +1,7 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 
+import { MainTabScreen } from '@/features/home/components/main-tab-screen';
 import { TripFlowSheet } from '../components/trip-flow-sheet';
 import { Content, ErrorNotice, Header, Page } from '../components/ui';
 import { useTripEnvironment } from '../context';
@@ -29,7 +30,7 @@ function useTripNavigation() {
 }
 export function TripListRoute() {
   const { source } = useTripNavigation();
-  return <TripListScreen onOpenTrip={id => router.push({ pathname: '/trips/[id]', params: { id, source } })} />;
+  return <MainTabScreen tab="trip"><TripListScreen onOpenTrip={id => router.push({ pathname: '/trips/[id]', params: { id, source } })} /></MainTabScreen>;
 }
 export function TripDetailRoute() {
   const { id } = useLocalSearchParams<{ id: string }>();

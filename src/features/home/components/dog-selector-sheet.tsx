@@ -69,11 +69,11 @@ export function DogSelectorSheet({
 
             return (
               <View key={dog.id} style={styles.dogOptionRow}>
-                <Image
+                {dog.imageUrl?.trim() ? <Image
                   contentFit="cover"
                   source={{ uri: dog.imageUrl }}
                   style={styles.dogOptionImage}
-                />
+                /> : null}
                 <View style={styles.dogOptionBody}>
                   <View style={styles.dogInfoLine}>
                     <Text style={styles.dogInfoLabel}>이름</Text>

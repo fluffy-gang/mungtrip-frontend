@@ -21,10 +21,6 @@ export const isObject = (value: unknown): value is ApiObject => {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 };
 
-export const unwrapData = (value: unknown): unknown => {
-  return isObject(value) && 'data' in value ? value.data : value;
-};
-
 export const findArrayPayload = (value: unknown): unknown[] => {
   if (Array.isArray(value)) {
     return value;

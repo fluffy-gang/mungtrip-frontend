@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { useFocusEffect } from 'expo-router';
+import { useCallback, useRef, useState } from 'react';
 import { Modal, Pressable, RefreshControl, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -24,7 +25,7 @@ export function TripListScreen({ onOpenTrip }: TripListScreenProps) {
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const deleteLock = useRef(false);
-  useEffect(() => { void provider.refresh().catch(() => undefined); }, [provider]);
+  useFocusEffect(useCallback(() => { void provider.refresh().catch(() => undefined); }, [provider]));
   const remove = async () => {
     if (!deleting || deleteLock.current)
       return;

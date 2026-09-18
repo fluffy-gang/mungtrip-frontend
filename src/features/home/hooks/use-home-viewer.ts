@@ -47,13 +47,10 @@ export function useHomeViewer(): HomeViewer {
         const nextDogIds = nextDogs.map(dog => dog.id);
 
         setViewerDogs(nextDogs);
-        setSelectedDogIds(currentDogIds => {
-          const retainedDogIds = currentDogIds.filter(dogId =>
-            nextDogIds.includes(dogId),
-          );
-
-          return retainedDogIds.length > 0 ? retainedDogIds : nextDogIds;
-        });
+        // ADR 0002: 등록만으로 동행 필터를 켜지 않고 사용자가 선택한 반려견만 유지한다.
+        setSelectedDogIds(currentDogIds =>
+          currentDogIds.filter(dogId => nextDogIds.includes(dogId)),
+        );
       })
       .catch(() => {
         if (isMounted) {

@@ -15,19 +15,20 @@ import { areMapBoundsEqual } from '../utils/map-bounds';
 import { filterPlaces } from '../utils/place-utils';
 import { useCurrentLocation } from './use-current-location';
 import { useHomeData } from './use-home-data';
+import { useHomeMode } from './use-home-mode';
 import { useHomeBackHandler } from './use-home-back-handler';
 import { useHomeViewer } from './use-home-viewer';
 import { useMapSheetController } from './use-map-sheet-controller';
 import { useRecentSearches } from './use-recent-searches';
 
-import type { HomeMode, MapBounds, PlaceListSource } from '../types';
+import type { MapBounds, PlaceListSource } from '../types';
 import type { Place, PlaceCategory } from '@/features/places/types';
 
 export function useHomeScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { height: windowHeight } = useWindowDimensions();
-  const [mode, setMode] = useState<HomeMode>('map');
+  const { mode, setMode } = useHomeMode();
   const [query, setQuery] = useState('');
   const [listSource, setListSource] = useState<PlaceListSource>('recommendation');
   const headerHeight = insets.top + HEADER_CONTENT_HEIGHT;
@@ -64,7 +65,7 @@ export function useHomeScreen() {
   const handleLocated = useCallback(() => {
     mapSheet.showMap();
     setMode('map');
-  }, [mapSheet]);
+  }, [mapSheet, setMode]);
 
   const { mapCamera, moveToCurrentLocation, setMapCamera, userCoordinate } =
     useCurrentLocation({ onLocated: handleLocated });
@@ -175,7 +176,7 @@ export function useHomeScreen() {
       addRecentSearch(nextKeyword);
       void searchPlaces({ keyword: nextKeyword });
     },
-    [addRecentSearch, mapSheet, searchPlaces],
+    [addRecentSearch, mapSheet, searchPlaces, setMode],
   );
   const showCategoryPlaces = useCallback(
     (categoryCode: string) => {
@@ -187,7 +188,7 @@ export function useHomeScreen() {
       mapSheet.showPlacesExpanded();
       setMode('map');
     },
-    [clearSearchResults, mapSheet],
+    [clearSearchResults, mapSheet, setMode],
   );
   const showRecommendationList = useCallback(() => {
     setQuery('');
@@ -196,7 +197,7 @@ export function useHomeScreen() {
     setListSource('recommendation');
     mapSheet.showPlacesExpanded();
     setMode('map');
-  }, [clearSearchResults, mapSheet]);
+  }, [clearSearchResults, mapSheet, setMode]);
   const showHomeFeed = useCallback(() => {
     setQuery('');
     clearSearchResults();
@@ -205,14 +206,14 @@ export function useHomeScreen() {
     setListSource('recommendation');
     mapSheet.showContentCollapsed();
     setMode('map');
-  }, [clearSearchResults, mapSheet]);
+  }, [clearSearchResults, mapSheet, setMode]);
   const showMapView = useCallback(() => {
     mapSheet.showMap();
     setMode('map');
-  }, [mapSheet]);
+  }, [mapSheet, setMode]);
   const openSearch = useCallback(() => {
     setMode('search');
-  }, []);
+  }, [setMode]);
   const handleMapFloatingAction = useCallback(() => {
     if (mapSheet.isExpanded) {
       mapSheet.showMap();
@@ -222,20 +223,17 @@ export function useHomeScreen() {
 
     setSelectedPlace(null);
     setMode('map');
-  }, [mapSheet]);
+  }, [mapSheet, setMode]);
   const closeSearch = useCallback(() => {
     setQuery('');
     clearSearchResults();
     setSelectedPlace(null);
     setMode('map');
-  }, [clearSearchResults]);
+  }, [clearSearchResults, setMode]);
   const selectPlace = useCallback(
     (place: Place) => {
       // 상세로 바로 이동해 미리보기 카드가 한 프레임 노출되는 깜빡임을 막는다.
-      router.push({
-        params: { id: String(place.id) },
-        pathname: '/places/[id]',
-      });
+      router.push({ pathname: '/places/[id]', params: { id: String(place.id) } });
     },
     [router],
   );
@@ -245,11 +243,17 @@ export function useHomeScreen() {
       mapSheet.showMap();
       setMode('map');
     },
-    [mapSheet],
+    [mapSheet, setMode],
   );
   const closeSelectedPlace = useCallback(() => {
     setSelectedPlace(null);
   }, []);
+  const clearPlaceFilters = () => {
+    homeViewer.saveDogSelection([]);
+    setSelectedCategoryCode(null);
+    closeSearch();
+    setListSource('recommendation');
+  };
 
   useHomeBackHandler({
     closePlacePreview: closeSelectedPlace,
@@ -261,6 +265,8 @@ export function useHomeScreen() {
   return {
     activeCategoryCode,
     categories,
+    clearPlaceFilters,
+    hasPlaceFilters: homeViewer.dogIds.length > 0 || !!activeCategoryCode || !!trimmedQuery,
     closeSearch,
     closeSelectedPlace,
     courses,

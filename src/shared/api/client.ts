@@ -29,6 +29,7 @@ const serializeParams = (params: Record<string, unknown>): string => {
     .join('&');
 };
 
+/** 응답의 data는 envelope를 한 번 벗긴 본문이다. 호출부의 제네릭도 본문 타입을 사용한다. */
 export const apiClient = create({
   baseURL: ENV.apiUrl,
   paramsSerializer: {

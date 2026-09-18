@@ -26,8 +26,8 @@ export function CategoryRail({
   onSelectCategory,
   selectedDogs,
 }: CategoryRailProps) {
-  const visibleDogs =
-    selectedDogs.length > 0 ? selectedDogs : activeDog ? [activeDog] : [];
+  const visibleDogs = (selectedDogs.length > 0 ? selectedDogs : activeDog ? [activeDog] : [])
+    .filter(dog => Boolean(dog.imageUrl?.trim()));
 
   return (
     <ScrollView
@@ -51,7 +51,7 @@ export function CategoryRail({
           onPress={onOpenDogSelector}
           style={styles.dogSelector}
         >
-          <View style={styles.dogAvatarStack}>
+          {visibleDogs.length > 0 ? <View style={styles.dogAvatarStack}>
             {visibleDogs.slice(0, 2).map((dog, index) => (
               <Image
                 key={dog.id}
@@ -63,9 +63,9 @@ export function CategoryRail({
                 ]}
               />
             ))}
-          </View>
-          {selectedDogs.length <= 1 ? (
-            <Text style={styles.dogSelectorText}>{activeDog.name}</Text>
+          </View> : null}
+          {selectedDogs.length <= 1 || visibleDogs.length === 0 ? (
+            <Text style={styles.dogSelectorText}>{selectedDogs.length > 1 ? `${selectedDogs.length}마리` : selectedDogs.length ? activeDog.name : '동행 조건 없음'}</Text>
           ) : null}
           <SymbolView name={{ android: "keyboard_arrow_down", ios: "chevron.down", web: "keyboard_arrow_down" }} size={16} tintColor="#6B7684" />
         </Pressable>

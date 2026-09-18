@@ -32,6 +32,7 @@ interface HomeMapSheetProps {
   isPlaceList: boolean;
   loading: boolean;
   onRetry: () => void;
+  onClearFilters?: () => void;
   onSelectPlace: (place: Place) => void;
   onShowCategoryPlaces: (categoryCode: string) => void;
   onShowMap: () => void;
@@ -52,6 +53,7 @@ export function HomeMapSheet({
   isPlaceList,
   loading,
   onRetry,
+  onClearFilters,
   onSelectPlace,
   onShowCategoryPlaces,
   onShowMap,
@@ -99,7 +101,7 @@ export function HomeMapSheet({
             <Text style={styles.retryButtonText}>다시 시도</Text>
           </Pressable>
         </View>
-      ) : isPlaceList ? (
+      ) : loading ? null : isPlaceList ? (
         <>
           <Text style={styles.placeListCount}>{places.length}개 장소</Text>
           <PlaceList
@@ -108,6 +110,8 @@ export function HomeMapSheet({
             onSelectPlace={onSelectPlace}
             onShowMap={onShowMap}
             showMapSwitchButton={false}
+            emptyText={dogs.length ? '선택한 반려견의 동행 조건이 확인된 장소가 없어요. 필터를 해제하면 전체 장소를 볼 수 있어요.' : undefined}
+            onClearFilters={onClearFilters}
           />
         </>
       ) : (

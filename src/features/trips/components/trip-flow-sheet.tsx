@@ -158,7 +158,7 @@ function FlowSession({ input, provider, onResult }: TripFlowSheetProps) {
                   {!loading && !snapshot.dogs.length ? <Muted>등록된 반려견이 없어요. 프로필에서 반려견을 등록한 뒤 다시 열어 주세요.</Muted> : null}
                   <Row style={{ flexWrap: 'wrap' }}>
                     {snapshot.dogs.map(dog => <Chip key={dog.dogId} selected={dogs.includes(dog.dogId)} disabled={locked} onPress={() => setDogs(current => current.includes(dog.dogId) ? current.filter(id => id !== dog.dogId) : [...current, dog.dogId])}>
-                      <Row><Thumbnail uri={dog.profileImageUrl} size={24} /><Text fontSize={14}>{dog.name}</Text></Row>
+                      <Row>{dog.profileImageUrl?.trim() ? <Thumbnail uri={dog.profileImageUrl} size={24} /> : null}<Text fontSize={14}>{dog.name}</Text></Row>
                     </Chip>)}
                   </Row>
                 </Column>

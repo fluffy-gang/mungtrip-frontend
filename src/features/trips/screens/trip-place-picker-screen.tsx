@@ -37,7 +37,11 @@ export function TripPlacePickerScreen({ tripId, day = 1, onBack, onComplete }: {
   const [savedRevision, setSavedRevision] = useState(0);
   const insets = useSafeAreaInsets();
   const { height } = useWindowDimensions();
-  useEffect(() => saved?.subscribe(() => setSavedRevision(value => value + 1)), [saved]);
+  useEffect(() => saved?.subscribe(() => {
+    const { status } = saved.getSnapshot().places;
+    // 로딩 알림으로 검색을 재시작하면 아직 미완료인 저장 목록을 중복 요청한다.
+    if (status !== 'loading' && status !== 'refreshing') setSavedRevision(value => value + 1);
+  }), [saved]);
   useEffect(() => { void provider.refreshOptions().catch(() => undefined); }, [provider]);
   const request = useCallback(async (page: number): Promise<TripSearchResult> => {
     if (keyword.trim())

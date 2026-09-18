@@ -94,6 +94,7 @@ export function HomeScreen() {
                 isPlaceList={home.isMapSheetPlaceList}
                 loading={home.isMapSheetPlaceList ? home.placesLoading : home.feedLoading}
                 onRetry={home.retry}
+                onClearFilters={home.hasPlaceFilters ? home.clearPlaceFilters : undefined}
                 onSelectPlace={home.selectPlace}
                 onShowCategoryPlaces={home.showCategoryPlaces}
                 onShowMap={home.showMapView}

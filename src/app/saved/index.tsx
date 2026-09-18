@@ -1,5 +1,1 @@
-import { SavedScreen } from '@/features/saved';
-
-export default function SavedRoute() {
-  return <SavedScreen />;
-}
+export { SavedRouteScreen as default } from '@/features/saved/screens/saved-route-screen';

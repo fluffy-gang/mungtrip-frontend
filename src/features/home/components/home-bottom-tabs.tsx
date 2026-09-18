@@ -1,6 +1,8 @@
 import { Image } from 'expo-image';
+import { useRouter } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
 
+import { showComingSoon } from '@/shared/utils/show-coming-soon';
 import { styles } from '../styles';
 
 import type { ImageSource } from 'expo-image';
@@ -40,7 +42,7 @@ const TAB_ICON_SOURCES: Record<HomeBottomTab, { active: ImageSource; inactive: I
 
 /**
  * Controlled when selectedTab is supplied; it defaults to home. onSelectTab owns
- * every press when present, otherwise home/search retain their legacy callbacks.
+ * every press when present; otherwise home/search use callbacks and trip/saved use routes.
  */
 interface HomeBottomTabsProps {
   height: number;
@@ -59,17 +61,20 @@ export function HomeBottomTabs({
   onSelectTab,
   selectedTab = 'home',
 }: HomeBottomTabsProps) {
+  const router = useRouter();
+  const selectTab = (tab: HomeBottomTab) => {
+    if (onSelectTab) return onSelectTab(tab);
+    if (tab === selectedTab && tab !== 'home' && tab !== 'search') return;
+    if (tab === 'home') return onShowHome();
+    if (tab === 'search') return onOpenSearch();
+    if (tab === 'trip') return router.navigate('/trips');
+    if (tab === 'favorite') return router.navigate('/saved');
+    showComingSoon();
+  };
   return (
     <View style={[styles.bottomTabs, { height, paddingBottom }]}>
       {TAB_ITEMS.map(({ key, label }) => {
         const isSelected = selectedTab === key;
-        const onPress = onSelectTab
-          ? () => onSelectTab(key)
-          : key === 'home'
-            ? onShowHome
-            : key === 'search'
-              ? onOpenSearch
-              : undefined;
         const homeIconStyle = isSelected
           ? { height: 18.5909, left: 3, position: 'absolute' as const, top: 2.41, width: 18 }
           : { height: 19.3674, left: 2.63, position: 'absolute' as const, top: 2.0326, width: 18.7412 };
@@ -80,7 +85,7 @@ export function HomeBottomTabs({
             accessibilityRole="button"
             accessibilityState={{ selected: isSelected }}
             key={key}
-            onPress={onPress}
+            onPress={() => selectTab(key)}
             style={styles.tabButton}
           >
             <View style={{ alignItems: 'center', height: 24, justifyContent: 'center', width: 24 }}>

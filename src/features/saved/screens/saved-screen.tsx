@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useSyncExternalStore } from 'react';
+import { useFocusEffect } from 'expo-router';
+import { useCallback, useEffect, useMemo, useSyncExternalStore } from 'react';
 import { ActivityIndicator, BackHandler, FlatList, Pressable, RefreshControl } from 'react-native';
 import { SymbolView } from 'expo-symbols';
 import { Image } from 'expo-image';
@@ -34,7 +35,9 @@ export function SavedScreen({ provider = savedProvider, ...callbacks }: Props) {
   const selected = new Set(state.selectedIds);
   const allVisible = places.length > 0 && places.every(item => selected.has(item.id));
 
-  useEffect(() => { void provider.refresh(); }, [provider, snapshot.sessionRevision]);
+  useFocusEffect(useCallback(() => {
+    if (provider.getSnapshot().sessionRevision === snapshot.sessionRevision) void provider.refresh();
+  }, [provider, snapshot.sessionRevision]));
   useEffect(() => {
     const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
       if (!state.selectionMode) return false;

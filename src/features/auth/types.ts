@@ -15,13 +15,25 @@ export interface SocialLoginRequest {
   deviceId: string;
 }
 
+export interface LogoutRequest {
+  deviceId: string;
+}
+
 export interface SocialLoginResponse {
-  accessToken: string;
-  refreshToken: string;
+  accessToken: string | null;
+  refreshToken: string | null;
   isNewUser: boolean;
+  pendingDeletion: boolean;
   userId: number;
   provider: SocialProvider;
+  restoreToken: string | null;
 }
+
+export type AuthenticatedSocialLoginResponse = SocialLoginResponse & {
+  accessToken: string;
+  refreshToken: string;
+  pendingDeletion: false;
+};
 
 export interface AuthSession {
   accessToken: string;
@@ -34,4 +46,12 @@ export interface ReissueResponse {
   accessToken: string;
   refreshToken: string;
   userId: number;
+}
+
+export interface RestoreAccountResponse {
+  userId: number;
+}
+
+export interface UpdateMyProfileRequest {
+  nickname: string;
 }

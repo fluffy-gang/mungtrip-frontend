@@ -28,7 +28,13 @@ import { styles } from './style';
 
 import type { Href } from 'expo-router';
 
-export function DogStepThreeScreen() {
+interface DogStepThreeScreenProps {
+  completionPath?: Href;
+}
+
+export function DogStepThreeScreen({
+  completionPath = '/onboarding/complete' as Href,
+}: DogStepThreeScreenProps = {}) {
   const router = useRouter();
   const { draft, personalities, setDraft, submitDog } = useOnboarding();
   const [pending, setPending] = useState(false);
@@ -62,7 +68,7 @@ export function DogStepThreeScreen() {
           ? { isNeutered: undefined, personalities: [] }
           : undefined,
       );
-      router.replace('/onboarding/complete' as Href);
+      router.replace(completionPath);
     } catch (nextError) {
       setError(getErrorMessage(nextError));
       setPending(false);

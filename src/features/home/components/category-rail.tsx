@@ -52,17 +52,30 @@ export function CategoryRail({
           style={styles.dogSelector}
         >
           <View style={styles.dogAvatarStack}>
-            {visibleDogs.slice(0, 2).map((dog, index) => (
-              <Image
-                key={dog.id}
-                contentFit="cover"
-                source={{ uri: dog.imageUrl }}
-                style={[
-                  styles.stackedDogAvatar,
-                  { marginLeft: index === 0 ? 0 : -10 },
-                ]}
-              />
-            ))}
+            {visibleDogs.slice(0, 2).map((dog, index) =>
+              dog.imageUrl ? (
+                <Image
+                  key={dog.id}
+                  contentFit="cover"
+                  source={{ uri: dog.imageUrl }}
+                  style={[
+                    styles.stackedDogAvatar,
+                    { marginLeft: index === 0 ? 0 : -10 },
+                  ]}
+                />
+              ) : (
+                <View
+                  key={dog.id}
+                  style={[
+                    styles.stackedDogAvatar,
+                    styles.stackedDogAvatarPlaceholder,
+                    { marginLeft: index === 0 ? 0 : -10 },
+                  ]}
+                >
+                  <SymbolView name={{ android: "pets", ios: "pawprint.fill", web: "pets" }} size={14} tintColor="#8B95A1" />
+                </View>
+              ),
+            )}
           </View>
           {selectedDogs.length <= 1 ? (
             <Text style={styles.dogSelectorText}>{activeDog.name}</Text>

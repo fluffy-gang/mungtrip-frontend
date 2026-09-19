@@ -1,23 +1,23 @@
-import { isAxiosError } from 'axios';
+import { isAxiosError } from "axios";
 
-import {
-  apiClient,
-  setResponseErrorHandler,
-} from '@/shared/api/client';
-import { ENDPOINTS } from '@/shared/api/endpoints';
-import { useAuthStore } from './authStore';
+import { apiClient, setResponseErrorHandler } from "@/shared/api/client";
+import { ENDPOINTS } from "@/shared/api/endpoints";
+import { useAuthStore } from "./authStore";
 import {
   getAccessToken,
   getRefreshToken,
   removeAuthSession,
   saveAuthTokens,
-} from './storage';
+} from "./storage";
 
 import type {
+  LogoutRequest,
   ReissueResponse,
+  RestoreAccountResponse,
   SocialLoginRequest,
   SocialLoginResponse,
-} from './types';
+  UpdateMyProfileRequest,
+} from "./types";
 
 let requestInterceptorId: number | null = null;
 let refreshRequest: Promise<string> | null = null;
@@ -34,7 +34,7 @@ async function reissueAccessToken() {
   refreshRequest = (async () => {
     const refreshToken = await getRefreshToken();
 
-    if (!refreshToken) throw new Error('로그인이 필요해요.');
+    if (!refreshToken) throw new Error("로그인이 필요해요.");
 
     const { data } = await apiClient.post<ReissueResponse>(
       ENDPOINTS.auth.reissue,
@@ -42,7 +42,9 @@ async function reissueAccessToken() {
     );
 
     await saveAuthTokens(data);
-    useAuthStore.getState().setLogin(data.accessToken, useAuthStore.getState().user ?? undefined);
+    useAuthStore
+      .getState()
+      .setLogin(data.accessToken, useAuthStore.getState().user ?? undefined);
 
     return data.accessToken;
   })().finally(() => {
@@ -59,10 +61,7 @@ async function handleResponseError(error: unknown) {
 
   const config = error.config;
 
-  if (
-    config.url === ENDPOINTS.auth.reissue ||
-    retriedRequests.has(config)
-  ) {
+  if (config.url === ENDPOINTS.auth.reissue || retriedRequests.has(config)) {
     await clearAuthentication();
     throw error;
   }
@@ -71,7 +70,7 @@ async function handleResponseError(error: unknown) {
 
   try {
     const accessToken = await reissueAccessToken();
-    config.headers.set('Authorization', `Bearer ${accessToken}`);
+    config.headers.set("Authorization", `Bearer ${accessToken}`);
 
     return apiClient.request(config);
   } catch (refreshError) {
@@ -82,13 +81,15 @@ async function handleResponseError(error: unknown) {
 
 export const setupAuthInterceptor = () => {
   if (requestInterceptorId === null) {
-    requestInterceptorId = apiClient.interceptors.request.use(async config => {
-      const token = await getAccessToken();
+    requestInterceptorId = apiClient.interceptors.request.use(
+      async (config) => {
+        const token = await getAccessToken();
 
-      if (token) config.headers.Authorization = `Bearer ${token}`;
+        if (token) config.headers.Authorization = `Bearer ${token}`;
 
-      return config;
-    });
+        return config;
+      },
+    );
   }
 
   setResponseErrorHandler(handleResponseError);
@@ -103,4 +104,35 @@ export const socialLogin = async (
   );
 
   return data;
+};
+
+export const logout = async (body: LogoutRequest): Promise<void> => {
+  await apiClient.post(ENDPOINTS.auth.logout, body);
+};
+
+export const withdrawAccount = async (): Promise<void> => {
+  await apiClient.delete(ENDPOINTS.users.me);
+};
+
+export const restoreAccount = async (
+  restoreToken: string,
+): Promise<RestoreAccountResponse> => {
+  const { data } = await apiClient.post<RestoreAccountResponse>(
+    ENDPOINTS.auth.restore,
+    undefined,
+    {
+      headers: { Authorization: `Bearer ${restoreToken}` },
+    },
+  );
+
+  return data;
+};
+
+export const updateMyProfile = async (
+  body: UpdateMyProfileRequest,
+): Promise<void> => {
+  await apiClient.patch(
+    ENDPOINTS.users.nickname,
+    body,
+  );
 };

@@ -11,6 +11,7 @@ import type { HomeDogProfile } from '../types';
 interface DogSelectorSheetProps {
   dogs: HomeDogProfile[];
   onClose: () => void;
+  onOpenDogManagement: () => void;
   onSave: (dogIds: number[]) => void;
   selectedDogIds: number[];
 }
@@ -18,6 +19,7 @@ interface DogSelectorSheetProps {
 export function DogSelectorSheet({
   dogs,
   onClose,
+  onOpenDogManagement,
   onSave,
   selectedDogIds,
 }: DogSelectorSheetProps) {
@@ -69,11 +71,17 @@ export function DogSelectorSheet({
 
             return (
               <View key={dog.id} style={styles.dogOptionRow}>
-                <Image
-                  contentFit="cover"
-                  source={{ uri: dog.imageUrl }}
-                  style={styles.dogOptionImage}
-                />
+                {dog.imageUrl ? (
+                  <Image
+                    contentFit="cover"
+                    source={{ uri: dog.imageUrl }}
+                    style={styles.dogOptionImage}
+                  />
+                ) : (
+                  <View style={[styles.dogOptionImage, styles.dogOptionImagePlaceholder]}>
+                    <SymbolView name={{ android: 'pets', ios: 'pawprint.fill', web: 'pets' }} size={28} tintColor="#8B95A1" />
+                  </View>
+                )}
                 <View style={styles.dogOptionBody}>
                   <View style={styles.dogInfoLine}>
                     <Text style={styles.dogInfoLabel}>이름</Text>
@@ -105,7 +113,11 @@ export function DogSelectorSheet({
           })}
 
           <View style={styles.dogSheetActions}>
-            <Pressable accessibilityRole="button" style={styles.dogEditButton}>
+            <Pressable
+              accessibilityRole="button"
+              onPress={onOpenDogManagement}
+              style={styles.dogEditButton}
+            >
               <Text style={styles.dogEditButtonText}>정보 수정</Text>
             </Pressable>
             <Pressable

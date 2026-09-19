@@ -5,10 +5,12 @@ import { FlatList, Pressable, ScrollView, useWindowDimensions, View } from 'reac
 
 import { Text } from '@/components/ui/text';
 import { Toast } from '@/components/ui/toast';
+import { showDialog } from '@/components/ui/dialog';
 import { OnboardingPage, ScreenTitle } from '@/features/onboarding/components';
 
 import { INTRO_SLIDES } from '../../constants';
 import { useOnboarding } from '../../context';
+import { PendingDeletionError } from '@/features/auth/useAuth';
 import { getErrorMessage } from '@/utils/error';
 import { styles } from './style';
 
@@ -33,11 +35,11 @@ export function LoginScreen() {
   const [pending, setPending] = useState<LoginProvider>();
   const [error, setError] = useState<string>();
 
-  const handleLogin = async (provider: LoginProvider) => {
+  const handleLogin = async (provider: LoginProvider, restoreToken?: string) => {
     try {
       setError(undefined);
       setPending(provider);
-      const next = await login(provider);
+      const next = await login(provider, restoreToken);
       const path = next === 'agreements'
         ? '/onboarding/agreements'
         : next === 'dogPrompt'
@@ -47,6 +49,23 @@ export function LoginScreen() {
             : undefined;
       if (path) router.replace(path as Href);
     } catch (nextError) {
+      if (nextError instanceof PendingDeletionError) {
+        showDialog(
+          '계정을 복구할까요?',
+          '탈퇴 신청 후 30일 이내에는 계정을 복구할 수 있어요.',
+          [
+            { style: 'cancel', text: '취소' },
+            {
+              text: '복구하기',
+              onPress: () => {
+                void handleLogin(provider, nextError.restoreToken);
+              },
+            },
+          ],
+        );
+        return;
+      }
+
       setError(getErrorMessage(nextError));
     } finally {
       setPending(undefined);

@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { StatusBar, View } from 'react-native';
+import { Platform, StatusBar, View } from 'react-native';
 
 import { useOnboarding } from '@/features/onboarding/context';
 import { BOTTOM_TAB_HEIGHT } from '../constants';
@@ -74,7 +74,7 @@ export function HomeScreen() {
               onMoveToCurrentLocation={home.moveToCurrentLocation}
               onZoomIn={home.zoomIn}
               onZoomOut={home.zoomOut}
-              visible={isNativeMapAvailable}
+              visible={isNativeMapAvailable || Platform.OS === 'web'}
               zoomControlBottom={home.zoomControlBottom}
             />
             <MapFloatingAction

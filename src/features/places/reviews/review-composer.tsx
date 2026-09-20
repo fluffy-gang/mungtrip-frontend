@@ -57,7 +57,7 @@ export function ReviewComposer({ provider, placeId, defaultDogId, onDone, onBusy
       }
       const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], allowsMultipleSelection: true, selectionLimit: 5 });
       if (!active.current || result.canceled) return;
-      const selected = result.assets.map(asset => ({ uri: asset.uri, mimeType: asset.mimeType ?? '' }));
+      const selected = result.assets.map(asset => ({ uri: asset.uri, mimeType: asset.mimeType ?? '', file: asset.file }));
       if (selected.some(photo => !['image/jpeg', 'image/png', 'image/webp'].includes(photo.mimeType))) {
         throw new Error('JPG, PNG, WebP 사진만 첨부할 수 있어요.');
       }

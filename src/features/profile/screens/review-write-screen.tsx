@@ -8,6 +8,7 @@ import { ScreenHeader } from '@/components/ui/screen-header';
 import { StatePanel } from '@/components/ui/state-panel';
 
 import { uploadFile } from '@/features/uploads/api';
+import { getUploadSource } from '@/features/uploads/types';
 import { ReviewForm, type ReviewFormValues } from '../components/review-form';
 import { useDogs } from '../hooks/use-dogs';
 import { useReviewsStore } from '../store/reviews-store';
@@ -29,7 +30,7 @@ export function ReviewWriteScreen() {
     try {
       const imageUrls = await Promise.all(
         values.photos.map(photo =>
-          uploadFile(photo.uri, photo.mimeType, 'REVIEW_IMAGE'),
+          uploadFile(getUploadSource(photo.uri, photo.file), photo.mimeType, 'REVIEW_IMAGE'),
         ),
       );
 

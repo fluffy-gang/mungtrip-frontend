@@ -1,4 +1,4 @@
-import * as SecureStore from 'expo-secure-store';
+import * as Storage from '@/shared/storage';
 
 import type { AuthSession, SocialProvider } from './types';
 
@@ -18,36 +18,36 @@ interface AuthTokens {
 }
 
 export const saveAccessToken = async (token: string) => {
-  await SecureStore.setItemAsync(ACCESS_TOKEN_KEY, token);
+  await Storage.setItem(ACCESS_TOKEN_KEY, token);
 };
 
 export const getAccessToken = async () => {
-  return SecureStore.getItemAsync(ACCESS_TOKEN_KEY);
+  return Storage.getItem(ACCESS_TOKEN_KEY);
 };
 
 export const removeAccessToken = async () => {
-  await SecureStore.deleteItemAsync(ACCESS_TOKEN_KEY);
+  await Storage.removeItem(ACCESS_TOKEN_KEY);
 };
 
 export const saveRefreshToken = async (token: string) => {
-  await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, token);
+  await Storage.setItem(REFRESH_TOKEN_KEY, token);
 };
 
 export const getRefreshToken = async () => {
-  return SecureStore.getItemAsync(REFRESH_TOKEN_KEY);
+  return Storage.getItem(REFRESH_TOKEN_KEY);
 };
 
 export const removeRefreshToken = async () => {
-  await SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY);
+  await Storage.removeItem(REFRESH_TOKEN_KEY);
 };
 
 /** 로그인과 로그아웃 요청에서 동일한 기기 식별자를 사용하기 위해 안전 저장소에 보관한다. */
 export const saveDeviceId = async (deviceId: string) => {
-  await SecureStore.setItemAsync(DEVICE_ID_KEY, deviceId);
+  await Storage.setItem(DEVICE_ID_KEY, deviceId);
 };
 
 export const getDeviceId = async () => {
-  return SecureStore.getItemAsync(DEVICE_ID_KEY);
+  return Storage.getItem(DEVICE_ID_KEY);
 };
 
 export const saveAuthTokens = async (tokens: AuthTokens) => {
@@ -69,7 +69,7 @@ export const saveAuthSession = async (session: AuthSession) => {
 
   await Promise.all([
     saveAuthTokens(session),
-    SecureStore.setItemAsync(AUTH_IDENTITY_KEY, JSON.stringify(identity)),
+    Storage.setItem(AUTH_IDENTITY_KEY, JSON.stringify(identity)),
   ]);
 };
 
@@ -77,7 +77,7 @@ export const getAuthSession = async (): Promise<AuthSession | null> => {
   const [accessToken, refreshToken, identityValue] = await Promise.all([
     getAccessToken(),
     getRefreshToken(),
-    SecureStore.getItemAsync(AUTH_IDENTITY_KEY),
+    Storage.getItem(AUTH_IDENTITY_KEY),
   ]);
 
   if (!accessToken || !refreshToken || !identityValue) return null;
@@ -97,6 +97,6 @@ export const removeAuthSession = async () => {
   await Promise.all([
     removeAccessToken(),
     removeRefreshToken(),
-    SecureStore.deleteItemAsync(AUTH_IDENTITY_KEY),
+    Storage.removeItem(AUTH_IDENTITY_KEY),
   ]);
 };

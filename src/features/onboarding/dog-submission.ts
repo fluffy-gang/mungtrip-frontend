@@ -1,3 +1,6 @@
+import { getUploadSource } from '@/features/uploads/types';
+
+import type { UploadFileSource } from '@/features/uploads/types';
 import type { DogSaveRequest, OnboardingDraft } from './types';
 
 export interface DraftSubmissionState {
@@ -29,7 +32,7 @@ export interface DogSubmissionDependencies {
   loadDogs: () => Promise<unknown>;
   setSkipped: () => Promise<void>;
   updateDog: (dogId: number, payload: DogSaveRequest) => Promise<SubmissionResponse>;
-  uploadDogProfile: (uri: string, fileType: string) => Promise<string>;
+  uploadDogProfile: (source: UploadFileSource, fileType: string) => Promise<string>;
 }
 
 export function submitDogDraft(
@@ -49,7 +52,10 @@ export function submitDogDraft(
       const cacheKey = `${submittedDraft.profileImage.uri}:${mimeType}`;
       profileImageUrl = state.uploadKeys.get(cacheKey) ?? '';
       if (!profileImageUrl) {
-        profileImageUrl = await dependencies.uploadDogProfile(submittedDraft.profileImage.uri, mimeType);
+        profileImageUrl = await dependencies.uploadDogProfile(
+          getUploadSource(submittedDraft.profileImage.uri, submittedDraft.profileImage.file),
+          mimeType,
+        );
         ensureCurrent();
         state.uploadKeys.set(cacheKey, profileImageUrl);
       }

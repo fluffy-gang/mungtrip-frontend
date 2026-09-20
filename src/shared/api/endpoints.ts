@@ -6,6 +6,7 @@ export const ENDPOINTS = {
     reissue: `${API_PREFIX}/auth/reissue`,
     restore: `${API_PREFIX}/auth/restore`,
     socialLogin: `${API_PREFIX}/auth/social-login`,
+    kakaoCode: `${API_PREFIX}/auth/social-login/kakao/code`,
   },
   users: {
     me: `${API_PREFIX}/users/me`,

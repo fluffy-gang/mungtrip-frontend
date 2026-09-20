@@ -7,3 +7,9 @@ export interface PresignedUploadResponse {
   objectKey: string;
   uploadUrl: string;
 }
+
+export type UploadFileSource = string | Blob;
+
+export function getUploadSource(uri: string, file?: Blob): UploadFileSource {
+  return file ?? uri;
+}

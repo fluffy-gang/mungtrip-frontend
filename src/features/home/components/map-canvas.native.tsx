@@ -11,22 +11,8 @@ import { loadNativeMapModule } from "../utils/native-modules";
 import { hasPlaceCoordinate } from "../utils/place-utils";
 import { PlaceMarker } from "./place-marker";
 
-import type { LocationCoordinate, MapBounds, MapCamera } from "../types";
-import type { Place, PlaceCategory } from "@/features/places/types";
-
+import type { MapCanvasProps } from './map-canvas.types';
 const nativeMapModule = loadNativeMapModule();
-
-interface MapCanvasProps {
-  mapCamera: MapCamera;
-  onSelectPlace: (place: Place) => void;
-  places: Place[];
-  selectedCategory?: PlaceCategory;
-  selectedPlaceId?: number;
-  setMapBounds: (bounds: MapBounds) => void;
-  setMapCamera: (camera: MapCamera) => void;
-  userCoordinate: LocationCoordinate | null;
-  userProfileImageUrl?: string;
-}
 
 export function MapCanvas({
   mapCamera,

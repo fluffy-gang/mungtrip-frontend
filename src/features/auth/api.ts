@@ -1,7 +1,9 @@
 import { isAxiosError } from "axios";
+import { Platform } from 'react-native';
 
 import { apiClient, setResponseErrorHandler } from "@/shared/api/client";
 import { ENDPOINTS } from "@/shared/api/endpoints";
+import { getKakaoRedirectUri } from '../onboarding/social';
 import { useAuthStore } from "./authStore";
 import {
   getAccessToken,
@@ -98,11 +100,27 @@ export const setupAuthInterceptor = () => {
 export const socialLogin = async (
   body: SocialLoginRequest,
 ): Promise<SocialLoginResponse> => {
+  if (Platform.OS === 'web' && body.provider === 'KAKAO') {
+    return socialLoginWithKakaoCode(body.providerToken, getKakaoRedirectUri(), body.deviceId);
+  }
   const { data } = await apiClient.post<SocialLoginResponse>(
     ENDPOINTS.auth.socialLogin,
     body,
   );
 
+  return data;
+};
+
+export const socialLoginWithKakaoCode = async (
+  code: string,
+  redirectUri: string,
+  deviceId: string,
+): Promise<SocialLoginResponse> => {
+  const { data } = await apiClient.post<SocialLoginResponse>(ENDPOINTS.auth.kakaoCode, {
+    code,
+    redirectUri,
+    deviceId,
+  });
   return data;
 };
 

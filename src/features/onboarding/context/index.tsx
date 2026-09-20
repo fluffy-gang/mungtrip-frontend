@@ -83,8 +83,8 @@ export function OnboardingProvider({ children }: OnboardingProviderProps) {
   }, [initAuth, resolveStatus]);
 
   const login = useCallback(
-    async (provider: LoginProvider, restoreToken?: string) => {
-      const providerToken = await getProviderToken(provider);
+    async (provider: LoginProvider, restoreToken?: string, suppliedToken?: string) => {
+      const providerToken = suppliedToken ?? await getProviderToken(provider);
       const deviceId = await getDeviceId();
       const body = { deviceId, provider, providerToken };
       const response = restoreToken

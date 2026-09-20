@@ -1,6 +1,6 @@
 import { Image } from 'expo-image';
-import { useRouter } from 'expo-router';
-import { useRef, useState } from 'react';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, Pressable, ScrollView, useWindowDimensions, View } from 'react-native';
 
 import { Text } from '@/components/ui/text';
@@ -13,6 +13,7 @@ import { useOnboarding } from '../../context';
 import { PendingDeletionError } from '@/features/auth/useAuth';
 import { getErrorMessage } from '@/utils/error';
 import { styles } from './style';
+import { GoogleGISButton } from '@/features/onboarding/google-gis-button';
 
 import type { Href } from 'expo-router';
 import type { LoginProvider } from '../../types';
@@ -23,23 +24,30 @@ const INTRO_SLIDE_IMAGES: Record<(typeof INTRO_SLIDES)[number]['id'], number> = 
   places: require('../../../../../assets/images/onboarding/onboard-1.png'),
   verified: require('../../../../../assets/images/onboarding/onboard-3.png'),
 };
-const googleIcon = require('../../../../../assets/images/onboarding/google-icon.png');
 const kakaoIcon = require('../../../../../assets/images/onboarding/kakao-icon.png');
 
 export function LoginScreen() {
   const router = useRouter();
   const { width } = useWindowDimensions();
   const { login } = useOnboarding();
+  const params = useLocalSearchParams<{ oauth?: string; oauthError?: string }>();
   const listRef = useRef<FlatList<(typeof LOOP_SLIDES)[number]>>(null);
   const [page, setPage] = useState(0);
   const [pending, setPending] = useState<LoginProvider>();
-  const [error, setError] = useState<string>();
+  const [error, setError] = useState<string | undefined>(() => {
+    if (params.oauthError === 'kakao-denied') return '카카오 로그인이 취소되었어요. 다시 시도해주세요.';
+    if (params.oauthError === 'kakao-response') return '카카오 로그인 응답이 올바르지 않아요. 다시 시도해주세요.';
+    if (params.oauthError === 'kakao-state') return '카카오 로그인 상태 확인에 실패했어요. 다시 시도해주세요.';
+    return undefined;
+  });
 
-  const handleLogin = async (provider: LoginProvider, restoreToken?: string) => {
+  const callbackHandled = useRef(false);
+
+  const handleLogin = useCallback(async (provider: LoginProvider, restoreToken?: string, providerToken?: string) => {
     try {
       setError(undefined);
       setPending(provider);
-      const next = await login(provider, restoreToken);
+      const next = await login(provider, restoreToken, providerToken);
       const path = next === 'agreements'
         ? '/onboarding/agreements'
         : next === 'dogPrompt'
@@ -70,7 +78,21 @@ export function LoginScreen() {
     } finally {
       setPending(undefined);
     }
-  };
+  }, [login, router]);
+
+  const handleGoogleCredential = useCallback((credential: string) => {
+    void handleLogin('GOOGLE', undefined, credential);
+  }, [handleLogin]);
+  const handleGoogleError = useCallback((loginError: unknown) => {
+    setError(getErrorMessage(loginError));
+  }, []);
+
+  useEffect(() => {
+    if (params.oauth === 'kakao' && !callbackHandled.current) {
+      callbackHandled.current = true;
+      void handleLogin('KAKAO');
+    }
+  }, [handleLogin, params.oauth]);
 
   return (
     <OnboardingPage>
@@ -131,17 +153,11 @@ export function LoginScreen() {
             {pending === 'KAKAO' ? '로그인 중...' : '카카오로 시작하기'}
           </Text>
         </Pressable>
-        <Pressable
-          accessibilityRole="button"
+        <GoogleGISButton
           disabled={Boolean(pending)}
-          onPress={() => void handleLogin('GOOGLE')}
-          style={({ pressed }) => [styles.socialButton, styles.googleButton, pressed && styles.pressed]}
-        >
-          <Image contentFit="contain" source={googleIcon} style={styles.socialIcon} />
-          <Text fontSize={16} fontWeight="bold" lineHeight={24}>
-            {pending === 'GOOGLE' ? '로그인 중...' : 'Google로 시작하기'}
-          </Text>
-        </Pressable>
+          onCredential={handleGoogleCredential}
+          onError={handleGoogleError}
+        />
         <Text color="textTertiary" fontSize={12} lineHeight={20} style={styles.centerText}>
           로그인하면 이용약관 및 개인정보처리방침에{`\n`}동의하는 것으로 간주합니다
         </Text>

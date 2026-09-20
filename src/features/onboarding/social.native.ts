@@ -35,3 +35,11 @@ export async function getProviderToken(provider: LoginProvider) {
   }
   return result.data.idToken;
 }
+
+export function getKakaoRedirectUri(): string {
+  throw new Error('Kakao redirect URI is available on web only.');
+}
+
+export function consumeKakaoCallback(_code: string, _state: string): never {
+  throw new Error('Kakao OAuth callback is available on web only.');
+}

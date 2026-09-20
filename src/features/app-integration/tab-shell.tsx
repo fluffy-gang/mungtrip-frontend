@@ -22,7 +22,10 @@ export function TabShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const insets = useSafeAreaInsets();
   const navigate = useTabNavigation();
-  const selected = pathname === '/saved' ? 'favorite' : pathname === '/trips' ? 'trip' : undefined;
+  const selected = pathname === '/saved' ? 'favorite'
+    : pathname === '/trips' ? 'trip'
+      : pathname === '/profile' || pathname === '/profile/reviews' ? 'my'
+        : undefined;
   const height = BOTTOM_TAB_HEIGHT + insets.bottom;
   return <View style={{ flex: 1, paddingBottom: selected ? height : 0 }}>
     {children}

@@ -25,7 +25,10 @@ export function TripMap({ places, onSelect, height = 172, numbered = false }: {
     const latitudes = valid.map(p => p.latitude), longitudes = valid.map(p => p.longitude);
     const minLat = Math.min(...latitudes), maxLat = Math.max(...latitudes), minLng = Math.min(...longitudes), maxLng = Math.max(...longitudes);
     const latDelta = Math.max((maxLat - minLat) * 1.8, 0.012), lngDelta = Math.max((maxLng - minLng) * 1.8, 0.02);
-    return <NaverMapView style={{ flex: 1 }} initialRegion={{ latitude: (minLat + maxLat - latDelta) / 2, longitude: (minLng + maxLng - lngDelta) / 2, latitudeDelta: latDelta, longitudeDelta: lngDelta }} isRotateGesturesEnabled={false} isShowCompass={false} isShowZoomControls={false} isShowScaleBar={false} locale="ko">
+    // @mj-studio/react-native-naver-map@2.9.0's Fabric ViewManager loses track of marker overlay
+    // children when their count changes in place, crashing removeViewAt with an IndexOutOfBoundsException.
+    // Keying on the marker set forces a full NaverMapView remount instead of an in-place diff.
+    return <NaverMapView key={valid.map(place => place.id).join(',')} style={{ flex: 1 }} initialRegion={{ latitude: (minLat + maxLat - latDelta) / 2, longitude: (minLng + maxLng - lngDelta) / 2, latitudeDelta: latDelta, longitudeDelta: lngDelta }} isRotateGesturesEnabled={false} isShowCompass={false} isShowZoomControls={false} isShowScaleBar={false} locale="ko">
       {/* TODO(#27): Figma shows a dashed connector, but @mj-studio/react-native-naver-map@2.9.0's
           NaverMapPolylineOverlay wrapper never forwards its `pattern` prop to the native view
           (checked lib/module, lib/commonjs and src -- the JSX call omits `pattern` entirely) even

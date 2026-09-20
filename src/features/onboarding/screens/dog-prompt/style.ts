@@ -11,7 +11,6 @@ export const styles = StyleSheet.create({
     paddingTop: tokens.spacing[24],
   },
   promptHero: {
-    backgroundColor: tokens.colors.semantic.light.surfaceMuted,
     height: 256,
     marginTop: tokens.spacing[56],
     width: '100%',

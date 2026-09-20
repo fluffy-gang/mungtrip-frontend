@@ -13,10 +13,11 @@ interface UsePlaceSearchOptions {
   categories: PlaceCategory[];
   dogIds: number[];
   tags: PlaceTag[];
+  mockPlaces?: Place[];
 }
 
 export function usePlaceSearch(options: UsePlaceSearchOptions) {
-  const { categories, dogIds, tags } = options;
+  const { categories, dogIds, tags, mockPlaces } = options;
   const [results, setResults] = useState<Place[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -28,6 +29,11 @@ export function usePlaceSearch(options: UsePlaceSearchOptions) {
 
       if (!keyword) {
         setResults(null);
+        setHasError(false);
+        return;
+      }
+      if (mockPlaces) {
+        setResults(mockPlaces.filter(place => place.name.includes(keyword) || place.address.includes(keyword)));
         setHasError(false);
         return;
       }
@@ -53,7 +59,7 @@ export function usePlaceSearch(options: UsePlaceSearchOptions) {
         setLoading(false);
       }
     },
-    [catalog, dogIds],
+    [catalog, dogIds, mockPlaces],
   );
 
   const clear = useCallback(() => {

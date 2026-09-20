@@ -4,10 +4,6 @@ import { useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import {
-  BOTTOM_TAB_HEIGHT,
-  BottomTabBar,
-} from '@/components/navigation/bottom-tab-bar';
 import { showDialog } from '@/components/ui/dialog';
 import { StatePanel } from '@/components/ui/state-panel';
 
@@ -41,7 +37,6 @@ export function ProfileScreen() {
   const [isNameModalVisible, setIsNameModalVisible] = useState(false);
   const [withdrawing, setWithdrawing] = useState(false);
   const displayName = user?.nickname ?? user?.name ?? "프로필";
-  const bottomTabHeight = insets.bottom + BOTTOM_TAB_HEIGHT;
 
   const openLogin = async () => {
     const status = await bootstrap();
@@ -106,7 +101,7 @@ export function ProfileScreen() {
       <ScrollView
         contentContainerStyle={[
           styles.content,
-          { paddingBottom: bottomTabHeight + 16 },
+          { paddingBottom: insets.bottom + 16 },
         ]}
       >
         <Text style={styles.profileTitle}>프로필</Text>
@@ -266,13 +261,6 @@ export function ProfileScreen() {
           ) : null}
         </View>
       </ScrollView>
-      <BottomTabBar
-        active="profile"
-        height={bottomTabHeight}
-        onPressHome={() => router.navigate("/")}
-        onPressProfile={() => router.navigate("/profile")}
-        paddingBottom={insets.bottom}
-      />
       {isLoggedIn ? (
         <NameChangeModal
           currentName={displayName}

@@ -3,14 +3,8 @@ import { useCallback, useMemo, useState } from 'react';
 import { useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-
-import {
-  HEADER_CONTENT_HEIGHT,
-  JEJU_MAP_BOUNDS,
-  MAP_MAX_ZOOM,
-  MAP_MIN_ZOOM,
-  MAP_ZOOM_STEP,
-} from '../constants';
+import { useFeatureIntegration } from '@/features/app-integration/context';
+import { HEADER_CONTENT_HEIGHT, JEJU_MAP_BOUNDS } from '../constants';
 import { areMapBoundsEqual } from '../utils/map-bounds';
 import { filterPlaces } from '../utils/place-utils';
 import { useCurrentLocation } from './use-current-location';
@@ -18,16 +12,18 @@ import { useHomeData } from './use-home-data';
 import { useHomeBackHandler } from './use-home-back-handler';
 import { useHomeViewer } from './use-home-viewer';
 import { useMapSheetController } from './use-map-sheet-controller';
+import { useMapZoom } from './use-map-zoom';
 import { useRecentSearches } from './use-recent-searches';
 
 import type { HomeMode, MapBounds, PlaceListSource } from '../types';
 import type { Place, PlaceCategory } from '@/features/places/types';
 
-export function useHomeScreen() {
+export function useHomeScreen(initialMode: HomeMode = 'map') {
+  const app = useFeatureIntegration();
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { height: windowHeight } = useWindowDimensions();
-  const [mode, setMode] = useState<HomeMode>('map');
+  const [mode, setMode] = useState<HomeMode>(initialMode);
   const [query, setQuery] = useState('');
   const [listSource, setListSource] = useState<PlaceListSource>('recommendation');
   const headerHeight = insets.top + HEADER_CONTENT_HEIGHT;
@@ -40,7 +36,7 @@ export function useHomeScreen() {
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
   const [selectedCategoryCode, setSelectedCategoryCode] =
     useState<string | null>(null);
-  const homeViewer = useHomeViewer();
+  const homeViewer = useHomeViewer(app.source === 'real');
   const { addRecentSearch, recentSearches, removeRecentSearch } =
     useRecentSearches();
   const {
@@ -59,7 +55,7 @@ export function useHomeScreen() {
     searchResults,
     topCafePlaces,
     topRestaurantPlaces,
-  } = useHomeData(mapBounds, homeViewer.dogIds);
+  } = useHomeData(mapBounds, homeViewer.dogIds, app.catalog);
 
   const handleLocated = useCallback(() => {
     mapSheet.showMap();
@@ -84,19 +80,23 @@ export function useHomeScreen() {
   const isSearchList = listSource === 'search' && Boolean(query.trim());
   const updateMapBounds = useCallback(
     (nextBounds: MapBounds) => {
-      if (areMapBoundsEqual(mapBounds, nextBounds)) return;
+      setMapBounds(currentBounds => {
+        if (areMapBoundsEqual(currentBounds, nextBounds)) {
+          return currentBounds;
+        }
 
-      setMapBounds(nextBounds);
-
-      // 지도 이동 시 검색 결과 고정을 해제하고 위치 기준 목록으로 복귀한다.
-      if (isSearchList) {
-        setQuery('');
-        clearSearchResults();
-        setListSource('recommendation');
-      }
+        return nextBounds;
+      });
     },
-    [clearSearchResults, isSearchList, mapBounds],
+    [],
   );
+  // Initial/programmatic camera-idle events must not discard a just-submitted search.
+  const handleMapUserMove = useCallback(() => {
+    if (!isSearchList) return;
+    setQuery('');
+    clearSearchResults();
+    setListSource('recommendation');
+  }, [clearSearchResults, isSearchList]);
   const filterCategory = query.trim() ? undefined : selectedCategory;
   const filteredPlaces = useMemo(() => {
     if (isSearchList && searchResults) {
@@ -118,20 +118,7 @@ export function useHomeScreen() {
 
     return [selectedPlace, ...places];
   }, [places, selectedPlace]);
-  const updateMapZoom = useCallback(
-    (zoomDelta: number) => {
-      setMapCamera(currentCamera => ({
-        ...currentCamera,
-        zoom: Math.min(
-          MAP_MAX_ZOOM,
-          Math.max(MAP_MIN_ZOOM, currentCamera.zoom + zoomDelta),
-        ),
-      }));
-    },
-    [setMapCamera],
-  );
-  const zoomIn = useCallback(() => updateMapZoom(MAP_ZOOM_STEP), [updateMapZoom]);
-  const zoomOut = useCallback(() => updateMapZoom(-MAP_ZOOM_STEP), [updateMapZoom]);
+  const { zoomIn, zoomOut } = useMapZoom(setMapCamera);
   const selectCategory = useCallback(
     (category: PlaceCategory) => {
       const isSameCategory = selectedCategoryCode === category.code;
@@ -255,6 +242,13 @@ export function useHomeScreen() {
     setSelectedPlace(null);
   }, []);
 
+  const clearPlaceFilters = () => {
+    homeViewer.saveDogSelection([]);
+    setSelectedCategoryCode(null);
+    closeSearch();
+    setListSource('recommendation');
+  };
+
   useHomeBackHandler({
     closePlacePreview: closeSelectedPlace,
     closeSearch,
@@ -265,6 +259,8 @@ export function useHomeScreen() {
   return {
     activeCategoryCode,
     categories,
+    clearPlaceFilters,
+    hasPlaceFilters: homeViewer.dogIds.length > 0 || !!activeCategoryCode || !!query.trim(),
     closeSearch,
     closeSelectedPlace,
     courses,
@@ -313,6 +309,7 @@ export function useHomeScreen() {
     topCafePlaces,
     topRestaurantPlaces,
     updateMapBounds,
+    handleMapUserMove,
     userCoordinate,
     zoomControlBottom: mapSheet.zoomControlBottom,
     zoomIn,

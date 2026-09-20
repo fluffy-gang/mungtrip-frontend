@@ -1,6 +1,6 @@
 import { apiClient } from '@/shared/api/client';
 import { ENDPOINTS } from '@/shared/api/endpoints';
-import { findArrayPayload, getObjectValue, isObject, mapCategory, mapPlace, mapPlaces, mapTag, toString, unwrapData } from './detail/catalog-mapping';
+import { findArrayPayload, getObjectValue, isObject, mapCategory, mapPlace, mapPlaces, mapTag, toString } from './detail/catalog-mapping';
 
 import type { PlaceCatalog } from './detail/catalog-mapping';
 import type {
@@ -11,25 +11,19 @@ import type {
   TopPlacesQueryParams,
 } from './types';
 
-interface ApiEnvelope<T> {
-  code: string;
-  message: string;
-  data: T;
-}
-
 export const getPlaceCategories = async (): Promise<PlaceCategory[]> => {
   const { data } =
-    await apiClient.get<ApiEnvelope<unknown>>(ENDPOINTS.map.categories);
+    await apiClient.get<unknown>(ENDPOINTS.map.categories);
 
-  return findArrayPayload(unwrapData(data))
+  return findArrayPayload(data)
     .map(mapCategory)
     .filter((category): category is PlaceCategory => Boolean(category));
 };
 
 export const getPlaceTags = async (): Promise<PlaceTag[]> => {
-  const { data } = await apiClient.get<ApiEnvelope<unknown>>(ENDPOINTS.map.tags);
+  const { data } = await apiClient.get<unknown>(ENDPOINTS.map.tags);
 
-  return findArrayPayload(unwrapData(data))
+  return findArrayPayload(data)
     .map(mapTag)
     .filter((tag): tag is PlaceTag => Boolean(tag))
     .sort((firstTag, secondTag) => firstTag.sortOrder - secondTag.sortOrder);
@@ -39,23 +33,23 @@ export const getPlaces = async (
   params?: PlaceQueryParams,
   catalog?: PlaceCatalog,
 ): Promise<Place[]> => {
-  const { data } = await apiClient.get<ApiEnvelope<unknown>>(
+  const { data } = await apiClient.get<unknown>(
     ENDPOINTS.map.places,
     { params },
   );
 
-  return mapPlaces(unwrapData(data), catalog);
+  return mapPlaces(data, catalog);
 };
 
 export const getPlaceDetail = async (
   placeId: number,
   catalog?: PlaceCatalog,
 ): Promise<Place> => {
-  const { data } = await apiClient.get<ApiEnvelope<unknown>>(
+  const { data } = await apiClient.get<unknown>(
     ENDPOINTS.map.placeDetail(placeId),
   );
 
-  const place = mapPlace(unwrapData(data), catalog);
+  const place = mapPlace(data, catalog);
   if (!place) {
     throw new Error('장소 응답 형식이 올바르지 않습니다.');
   }
@@ -64,11 +58,11 @@ export const getPlaceDetail = async (
 };
 
 export const getPopularKeywords = async (): Promise<string[]> => {
-  const { data } = await apiClient.get<ApiEnvelope<unknown>>(
+  const { data } = await apiClient.get<unknown>(
     ENDPOINTS.map.popularKeywords,
   );
 
-  return findArrayPayload(unwrapData(data))
+  return findArrayPayload(data)
     .map(value => {
       if (typeof value === 'string') {
         return value;
@@ -87,24 +81,24 @@ export const getRecentlyVerifiedPlaces = async (
   limit = 10,
   catalog?: PlaceCatalog,
 ): Promise<Place[]> => {
-  const { data } = await apiClient.get<ApiEnvelope<unknown>>(
+  const { data } = await apiClient.get<unknown>(
     ENDPOINTS.map.recentlyVerified,
     {
       params: { limit },
     },
   );
 
-  return mapPlaces(unwrapData(data), catalog);
+  return mapPlaces(data, catalog);
 };
 
 export const getTopPlaces = async (
   params: TopPlacesQueryParams,
   catalog?: PlaceCatalog,
 ): Promise<Place[]> => {
-  const { data } = await apiClient.get<ApiEnvelope<unknown>>(
+  const { data } = await apiClient.get<unknown>(
     ENDPOINTS.map.topPlaces,
     { params },
   );
 
-  return mapPlaces(unwrapData(data), catalog);
+  return mapPlaces(data, catalog);
 };

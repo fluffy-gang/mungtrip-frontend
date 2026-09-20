@@ -12,10 +12,11 @@ export const MOCK_REVIEW_PHOTO = require('./assets/review-photo.webp');
 const icons = {
   close: require('./assets/close.svg'),
   back: require('./assets/back.svg'), share: require('./assets/share.svg'),
-  heart: require('./assets/heart.svg'), plus: require('./assets/plus.svg'),
+  plus: require('./assets/plus.svg'),
   pin: require('./assets/pin.svg'), clock: require('./assets/clock.svg'),
   phone: require('./assets/phone.svg'), official: require('./assets/official.svg'),
   users: require('./assets/users.svg'), star: require('./assets/star.svg'),
+  chevron: require('./assets/chevron-right.svg'),
 };
 /** Figma-exported vectors retain their viewBox and explicit leaf dimensions. */
 export function PlaceIcon({ name, size = 24 }: { name: keyof typeof icons; size?: number }) {

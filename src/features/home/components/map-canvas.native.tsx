@@ -17,6 +17,7 @@ const nativeMapModule = loadNativeMapModule();
 export function MapCanvas({
   mapCamera,
   onSelectPlace,
+  onUserMove,
   places,
   selectedCategory,
   selectedPlaceId,
@@ -48,6 +49,9 @@ export function MapCanvas({
           logoAlign="BottomLeft"
           logoMargin={{ bottom: 12, left: 12 }}
           mapType="Basic"
+          onCameraChanged={({ reason }) => {
+            if (reason === 'Gesture' || reason === 'Control') onUserMove?.();
+          }}
           onCameraIdle={(nextCamera) => {
             setMapCamera({
               latitude: nextCamera.latitude,

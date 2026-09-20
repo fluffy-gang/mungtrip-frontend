@@ -3,7 +3,6 @@ import { useCallback, useState } from 'react';
 import { Image, Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { BOTTOM_TAB_HEIGHT, BottomTabBar } from '@/components/navigation/bottom-tab-bar';
 import { showDialog } from '@/components/ui/dialog';
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { StatePanel } from '@/components/ui/state-panel';
@@ -32,7 +31,6 @@ export function ReviewsScreen() {
   const { hasError, loading, retry, reviews, visitedPlaces } = useReviews();
   const commitPendingReview = useReviewsStore(state => state.commitPendingReview);
   const removeReview = useReviewsStore(state => state.removeReview);
-  const bottomTabHeight = insets.bottom + BOTTOM_TAB_HEIGHT;
   const [openMenu, setOpenMenu] = useState<OpenReviewMenu | null>(null);
   const [reviewToDelete, setReviewToDelete] = useState<Review | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -96,7 +94,7 @@ export function ReviewsScreen() {
 
   return (
     <View style={[styles.root, { paddingTop: insets.top }]}>
-      <ScrollView contentContainerStyle={[styles.content, { paddingBottom: bottomTabHeight + 16 }]}>
+      <ScrollView contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 16 }]}>
         <ScreenHeader onBack={() => router.back()} title="방문 장소/리뷰" />
         {loading ? (
           <StatePanel loading title="정보를 불러오는 중이에요" />
@@ -180,7 +178,7 @@ export function ReviewsScreen() {
         )}
       </ScrollView>
       {toastMessage ? (
-        <View pointerEvents="none" style={[reviewStyles.toast, { bottom: bottomTabHeight + 12 }]}>
+        <View pointerEvents="none" style={[reviewStyles.toast, { bottom: insets.bottom + 12 }]}>
           <Text style={reviewStyles.toastText}>{toastMessage}</Text>
         </View>
       ) : null}
@@ -197,13 +195,6 @@ export function ReviewsScreen() {
         onClose={() => !deleting && setReviewToDelete(null)}
         onDelete={() => void deleteReview()}
         visible={reviewToDelete !== null}
-      />
-      <BottomTabBar
-        active="profile"
-        height={bottomTabHeight}
-        onPressHome={() => router.navigate('/')}
-        onPressProfile={() => router.navigate('/profile')}
-        paddingBottom={insets.bottom}
       />
     </View>
   );

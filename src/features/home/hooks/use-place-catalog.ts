@@ -10,7 +10,7 @@ import { useAsyncEffect } from './use-async-effect';
 import type { PlaceCategory, PlaceTag } from '@/features/places/types';
 
 
-export function usePlaceCatalog(reloadKey: number) {
+export function usePlaceCatalog(reloadKey: number, enabled = true) {
   const [categories, setCategories] = useState<PlaceCategory[]>([]);
   const [tags, setTags] = useState<PlaceTag[]>([]);
   const [popularKeywords, setPopularKeywords] = useState<string[]>([]);
@@ -35,7 +35,8 @@ export function usePlaceCatalog(reloadKey: number) {
         setIsLoaded(true);
       }
     },
-    [reloadKey],
+    [reloadKey, enabled],
+    enabled,
   );
 
   return { categories, hasError, isLoaded, loading, popularKeywords, tags };

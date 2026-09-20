@@ -15,6 +15,8 @@ import { ThemeProvider as StyledThemeProvider } from 'styled-components/native';
 import { DialogHost } from '@/components/ui/dialog';
 import { BootstrapError } from '@/features/onboarding/components';
 
+import { FeatureIntegrationProvider } from '@/features/app-integration/context';
+import { TabShell } from '@/features/app-integration/tab-shell';
 import { tokens } from '@/constants/tokens';
 import { setupAuthInterceptor } from '@/features/auth/api';
 import {
@@ -88,7 +90,9 @@ export default function RootLayout() {
     <ExpoThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <StyledThemeProvider theme={tokens}>
         <OnboardingProvider>
-          <OnboardingGate />
+          <FeatureIntegrationProvider>
+            <TabShell><OnboardingGate /></TabShell>
+          </FeatureIntegrationProvider>
         </OnboardingProvider>
         <DialogHost />
       </StyledThemeProvider>

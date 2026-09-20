@@ -27,4 +27,12 @@ export const placeStyles = StyleSheet.create({
   header: { height: 48, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 8, backgroundColor: colors.background },
   fixedBottom: { paddingTop: 12, paddingHorizontal: 20, backgroundColor: colors.background, borderTopWidth: 1, borderTopColor: colors.border, gap: 8 },
   hint: { backgroundColor: colors.surfaceSubtle, borderRadius: 8, padding: 12 },
+  statRow: { flexDirection: 'row' },
+  statColumn: { flex: 1, alignItems: 'center', gap: 4 },
+  statLabel: { textAlign: 'center' },
+  reviewRatingValue: { ...font, fontSize: 32, fontWeight: '700' },
+  reviewCaption: { ...font, fontSize: 12, fontWeight: '500', lineHeight: 16, letterSpacing: -0.36, color: colors.textDisabled, textAlign: 'center' },
+  reviewListTitle: { ...font, fontSize: 16, lineHeight: 24, fontWeight: '700' },
+  reviewListLink: { ...font, fontSize: 14, lineHeight: 20, fontWeight: '600', color: colors.textPlaceholder },
+  mutedCenter: { ...font, fontSize: 14, lineHeight: 20, color: colors.textTertiary, textAlign: 'center' },
 });

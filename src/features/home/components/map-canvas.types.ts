@@ -4,6 +4,7 @@ import type { Place, PlaceCategory } from '@/features/places/types';
 export interface MapCanvasProps {
   mapCamera: MapCamera;
   onSelectPlace: (place: Place) => void;
+  onUserMove?: () => void;
   places: Place[];
   selectedCategory?: PlaceCategory;
   selectedPlaceId?: number;

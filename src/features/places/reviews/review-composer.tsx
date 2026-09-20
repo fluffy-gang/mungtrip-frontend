@@ -75,7 +75,7 @@ export function ReviewComposer({ provider, placeId, defaultDogId, onDone, onBusy
     } catch (cause) { if (active.current) { setError(errorMessage(cause)); lock(false); } }
   };
   if (loading) return <ActivityIndicator accessibilityLabel="내 후기 확인 중" />;
-  if (loadError) return <><Text style={s.error}>{loadError}</Text><Button onPress={() => { setLoading(true); setAttempt(value => value + 1); }}>다시 시도</Button><Button type="ghost" onPress={() => onDone()}>다음에</Button></>;
+  if (loadError) return <><Text style={s.error}>{loadError}</Text><Button onPress={() => { setLoading(true); setAttempt(value => value + 1); }}>다시 시도</Button></>;
   return <>
     <Text style={s.heading}>{existing ? '후기를 수정해주세요' : '방문 후기를 알려주세요'}</Text>
     <View style={[s.row, { justifyContent: 'center', gap: 8 }]}>
@@ -105,7 +105,6 @@ export function ReviewComposer({ provider, placeId, defaultDogId, onDone, onBusy
       placeholder="매장에 대한 후기를 솔직하게 남겨주세요(선택)" />
     <Text style={s.small}>{content.length}/1,000</Text>
     {error && <Text accessibilityRole="alert" style={s.error}>{error}</Text>}
-    <View style={s.row}><View style={{ width: 112 }}><Button type="sub" disabled={busy} onPress={() => onDone()}>다음에</Button></View>
-      <View style={s.grow}><Button disabled={busy || !rating} onPress={() => void save()}>{busy ? '저장 중…' : '작성 완료'}</Button></View></View>
+    <Button disabled={busy || !rating} onPress={() => void save()}>{busy ? '저장 중…' : '작성 완료'}</Button>
   </>;
 }

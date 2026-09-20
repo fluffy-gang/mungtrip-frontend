@@ -1,6 +1,17 @@
 # mungtrip-frontend
 
-Mungtrip React Native 앱 프론트엔드입니다. Expo 기반으로 시작했고, 패키지 매니저는 pnpm으로 고정합니다.
+## Web deployment
+
+Expo SDK 57 web builds require Node.js 22.13 or newer. `pnpm build:web` exports the single-page app to `dist`; Vercel serves that directory with SPA rewrites and security headers from `vercel.json`.
+
+| Environment | Site | `EXPO_PUBLIC_API_URL` |
+| --- | --- | --- |
+| Production | `https://mungtrip.site` | Set to the production API origin when available |
+| Staging | `https://staging.mungtrip.site` | `https://dev.mungtrip.site` (temporary API) |
+
+Copy `.env.example` for local setup. Google Web Client ID and Kakao REST API key are public client configuration; provider secrets must stay on the backend. Set `EXPO_PUBLIC_OAUTH_KAKAO_REDIRECT_URI` per Vercel environment: staging uses `https://staging.mungtrip.site/onboarding/oauth/kakao`, production uses `https://mungtrip.site/onboarding/oauth/kakao`. `OAUTH_KAKAO_REST_API_KEY` is canonical; `OAUTH_KAKAO_API_KEY` remains a legacy fallback. `OAUTH_KAKAO_JAVSCRIPT_KEY` is unused because this client does not load the Kakao JavaScript SDK.
+
+Before deploying, confirm backend social login/code exchange and refresh/restore endpoints are deployed, provider client IDs and redirect URIs match each Vercel environment, API CORS allows the site origin and required headers, and direct nested routes load through the rewrite. Configure `EXPO_PUBLIC_NAVER_MAP_CLIENT_ID` in each Vercel environment. Keep `EXPO_PUBLIC_API_URL` and `vercel.json`'s CSP `connect-src` origins in sync: `https://dev.mungtrip.site` remains allowed for the temporary API, and replace/add origins when production API is selected. The CSP also allows Naver Maps JavaScript, tile, image, and connect hosts; update those sources alongside the map provider if they change. `geolocation=(self)` allows the current page to request the user's location. Kakao web code exchange uses `POST /api/v1/auth/social-login/kakao/code` with `{ code, redirectUri, deviceId }` and the existing `SocialLoginResponse`. A missing backend endpoint is surfaced as a login error. See [ADR 0002](docs/adr/0002-web-auth-deployment.md) for browser token storage risk and the HttpOnly cookie migration conditions.
 
 ## 현재 스택
 
@@ -9,10 +20,11 @@ Mungtrip React Native 앱 프론트엔드입니다. Expo 기반으로 시작했�
 - TypeScript strict mode
 - pnpm 9.6.0
 - expo-router
+- styled-components/native
 - ESLint
 - Development Build 예정
 - TanStack Query 예정
-- SecureStore 기반 인증 예정
+- native SecureStore / web localStorage 기반 인증
 - EAS Build 예정
 
 ## 빠른 시작
@@ -71,8 +83,10 @@ strict-peer-dependencies=false
 src/app/
   _layout.tsx
   index.tsx
-  explore.tsx
 ```
+
+공통 스타일은 `src/constants/tokens/`에 분리되어 있고, `src/constants/tokens/index.ts`가 공개 진입점입니다.
+`styled-components/native`는 루트에서 `ThemeProvider`로 `tokens`를 주입하는 방식으로 사용합니다.
 
 현재 주요 alias:
 

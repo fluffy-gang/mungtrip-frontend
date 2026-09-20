@@ -1,0 +1,38 @@
+import { Pressable, View } from 'react-native';
+import { SymbolView } from 'expo-symbols';
+
+import { colors, styles } from '../styles';
+import { PlaceListRow } from './place-list-row';
+
+import type { Place } from '@/features/places/types';
+import type { HomeDogProfile } from '../types';
+
+
+export function PlacePreviewCard({
+  bottom,
+  dogs,
+  onClose,
+  onSelectPlace,
+  place,
+}: {
+  bottom: number;
+  dogs: HomeDogProfile[];
+  onClose: () => void;
+  onSelectPlace: (place: Place) => void;
+  place: Place;
+}) {
+  return (
+    <View style={[styles.placePreviewWrapper, { bottom }]}>
+      <Pressable
+        accessibilityRole="button"
+        onPress={onClose}
+        style={styles.placePreviewCloseButton}
+      >
+        <SymbolView name={{ android: 'close', ios: 'xmark', web: 'close' }} size={18} tintColor={colors.textSecondary} />
+      </Pressable>
+      <View style={styles.placePreviewCard}>
+        <PlaceListRow compact dogs={dogs} onPress={onSelectPlace} place={place} />
+      </View>
+    </View>
+  );
+}

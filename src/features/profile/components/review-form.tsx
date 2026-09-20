@@ -13,6 +13,7 @@ import { ReviewVectorIcon } from './review-vector-icon';
 import type { ProfileDog } from '@/features/dogs/types';
 
 export interface ReviewPhoto {
+  file?: Blob;
   mimeType: string;
   uri: string;
 }
@@ -61,6 +62,7 @@ export function ReviewForm({ dogs, onSubmit, placeName, submitLabel, submitting 
     if (result.canceled) return;
 
     const selected = result.assets.map(asset => ({
+      file: asset.file,
       mimeType: asset.mimeType ?? 'image/jpeg',
       uri: asset.uri,
     }));

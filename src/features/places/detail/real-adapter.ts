@@ -1,6 +1,7 @@
 import { useAuthStore } from '@/features/auth/authStore';
 import { getMyDogs } from '@/features/dogs/api';
 import { uploadFile } from '@/features/uploads/api';
+import { getUploadSource } from '@/features/uploads/types';
 import { apiClient } from '@/shared/api/client';
 import { getPlaceCategories, getPlaceDetail, getPlaceTags } from '../api';
 import { createPlaceApi } from './api';
@@ -23,7 +24,7 @@ export function createRealPlaceAdapter(): PlaceAdapter {
       const [categories, tags] = await Promise.all([getPlaceCategories(), getPlaceTags()]);
       return getPlaceDetail(id, { categories, tags });
     },
-    upload: photo => uploadFile(photo.uri, photo.mimeType, 'REVIEW_IMAGE'),
+    upload: photo => uploadFile(getUploadSource(photo.uri, photo.file), photo.mimeType, 'REVIEW_IMAGE'),
     dogs: async () => (await getMyDogs()).map(dog => ({ id: dog.dogId, name: dog.name, breed: dog.breed, weight: dog.weight })),
   };
 }

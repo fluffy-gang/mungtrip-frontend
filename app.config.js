@@ -12,6 +12,9 @@ module.exports = ({ config }) => {
   const googleAndroidClientId = process.env.OAUTH_GOOGLE_ANDROID_CLIENT_ID?.trim();
   const googleIosClientId = process.env.OAUTH_GOOGLE_IOS_CLIENT_ID?.trim();
   const googleWebClientId = process.env.OAUTH_GOOGLE_WEB_CLIENT_ID?.trim();
+  const kakaoRestApiKey = process.env.OAUTH_KAKAO_REST_API_KEY?.trim()
+    || process.env.OAUTH_KAKAO_API_KEY?.trim();
+  const kakaoRedirectUri = process.env.EXPO_PUBLIC_OAUTH_KAKAO_REDIRECT_URI?.trim();
   const googleIosScheme = getGoogleIosScheme(googleIosClientId);
   const locationPermission =
     '현재 위치를 기준으로 가까운 반려동물 동반 장소를 보여드릴게요.';
@@ -73,6 +76,8 @@ module.exports = ({ config }) => {
         googleAndroidClientId,
         googleIosClientId,
         googleWebClientId,
+        kakaoRestApiKey,
+        kakaoRedirectUri,
       },
     },
     plugins,

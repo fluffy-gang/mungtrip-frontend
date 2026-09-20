@@ -2,7 +2,7 @@ import { Linking, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { Button } from '@/components/ui/button';
 
-import { MapCanvas } from '@/features/home/components/map-canvas';
+import { MapCanvas } from '../../home/components/map-canvas';
 import { PlaceCard } from '@/features/home/components/place-card';
 import { PlaceIcon } from './media';
 import { colors, placeStyles as s } from './styles';

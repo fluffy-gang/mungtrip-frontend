@@ -42,7 +42,7 @@ export interface VisitInput {
 }
 export interface PlaceVisit extends VisitInput { placeVisitId: number; placeId: number }
 export interface NearbyResult { places: Place[]; expandedRadiusMeters?: number; expandedCount?: number }
-export interface SelectedPhoto { uri: string; mimeType: string }
+export interface SelectedPhoto { uri: string; mimeType: string; file?: Blob }
 export interface Resource<T> { data?: T; loading: boolean; error?: string }
 export interface PlaceData {
   detail: Resource<Place>;

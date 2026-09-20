@@ -21,8 +21,11 @@
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "output": "single",
+      "favicon": "./assets/images/favicon.png",
+      "name": "멍멍트립",
+      "shortName": "멍멍트립",
+      "description": "반려견과 함께하는 여행을 계획해요."
     },
     "plugins": [
       "expo-router",

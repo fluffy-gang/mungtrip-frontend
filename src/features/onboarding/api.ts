@@ -24,6 +24,7 @@ import type {
   DogSizeWire,
   OnboardingStatus,
 } from './types';
+import type { UploadFileSource } from '@/features/uploads/types';
 
 export async function getAgreementDefinitions(): Promise<AgreementDefinition[]> {
   const data = await getAgreementDefinitionsRequest();
@@ -73,8 +74,8 @@ export function updateDog(dogId: number, payload: CreateDogRequest) {
   return updateDogRequest(dogId, payload);
 }
 
-export function uploadDogProfile(uri: string, fileType = 'image/jpeg') {
-  return uploadFile(uri, fileType, 'DOG_PROFILE_IMAGE');
+export function uploadDogProfile(source: UploadFileSource, fileType = 'image/jpeg') {
+  return uploadFile(source, fileType, 'DOG_PROFILE_IMAGE');
 }
 
 export function toWireSize(size: DogSize): DogSizeWire {

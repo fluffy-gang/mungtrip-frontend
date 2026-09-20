@@ -4,7 +4,7 @@ import { Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useFeatureIntegration } from '@/features/app-integration/context';
-import { MapCanvas } from '@/features/home/components/map-canvas';
+import { MapCanvas } from '../../features/home/components/map-canvas';
 import { PlacePreviewCard } from '@/features/home/components/place-preview-card';
 import { JEJU_MAP_CAMERA } from '@/features/home/constants';
 import { hasPlaceCoordinate } from '@/features/home/utils/place-utils';

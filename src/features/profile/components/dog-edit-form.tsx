@@ -173,7 +173,7 @@ export function DogEditForm({ dog, onBack, onDeleted }: DogEditFormProps) {
     setPendingImageUri(asset.uri);
     setUploadingImage(true);
     try {
-      const objectKey = await uploadFile(asset.uri, asset.mimeType ?? 'image/jpeg', 'DOG_PROFILE_IMAGE');
+      const objectKey = await uploadFile(asset.file ?? asset.uri, asset.mimeType ?? 'image/jpeg', 'DOG_PROFILE_IMAGE');
       if (await persistDog({ profileImageUrl: objectKey })) {
         setProfileImageKey(objectKey);
       } else {

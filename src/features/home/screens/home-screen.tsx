@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { StatusBar, View } from 'react-native';
+import { Platform, StatusBar, View } from 'react-native';
 import { useEffect } from 'react';
 
 import { useTabNavigation } from '@/features/app-integration/tab-shell';
@@ -82,7 +82,7 @@ export function HomeScreen() {
               onMoveToCurrentLocation={home.moveToCurrentLocation}
               onZoomIn={home.zoomIn}
               onZoomOut={home.zoomOut}
-              visible={isNativeMapAvailable}
+              visible={isNativeMapAvailable || Platform.OS === 'web'}
               zoomControlBottom={home.zoomControlBottom}
             />
             <MapFloatingAction

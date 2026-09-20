@@ -54,6 +54,8 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
+    "build:web": "expo export --platform web",
+    "test:oauth-state": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/features/onboarding/oauth-state.test.mjs",
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
     "test:dog-presets": "node --experimental-strip-types scripts/test-dog-presets.mjs",
@@ -63,5 +65,6 @@
     "prepare": "node ./scripts/install-git-hooks.js"
   },
   "private": true,
+  "engines": { "node": ">=22.13.0" },
   "packageManager": "pnpm@9.6.0"
 }

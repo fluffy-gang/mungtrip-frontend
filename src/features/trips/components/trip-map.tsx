@@ -2,7 +2,7 @@ import { View } from 'react-native';
 
 import { CourseOrderPin } from '@/components/ui/course-order-pin';
 
-import { MapCanvas } from '@/features/home/components/map-canvas';
+import { MapCanvas } from '../../home/components/map-canvas';
 import { loadNativeMapModule } from '@/features/home/utils/native-modules';
 import { tripColors, Muted } from './ui';
 

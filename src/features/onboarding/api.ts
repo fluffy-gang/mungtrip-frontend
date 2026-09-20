@@ -16,7 +16,7 @@ import { isUnauthorizedApiError } from '@/shared/api/error';
 import { AGREEMENT_URLS } from './constants';
 
 import type { Agreement } from '@/features/agreements/types';
-import type { DogSaveRequest } from '@/features/dogs/types';
+import type { CreateDogRequest } from '@/features/dogs/types';
 import type {
   AgreementDefinition,
   AgreementState,
@@ -52,14 +52,24 @@ export async function getPersonalities() {
 }
 
 export function getDogs() {
-  return getMyDogs();
+  return getMyDogs().then(dogs => dogs.map(dog => ({
+    breed: dog.breed,
+    dogId: dog.dogId,
+    isDangerousDog: dog.isDangerousDog,
+    isNeutered: dog.isNeutered,
+    name: dog.name,
+    personalities: dog.personalities,
+    profileImageUrl: dog.profileImageUrl ?? '',
+    size: dog.size,
+    weight: dog.weight,
+  })));
 }
 
-export function createDog(payload: DogSaveRequest) {
+export function createDog(payload: CreateDogRequest) {
   return createDogRequest(payload);
 }
 
-export function updateDog(dogId: number, payload: DogSaveRequest) {
+export function updateDog(dogId: number, payload: CreateDogRequest) {
   return updateDogRequest(dogId, payload);
 }
 

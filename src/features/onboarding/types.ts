@@ -51,7 +51,7 @@ export interface Dog {
 
 export interface DogSaveRequest {
   breed: string;
-  isDangerousDog?: boolean;
+  isDangerousDog: boolean;
   isNeutered?: boolean;
   name: string;
   personalityIds: number[];

@@ -1,7 +1,7 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Alert } from 'react-native';
 
-import { JEJU_MAP_CAMERA } from '../constants';
+import { isWithinJejuMapBounds, JEJU_MAP_CAMERA } from '../constants';
 import { loadLocationModule } from '../utils/native-modules';
 
 import type { LocationCoordinate, MapCamera } from '../types';
@@ -16,6 +16,47 @@ interface UseCurrentLocationOptions {
 export function useCurrentLocation({ onLocated }: UseCurrentLocationOptions = {}) {
   const [mapCamera, setMapCamera] = useState<MapCamera>(JEJU_MAP_CAMERA);
   const [userCoordinate, setUserCoordinate] = useState<LocationCoordinate | null>(null);
+
+  const applyLocation = useCallback((location: LocationObject) => {
+    const nextCoordinate = {
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+    };
+
+    if (!isWithinJejuMapBounds(nextCoordinate.latitude, nextCoordinate.longitude)) {
+      setUserCoordinate(null);
+      setMapCamera(JEJU_MAP_CAMERA);
+      return false;
+    }
+
+    setUserCoordinate(nextCoordinate);
+    setMapCamera({ ...nextCoordinate, zoom: 15 });
+    return true;
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    if (!locationModule) return;
+
+    void locationModule
+      .getForegroundPermissionsAsync()
+      .then(async permission => {
+        if (!isMounted || permission.status !== 'granted') return;
+
+        const currentLocation = await locationModule.getCurrentPositionAsync({
+          accuracy: locationModule.LocationAccuracy.Balanced,
+        });
+        if (isMounted) applyLocation(currentLocation);
+      })
+      .catch(() => {
+        // 자동 위치 확인 실패 시 기본 제주 시청 카메라를 그대로 유지한다.
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [applyLocation]);
 
   const moveToCurrentLocation = useCallback(async () => {
     if (!locationModule) {
@@ -37,24 +78,19 @@ export function useCurrentLocation({ onLocated }: UseCurrentLocationOptions = {}
       const currentLocation: LocationObject = await locationModule.getCurrentPositionAsync({
         accuracy: locationModule.LocationAccuracy.Balanced,
       });
-      const nextCoordinate = {
-        latitude: currentLocation.coords.latitude,
-        longitude: currentLocation.coords.longitude,
-      };
-
-      setUserCoordinate(nextCoordinate);
-      setMapCamera({
-        ...nextCoordinate,
-        zoom: 15,
-      });
-      onLocated?.();
+      const isInJeju = applyLocation(currentLocation);
+      if (!isInJeju) {
+        Alert.alert('서비스 지역 안내', '현재 위치가 제주 지역 밖이라 제주 시청을 보여드려요.');
+      } else {
+        onLocated?.();
+      }
     } catch {
       Alert.alert(
         '현재 위치를 찾지 못했어요',
         '시뮬레이터라면 Features > Location에서 None이 아닌 위치를 선택해주세요.',
       );
     }
-  }, [onLocated]);
+  }, [applyLocation, onLocated]);
 
   return {
     mapCamera,

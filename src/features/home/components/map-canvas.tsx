@@ -94,7 +94,7 @@ export function MapCanvas({
               />
             );
           })}
-          {userCoordinate && userProfileImageUrl ? (
+          {userCoordinate ? (
             <NaverMapMarkerOverlay
               anchor={{ x: 0.5, y: 0.5 }}
               height={38}
@@ -104,12 +104,18 @@ export function MapCanvas({
               width={38}
               zIndex={100}
             >
-              <Image
-                collapsable={false}
-                contentFit="cover"
-                source={userMarkerSource}
-                style={homeStyles.nativeUserLocationMarker}
-              />
+              {userProfileImageUrl ? (
+                <Image
+                  collapsable={false}
+                  contentFit="cover"
+                  source={userMarkerSource}
+                  style={homeStyles.nativeUserLocationMarker}
+                />
+              ) : (
+                <View collapsable={false} style={styles.userLocationFallback}>
+                  <View style={styles.userLocationDot} />
+                </View>
+              )}
             </NaverMapMarkerOverlay>
           ) : null}
         </NaverMapView>
@@ -149,5 +155,21 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: 10,
     textAlign: "center",
+  },
+  userLocationDot: {
+    backgroundColor: "#1C7CFE",
+    borderRadius: 5,
+    height: 10,
+    width: 10,
+  },
+  userLocationFallback: {
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
+    borderColor: "#1C7CFE",
+    borderRadius: 19,
+    borderWidth: 2,
+    height: 38,
+    justifyContent: "center",
+    width: 38,
   },
 });

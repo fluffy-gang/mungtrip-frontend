@@ -4,7 +4,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HomeBottomTabs } from '@/features/home/components/home-bottom-tabs';
 import { BOTTOM_TAB_HEIGHT } from '@/features/home/constants';
-import { showComingSoon } from '@/shared/utils/show-coming-soon';
 
 import type { ReactNode } from 'react';
 import type { HomeBottomTab } from '@/features/home/components/home-bottom-tabs';
@@ -12,8 +11,8 @@ import type { HomeBottomTab } from '@/features/home/components/home-bottom-tabs'
 export function useTabNavigation() {
   const router = useRouter();
   return (tab: HomeBottomTab) => {
-    if (tab === 'my') { showComingSoon(); return; }
-    if (tab === 'trip') router.replace('/trips');
+    if (tab === 'my') router.replace('/profile');
+    else if (tab === 'trip') router.replace('/trips');
     else if (tab === 'favorite') router.replace('/saved');
     else router.replace({ pathname: '/', params: { view: tab === 'search' ? 'search' : 'home' } });
   };
@@ -28,6 +27,6 @@ export function TabShell({ children }: { children: ReactNode }) {
   return <View style={{ flex: 1, paddingBottom: selected ? height : 0 }}>
     {children}
     {selected && <HomeBottomTabs height={height} paddingBottom={insets.bottom} selectedTab={selected}
-      onShowHome={() => navigate('home')} onOpenSearch={() => navigate('search')} onSelectTab={navigate} />}
+      onShowHome={() => navigate('home')} onOpenSearch={() => navigate('search')} onShowProfile={() => navigate('my')} onSelectTab={navigate} />}
   </View>;
 }

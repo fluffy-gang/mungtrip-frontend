@@ -5,12 +5,11 @@ import type {
   CreateDogRequest,
   Dog,
   DogMutationResponse,
-  GetMyDogsResponse,
   UpdateDogRequest,
 } from './types';
 
 export const getMyDogs = async (): Promise<Dog[]> => {
-  const { data } = await apiClient.get<GetMyDogsResponse>(ENDPOINTS.dogs.list);
+  const { data } = await apiClient.get<{ dogs: Dog[] }>(ENDPOINTS.dogs.list);
 
   return data.dogs;
 };

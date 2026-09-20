@@ -1,9 +1,9 @@
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar, View } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
 import { useEffect } from 'react';
 
 import { useTabNavigation } from '@/features/app-integration/tab-shell';
-import { showComingSoon } from '@/shared/utils/show-coming-soon';
+import { useOnboarding } from '@/features/onboarding/context';
 import { BOTTOM_TAB_HEIGHT } from '../constants';
 import { CategoryRail } from '../components/category-rail';
 import { DogSelectorSheet } from '../components/dog-selector-sheet';
@@ -24,9 +24,16 @@ export function HomeScreen() {
   // Search routes must not mount and immediately tear down a native map during initialization.
   const home = useHomeScreen(view === 'search' ? 'search' : 'map');
   const navigate = useTabNavigation();
+  const router = useRouter();
+  const { resetDraft } = useOnboarding();
   const { openSearch } = home;
   useEffect(() => { if (view === 'search') openSearch(); }, [view, openSearch]);
   const bottomTabHeight = home.insets.bottom + BOTTOM_TAB_HEIGHT;
+
+  const openDogRegistration = () => {
+    resetDraft();
+    router.push('/profile/dogs/new');
+  };
 
   return (
     <View style={styles.root}>
@@ -51,7 +58,7 @@ export function HomeScreen() {
               activeCategoryCode={home.activeCategoryCode}
               activeDog={home.homeViewer.activeDog}
               categories={home.categories}
-              onAddDog={showComingSoon}
+              onAddDog={openDogRegistration}
               onOpenDogSelector={() => home.setIsDogSheetVisible(true)}
               onSelectCategory={home.selectCategory}
               selectedDogs={home.homeViewer.selectedDogs}
@@ -120,6 +127,7 @@ export function HomeScreen() {
             height={bottomTabHeight}
             onOpenSearch={home.openSearch}
             onShowHome={home.showHomeFeed}
+            onShowProfile={home.showProfile}
             paddingBottom={home.insets.bottom}
             selectedTab="home"
             onSelectTab={tab => {
@@ -132,6 +140,10 @@ export function HomeScreen() {
             <DogSelectorSheet
               dogs={home.homeViewer.dogs}
               onClose={() => home.setIsDogSheetVisible(false)}
+              onOpenDogManagement={() => {
+                home.setIsDogSheetVisible(false);
+                home.showProfile();
+              }}
               onSave={home.homeViewer.saveDogSelection}
               selectedDogIds={home.homeViewer.selectedDogIds}
             />

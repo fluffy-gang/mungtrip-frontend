@@ -44,6 +44,11 @@ export const topcontrolsStyles = {
     height: 28,
     width: 28,
   },
+  stackedDogAvatarPlaceholder: {
+    alignItems: 'center',
+    backgroundColor: colors.surfaceSubtle,
+    justifyContent: 'center',
+  },
   dogSelectorText: text(12, 'bold', 'onInverse'),
   dogSelectorEmpty: {
     alignItems: 'center',

@@ -25,7 +25,7 @@ export function SheetShell({ children, onClose, busy }: { children: ReactNode; o
     onPanResponderRelease: (_, gesture) => { if (gesture.dy > 50) close(); },
   });
   return <Modal visible transparent animationType="slide" onRequestClose={close}>
-    <KeyboardAvoidingView style={styles.overlay} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+    <KeyboardAvoidingView style={styles.overlay} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <Pressable style={StyleSheet.absoluteFill} accessibilityRole="button" accessibilityLabel="시트 닫기" disabled={busy} onPress={close} />
       <View style={[styles.sheet, { paddingBottom: Math.max(insets.bottom, 20) }]} accessibilityViewIsModal onAccessibilityEscape={close}>
         <View {...drag.panHandlers} style={{ minHeight: 44, justifyContent: 'center' }} accessibilityLabel="아래로 밀어 닫기"><View style={styles.handle} /></View>

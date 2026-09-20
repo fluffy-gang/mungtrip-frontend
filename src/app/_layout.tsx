@@ -11,6 +11,7 @@ import { useEffect, useRef } from 'react';
 import { useColorScheme } from 'react-native';
 import { ThemeProvider as StyledThemeProvider } from 'styled-components/native';
 
+import { DialogHost } from '@/components/ui/dialog';
 import { BootstrapError } from '@/features/onboarding/components';
 
 import { FeatureIntegrationProvider } from '@/features/app-integration/context';
@@ -92,6 +93,7 @@ export default function RootLayout() {
             <TabShell><OnboardingGate /></TabShell>
           </FeatureIntegrationProvider>
         </OnboardingProvider>
+        <DialogHost />
       </StyledThemeProvider>
     </ExpoThemeProvider>
   );

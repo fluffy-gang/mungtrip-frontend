@@ -26,7 +26,7 @@ export function useHomeFeed(options: UseHomeFeedOptions) {
     async isMounted => {
       const catalog = { categories, tags };
       const [nextCourses, nextRecentlyVerified, nextTopCafePlaces, nextTopRestaurantPlaces] =
-        await Promise.all([
+        await Promise.allSettled([
           getCourses(10),
           getRecentlyVerifiedPlaces(10, catalog),
           getTopPlaces({ category: 'CAFE', days: 30, limit: 10 }, catalog),
@@ -34,10 +34,19 @@ export function useHomeFeed(options: UseHomeFeedOptions) {
         ]);
 
       if (isMounted()) {
-        setCourses(nextCourses);
-        setRecentlyVerified(nextRecentlyVerified);
-        setTopCafePlaces(nextTopCafePlaces);
-        setTopRestaurantPlaces(nextTopRestaurantPlaces);
+        if (nextCourses.status === 'fulfilled') setCourses(nextCourses.value);
+        if (nextRecentlyVerified.status === 'fulfilled') setRecentlyVerified(nextRecentlyVerified.value);
+        if (nextTopCafePlaces.status === 'fulfilled') setTopCafePlaces(nextTopCafePlaces.value);
+        if (nextTopRestaurantPlaces.status === 'fulfilled') setTopRestaurantPlaces(nextTopRestaurantPlaces.value);
+
+        if (
+          nextCourses.status === 'rejected' &&
+          nextRecentlyVerified.status === 'rejected' &&
+          nextTopCafePlaces.status === 'rejected' &&
+          nextTopRestaurantPlaces.status === 'rejected'
+        ) {
+          throw new Error('All home feed requests failed.');
+        }
       }
     },
     [categories, enabled, reloadKey, tags],

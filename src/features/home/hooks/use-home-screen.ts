@@ -77,8 +77,7 @@ export function useHomeScreen(initialMode: HomeMode = 'map') {
         : undefined,
     [activeCategoryCode, categories],
   );
-  const trimmedQuery = query.trim();
-  const isSearchList = listSource === 'search' && Boolean(trimmedQuery);
+  const isSearchList = listSource === 'search' && Boolean(query.trim());
   const updateMapBounds = useCallback(
     (nextBounds: MapBounds) => {
       setMapBounds(currentBounds => {
@@ -146,6 +145,16 @@ export function useHomeScreen(initialMode: HomeMode = 'map') {
     (nextQuery: string) => {
       const nextKeyword = nextQuery.trim();
 
+      if (!nextKeyword) {
+        setQuery('');
+        clearSearchResults();
+        setSelectedPlace(null);
+        setListSource('recommendation');
+        mapSheet.showContentCollapsed();
+        setMode('map');
+        return;
+      }
+
       setQuery(nextKeyword);
       setSelectedPlace(null);
       setListSource('search');
@@ -154,7 +163,7 @@ export function useHomeScreen(initialMode: HomeMode = 'map') {
       addRecentSearch(nextKeyword);
       void searchPlaces({ keyword: nextKeyword });
     },
-    [addRecentSearch, mapSheet, searchPlaces],
+    [addRecentSearch, clearSearchResults, mapSheet, searchPlaces],
   );
   const showCategoryPlaces = useCallback(
     (categoryCode: string) => {
@@ -189,6 +198,9 @@ export function useHomeScreen(initialMode: HomeMode = 'map') {
     mapSheet.showMap();
     setMode('map');
   }, [mapSheet]);
+  const showProfile = useCallback(() => {
+    router.navigate('/profile');
+  }, [router]);
   const openSearch = useCallback(() => {
     setMode('search');
   }, []);
@@ -248,7 +260,7 @@ export function useHomeScreen(initialMode: HomeMode = 'map') {
     activeCategoryCode,
     categories,
     clearPlaceFilters,
-    hasPlaceFilters: homeViewer.dogIds.length > 0 || !!activeCategoryCode || !!trimmedQuery,
+    hasPlaceFilters: homeViewer.dogIds.length > 0 || !!activeCategoryCode || !!query.trim(),
     closeSearch,
     closeSelectedPlace,
     courses,
@@ -291,6 +303,7 @@ export function useHomeScreen(initialMode: HomeMode = 'map') {
     showCategoryPlaces,
     showHomeFeed,
     showMapView,
+    showProfile,
     showRecommendationList,
     submitSearch,
     topCafePlaces,

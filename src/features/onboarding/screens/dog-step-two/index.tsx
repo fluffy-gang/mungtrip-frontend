@@ -44,6 +44,7 @@ export function DogStepTwoScreen({
   const [dangerConfirmed, setDangerConfirmed] = useState(false);
   const weight = Number(draft.weight);
   const weightValid = !draft.weight.trim() || (!Number.isNaN(weight) && weight > 0);
+  const nameValid = draft.name.trim().length > 0;
   const selectedMode = draft.breedInputMode === 'selected';
 
   return (
@@ -105,7 +106,8 @@ export function DogStepTwoScreen({
                 />
               </View>
               <TextInputField
-                label="이름 (선택)"
+                errorText={nameValid ? undefined : '이름을 입력해주세요.'}
+                label="이름"
                 maxLength={20}
                 onChange={(name) => setDraft({ name })}
                 placeholder="이름을 입력해주세요"
@@ -124,7 +126,7 @@ export function DogStepTwoScreen({
         </ScrollView>
         <BottomActions>
           <Button
-            disabled={!weightValid}
+            disabled={!weightValid || !nameValid}
             onPress={() => router.push(nextPath)}
           >
             다음

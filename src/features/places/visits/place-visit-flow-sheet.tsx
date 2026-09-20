@@ -64,7 +64,6 @@ function VisitSession({ input, provider, onResult }: PlaceVisitFlowSheetProps) {
         <Button type="sub" disabled={busy || !reason} onPress={() => void submit('REJECTED')}>{busy ? '저장 중…' : '거절 처리'}</Button>
       </>}
       {error && <Text accessibilityRole="alert" style={s.error}>{error}</Text>}
-      <Button type="ghost" disabled={busy} onPress={() => finish()}>취소</Button>
     </>}
   </SheetShell>;
 }

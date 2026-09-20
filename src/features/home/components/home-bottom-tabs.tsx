@@ -40,7 +40,7 @@ const TAB_ICON_SOURCES: Record<HomeBottomTab, { active: ImageSource; inactive: I
 
 /**
  * Controlled when selectedTab is supplied; it defaults to home. onSelectTab owns
- * every press when present, otherwise home/search retain their legacy callbacks.
+ * every press when present, otherwise home/search/my retain their legacy callbacks.
  */
 interface HomeBottomTabsProps {
   height: number;

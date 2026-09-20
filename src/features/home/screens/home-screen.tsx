@@ -1,6 +1,8 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar, View } from 'react-native';
+import { useEffect } from 'react';
 
+import { useTabNavigation } from '@/features/app-integration/tab-shell';
 import { useOnboarding } from '@/features/onboarding/context';
 import { BOTTOM_TAB_HEIGHT } from '../constants';
 import { CategoryRail } from '../components/category-rail';
@@ -18,9 +20,14 @@ import { styles } from '../styles';
 import { isNativeMapAvailable } from '../utils/native-modules';
 
 export function HomeScreen() {
-  const home = useHomeScreen();
+  const { view } = useLocalSearchParams<{ view?: string }>();
+  // Search routes must not mount and immediately tear down a native map during initialization.
+  const home = useHomeScreen(view === 'search' ? 'search' : 'map');
+  const navigate = useTabNavigation();
   const router = useRouter();
   const { resetDraft } = useOnboarding();
+  const { openSearch } = home;
+  useEffect(() => { if (view === 'search') openSearch(); }, [view, openSearch]);
   const bottomTabHeight = home.insets.bottom + BOTTOM_TAB_HEIGHT;
 
   const openDogRegistration = () => {
@@ -61,6 +68,7 @@ export function HomeScreen() {
             <MapCanvas
               mapCamera={home.mapCamera}
               onSelectPlace={home.previewPlace}
+              onUserMove={home.handleMapUserMove}
               places={home.mapPlaces}
               selectedCategory={home.selectedCategory}
               selectedPlaceId={home.selectedPlace?.id}
@@ -102,6 +110,7 @@ export function HomeScreen() {
                 isPlaceList={home.isMapSheetPlaceList}
                 loading={home.isMapSheetPlaceList ? home.placesLoading : home.feedLoading}
                 onRetry={home.retry}
+                onClearFilters={home.hasPlaceFilters ? home.clearPlaceFilters : undefined}
                 onSelectPlace={home.selectPlace}
                 onShowCategoryPlaces={home.showCategoryPlaces}
                 onShowMap={home.showMapView}
@@ -120,6 +129,12 @@ export function HomeScreen() {
             onShowHome={home.showHomeFeed}
             onShowProfile={home.showProfile}
             paddingBottom={home.insets.bottom}
+            selectedTab="home"
+            onSelectTab={tab => {
+              if (tab === 'home') home.showHomeFeed();
+              else if (tab === 'search') home.openSearch();
+              else navigate(tab);
+            }}
           />
           {home.isDogSheetVisible ? (
             <DogSelectorSheet

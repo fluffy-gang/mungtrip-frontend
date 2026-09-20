@@ -1,18 +1,20 @@
+import { Image } from 'expo-image';
+import { StatusBar } from 'expo-status-bar';
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { LikeButton } from '@/components/ui/like-button';
 import { Button } from '@/components/ui/button';
-import { Icon } from '@/components/ui/icon';
+import { CourseOrderPin } from '@/components/ui/course-order-pin';
 import { Text } from '@/components/ui/text';
 
-import { categoryLabel } from '../categories';
+import { tagLabel } from '../categories';
 import { TripMap } from '../components/trip-map';
-import { tripColors, Column, Content, ErrorNotice, Header, Heading, Muted, Page, PlaceFacts, Row, SmallTitle, Spread, Thumbnail } from '../components/ui';
+import { tripColors, Column, Content, ErrorNotice, Header, Muted, Page, Row, Thumbnail } from '../components/ui';
 import { useTripEnvironment, useTripSnapshot } from '../context';
 import { completeTripVisit } from '../flow';
-import { visitStatusLabel } from '../visit-status';
-import { formatDate } from '../date-utils';
+import { rejectReasonLabel, visitStatusLabel } from '../visit-status';
 import { errorMessage } from '../provider';
 
 import type { TripItem, TripPlaceSelection, TripSavedPort } from '../types';
@@ -25,8 +27,9 @@ function Like({ saved, id }: {
   const [error, setError] = useState('');
   const lock = useRef(false);
   const liked = state.placeLikedById[id];
-  return <Column>
-    <Pressable accessibilityRole="button" accessibilityLabel={liked ? '저장 해제' : '장소 저장'} disabled={busy} onPress={async () => {
+  const disabled = busy || !state.places.loaded;
+  return <Column style={{ position: 'absolute', right: 6, top: 6 }}>
+    <LikeButton liked={!!liked} variant="photo" busy={busy} disabled={disabled} onPress={async () => {
       if (lock.current)
         return;
       lock.current = true;
@@ -42,9 +45,7 @@ function Like({ saved, id }: {
         lock.current = false;
         setBusy(false);
       }
-    }}>
-      <Text fontSize={18} color={liked ? 'primary' : 'textTertiary'}>{liked ? '♥' : '♡'}</Text>
-    </Pressable>
+    }} />
     <ErrorNotice message={error} />
   </Column>;
 }
@@ -66,6 +67,9 @@ export function TripDetailScreen({ tripId, onBack, onEdit, onAdd, onReplace }: T
   const alive = useRef(true);
   useEffect(() => { alive.current = true; return () => { alive.current = false; }; }, []);
   const insets = useSafeAreaInsets();
+  useEffect(() => {
+    if (saved && !saved.getSnapshot().places.loaded) void saved.refresh('places').catch(reason => { if (alive.current) setError(errorMessage(reason)); });
+  }, [saved]);
   const reload = () => { setError(''); void provider.loadTrip(tripId).catch(reason => setError(errorMessage(reason))); };
   useEffect(() => {
     let active = true; void provider.loadTrip(tripId).catch(reason => {
@@ -104,49 +108,44 @@ export function TripDetailScreen({ tripId, onBack, onEdit, onAdd, onReplace }: T
     }
   };
   return <Page style={{ paddingTop: insets.top }}>
-    <Header onBack={onBack} right={<Button type="ghost" size="m" disabled={!trip || !!visitBusy} onPress={onEdit}>편집</Button>} />
+    <StatusBar style="dark" />
+    <Header onBack={onBack} right={<Pressable accessibilityRole="button" disabled={!trip || !!visitBusy} onPress={onEdit} style={{ padding: 8 }}><Text fontSize={16} lineHeight={24}>편집</Text></Pressable>} />
     <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom + 20 }}>
       <Content>
         <ErrorNotice message={error || snapshot.error} onRetry={reload} />
-        {!trip ? <Muted>여행을 불러오는 중…</Muted> : <><Heading>{trip.title}</Heading><TripMap key={places.map(place => place.id).join(',')} places={places} onSelect={place => callbacks?.onOpenPlace?.({ source: provider.source, placeId: place.id })} />
+        {!trip ? <Muted>여행을 불러오는 중…</Muted> : <>
+          <Text fontSize={20} lineHeight={26} fontWeight="bold">{trip.title}</Text>
+          <TripMap key={places.map(place => place.id).join(',')} numbered places={trip.days.flatMap(day => day.items.flatMap(item => { const place = places.find(p => p.id === item.placeId); return place ? [place] : []; }))} onSelect={place => callbacks?.onOpenPlace?.({ source: provider.source, placeId: place.id })} />
           {trip.days.map(day => <Column key={day.day} style={{ gap: 24, marginTop: 24 }}>
-            <Row>
-              <Text color="primary" fontWeight="bold">DAY {day.day}</Text>
-              <Muted>{formatDate(day.date)}</Muted>
-            </Row>
-
-            {day.items.map((item, index) => <Column key={item.tripItemId}>
-              <Row style={{ alignItems: 'flex-start', gap: 12 }}>
-                <View style={{ width: 24, alignItems: 'center' }}>
-                  <Icon name="paw" size={28} tintColor={tripColors.primary} />
-                  <Text color="primary" fontSize={12}>{index + 1}</Text>
-                </View>
-                <Pressable accessibilityRole="button" accessibilityLabel={`${item.placeName} 상세`} disabled={!callbacks?.onOpenPlace} onPress={() => callbacks?.onOpenPlace?.({ source: provider.source, placeId: item.placeId })}>
-                  <Thumbnail uri={item.thumbnailUrl} />
-                </Pressable>
-                <Column style={{ flex: 1, gap: 6 }}>
-                  <Spread>
-                    <SmallTitle style={{ flex: 1 }}>{item.placeName}</SmallTitle>
+            <Row><Text fontSize={18} lineHeight={24} color="primary" fontWeight="bold">DAY {day.day}</Text><Text fontSize={14} lineHeight={20} color="textTertiary">{day.date.replaceAll('-', '.')} {['일', '월', '화', '수', '목', '금', '토'][new Date(`${day.date}T00:00:00Z`).getUTCDay()]}</Text></Row>
+            {day.items.map((item, index) => {
+              const place = places.find(p => p.id === item.placeId);
+              return <Column key={item.tripItemId} style={{ gap: 8 }}>
+                <Row style={{ alignItems: 'stretch', gap: 12 }}>
+                  <View style={{ width: 32, alignItems: 'center' }}><CourseOrderPin order={index + 1} />{index < day.items.length - 1 && <View style={{ width: 1, flex: 1, marginTop: 6, backgroundColor: tripColors.surfaceSubtle }} />}</View>
+                  <View style={{ width: 88, height: 88 }}>
+                    <Pressable accessibilityRole="button" accessibilityLabel={`${item.placeName} 상세`} disabled={!callbacks?.onOpenPlace} onPress={() => callbacks?.onOpenPlace?.({ source: provider.source, placeId: item.placeId })}><Thumbnail uri={item.thumbnailUrl} radius={12} /></Pressable>
                     {saved ? <Like saved={saved} id={item.placeId} /> : null}
-                  </Spread>
-                  {item.category ? <Muted>{categoryLabel(item.category)}</Muted> : null}
-                  <PlaceFacts place={places.find(place => place.id === item.placeId)} />
-                  <Muted>
-                    {visitStatusLabel(item.visitStatus)}
-                  </Muted>
-                  {callbacks?.onVisit ? <Button type="sub" size="m" disabled={!!visitBusy} onPress={() => visit(item)}>
-                    {visitBusy === item.tripItemId ? '처리 중…' : '방문여부'}
-                  </Button> : null}
-                </Column>
-              </Row>
-              {item.rejectReason ? <Text color="primaryPressed" fontSize={12}>{item.rejectDetail || item.rejectReason}</Text> : null}
-              {item.visitStatus === 'REJECTED' ? <Button type="sub" size="m" onPress={() => onReplace(item)}>대체 장소 추천</Button> : null}
-            </Column>)}
-
+                  </View>
+                  <Column style={{ flex: 1, minWidth: 0, gap: 4 }}>
+                    <Text fontSize={14} lineHeight={20} fontWeight="bold" color="textSecondary" numberOfLines={1}>{item.placeName}</Text>
+                    {!!place?.tags?.length && <Row style={{ gap: 4, flexWrap: 'wrap' }}>{place.tags.map(tag => <View key={tag} style={{ height: 20, paddingHorizontal: 4, borderRadius: 4, backgroundColor: tripColors.surfaceSubtle, justifyContent: 'center' }}><Text fontSize={11} lineHeight={16.5} fontWeight="semibold" color="textTertiary">{tagLabel(tag)}</Text></View>)}</Row>}
+                    <Row style={{ gap: 4, flexWrap: 'wrap' }}>
+                      {place?.isOfficial && <Row style={{ gap: 2 }}><Image source={require('../assets/official.svg')} style={{ width: 16, height: 16 }} /><Text fontSize={11} lineHeight={16.5} color="accentBlue" fontWeight="semibold">공식인증</Text></Row>}
+                      {place?.visitCount !== undefined && <Row style={{ gap: 2 }}><Image source={require('../assets/user.svg')} style={{ width: 16, height: 16 }} /><Text fontSize={11} lineHeight={16.5} color="textPlaceholder" fontWeight="semibold">유저인증 {place.visitCount}</Text></Row>}
+                    </Row>
+                    {place?.averageRating !== undefined && <Row style={{ gap: 2 }}><Image source={require('../assets/star.svg')} style={{ width: 8, height: 8 }} /><Text fontSize={10} lineHeight={12} color="textTertiary">{place.averageRating.toFixed(1)}</Text></Row>}
+                  </Column>
+                  {callbacks?.onVisit && <Pressable accessibilityRole="button" accessibilityLabel={`${item.placeName} 방문여부`} disabled={!!visitBusy} onPress={() => visit(item)} style={{ alignSelf: 'flex-start', height: 28, justifyContent: 'center', paddingHorizontal: 8, borderWidth: 1, borderColor: tripColors.border, borderRadius: 8 }}><Text fontSize={11} lineHeight={16.5} color="textSecondary">{visitBusy === item.tripItemId ? '처리 중…' : item.visitStatus && item.visitStatus !== 'NOT_VISITED' ? visitStatusLabel(item.visitStatus) : '방문여부'}</Text></Pressable>}
+                </Row>
+                {item.rejectReason ? <Text color="primaryPressed" fontSize={12}>{item.rejectDetail || rejectReasonLabel(item.rejectReason)}</Text> : null}
+                {item.visitStatus === 'REJECTED' ? <Button type="sub" size="m" onPress={() => onReplace(item)}>대체 장소 추천</Button> : null}
+              </Column>;
+            })}
             {!day.items.length ? <Muted>아직 추가한 장소가 없어요.</Muted> : null}
             <Button type="sub" size="m" onPress={() => onAdd(day.day)}>장소 추가</Button>
-
-          </Column>)}</>}
+          </Column>)}
+        </>}
       </Content>
     </ScrollView>
   </Page>;

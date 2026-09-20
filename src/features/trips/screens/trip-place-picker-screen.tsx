@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState, useSyncExternalStore } from 'react';
+import { useFocusEffect } from 'expo-router';
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { Pressable, ScrollView, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -12,6 +13,8 @@ import { TripMap } from '../components/trip-map';
 import { Chip, Column, Content, ErrorNotice, Footer, Muted, Page, PlaceFacts, Row, SmallTitle, Spread, Thumbnail } from '../components/ui';
 import { useTripEnvironment, useTripSnapshot } from '../context';
 import { createPlaceQueryController, createPlaceSelection } from '../selection';
+import { createDirectPlaceAddController } from '../direct-place-add';
+import { errorMessage } from '../provider';
 
 import type { TripPlaceSelection, TripSearchResult } from '../types';
 export function TripPlacePickerScreen({ tripId, day = 1, onBack, onComplete }: {
@@ -35,9 +38,22 @@ export function TripPlacePickerScreen({ tripId, day = 1, onBack, onComplete }: {
   const [targetTripId, setTargetTripId] = useState(tripId);
   const [targetDay, setTargetDay] = useState(day);
   const [savedRevision, setSavedRevision] = useState(0);
+  const [direct] = useState(() => tripId === undefined ? undefined : createDirectPlaceAddController(provider, tripId, day));
+  const [adding, setAdding] = useState(false);
+  const [addError, setAddError] = useState('');
+  const active = useRef(false);
+  const delivered = useRef(false);
+  useFocusEffect(useCallback(() => {
+    active.current = true;
+    return () => { active.current = false; };
+  }, []));
   const insets = useSafeAreaInsets();
   const { height } = useWindowDimensions();
-  useEffect(() => saved?.subscribe(() => setSavedRevision(value => value + 1)), [saved]);
+  useEffect(() => saved?.subscribe(() => {
+    const { status } = saved.getSnapshot().places;
+    // 로딩 알림으로 검색을 재시작하면 아직 미완료인 저장 목록을 중복 요청한다.
+    if (status !== 'loading' && status !== 'refreshing') setSavedRevision(value => value + 1);
+  }), [saved]);
   useEffect(() => { void provider.refreshOptions().catch(() => undefined); }, [provider]);
   const request = useCallback(async (page: number): Promise<TripSearchResult> => {
     if (keyword.trim())
@@ -58,7 +74,26 @@ export function TripPlacePickerScreen({ tripId, day = 1, onBack, onComplete }: {
     return { places, page: 0, size: Math.max(1, places.length), totalCount: places.length };
   }, [provider, saved, keyword, category, dogIds, tab]);
   useEffect(() => { const timer = setTimeout(() => { void query.load(request); }, keyword ? 250 : 0); return () => { clearTimeout(timer); query.invalidate(); }; }, [query, request, savedRevision, keyword, snapshot.sessionRevision]);
-  const toggle = (place: TripPlaceSelection) => setSelected(selection.toggle(place));
+  const locked = adding || !!direct?.uncertain;
+  const toggle = (place: TripPlaceSelection) => { if (!locked) setSelected(selection.toggle(place)); };
+  const add = async () => {
+    if (!direct) { setConfirming(true); return; }
+    if (direct.busy || delivered.current || direct.uncertain) return;
+    setAdding(true);
+    setAddError('');
+    try {
+      const result = await direct.submit(selected);
+      if (!active.current || result.status !== 'completed') return;
+      delivered.current = true;
+      selection.cancel();
+      setSelected([]);
+      onComplete(result.tripId);
+    } catch (error) {
+      if (active.current) setAddError(errorMessage(error));
+    } finally {
+      if (active.current && !delivered.current) setAdding(false);
+    }
+  };
   return <Page style={{ paddingTop: insets.top }}>
     <Row style={{ paddingHorizontal: 20, paddingVertical: 12 }}>
       <Pressable accessibilityRole="button" accessibilityLabel="뒤로" onPress={() => { selection.cancel(); onBack(); }} hitSlop={12}><Icon name="chevronLeft" size={24} /></Pressable>
@@ -105,7 +140,7 @@ export function TripPlacePickerScreen({ tripId, day = 1, onBack, onComplete }: {
         <Column style={{ flex: 1, gap: 6 }}>
           <Spread>
             <SmallTitle style={{ flex: 1 }}>{place.name}</SmallTitle>
-            <Button type="sub" size="m" fullWidth={false} onPress={() => toggle(place)}>
+            <Button type="sub" size="m" fullWidth={false} disabled={locked} onPress={() => toggle(place)}>
               {selected.some(item => item.id === place.id) ? '✓ 선택됨' : '＋ 선택'}
             </Button>
           </Spread>
@@ -121,11 +156,13 @@ export function TripPlacePickerScreen({ tripId, day = 1, onBack, onComplete }: {
 
     </ScrollView>
     <Footer style={{ paddingBottom: Math.max(insets.bottom, 16) }}>
+      <ErrorNotice message={addError} />
+      {direct?.uncertain ? <Button type="sub" onPress={onBack}>여행으로 돌아가 추가 결과 확인</Button> : null}
     {selected.length ? <ScrollView horizontal style={{ height: 44, flexGrow: 0, flexShrink: 0 }} contentContainerStyle={{ gap: 8 }}>
       {selected.map(place => <Chip key={place.id} selected onPress={() => toggle(place)}>{place.name} ×</Chip>)}
     </ScrollView> : null}
-      <Button disabled={!selected.length} onPress={() => setConfirming(true)}>
-        {selected.length ? `${selected.length}개 장소 추가` : '장소를 선택해 주세요'}
+      <Button disabled={!selected.length || locked} onPress={() => void add()}>
+        {adding ? '추가 중…' : selected.length ? `${selected.length}개 장소 추가` : '장소를 선택해 주세요'}
       </Button>
     </Footer>
 

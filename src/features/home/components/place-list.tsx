@@ -14,6 +14,7 @@ interface PlaceListProps {
   emptyTitle?: string;
   onSelectPlace?: (place: Place) => void;
   onShowMap: () => void;
+  onClearFilters?: () => void;
   places: Place[];
   showMapSwitchButton?: boolean;
 }
@@ -24,6 +25,7 @@ export function PlaceList({
   emptyTitle = "조건에 맞는 장소가 없어요",
   onSelectPlace,
   onShowMap,
+  onClearFilters,
   places,
   showMapSwitchButton = true,
 }: PlaceListProps) {
@@ -43,6 +45,9 @@ export function PlaceList({
           <View style={styles.emptyList}>
             <Text style={styles.emptyListTitle}>{emptyTitle}</Text>
             <Text style={styles.emptyListText}>{emptyText}</Text>
+            {onClearFilters && <Pressable accessibilityRole="button" onPress={onClearFilters} style={styles.retryButton}>
+              <Text style={styles.retryButtonText}>필터 해제하고 전체 장소 보기</Text>
+            </Pressable>}
           </View>
         )}
         <View style={styles.listBottomSpacer} />

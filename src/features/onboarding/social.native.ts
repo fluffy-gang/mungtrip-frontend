@@ -23,8 +23,15 @@ function configureGoogle() {
 
 export async function getProviderToken(provider: LoginProvider) {
   if (provider === 'KAKAO') {
-    const result = await kakaoLogin();
-    return result.accessToken;
+    try {
+      const result = await kakaoLogin();
+      return result.accessToken;
+    } catch (error) {
+      if (error instanceof Error && /^user cancel(?:l)?ed$/i.test(error.message)) {
+        throw new Error('로그인을 취소했어요.');
+      }
+      throw error;
+    }
   }
 
   configureGoogle();

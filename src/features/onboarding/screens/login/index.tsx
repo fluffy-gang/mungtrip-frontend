@@ -32,6 +32,7 @@ export function LoginScreen() {
   const { login } = useOnboarding();
   const params = useLocalSearchParams<{ oauth?: string; oauthError?: string }>();
   const listRef = useRef<FlatList<(typeof LOOP_SLIDES)[number]>>(null);
+  const [slideWidth, setSlideWidth] = useState(width);
   const [page, setPage] = useState(0);
   const [pending, setPending] = useState<LoginProvider>();
   const [error, setError] = useState<string | undefined>(() => {
@@ -99,12 +100,13 @@ export function LoginScreen() {
       <ScrollView bounces={false} contentContainerStyle={styles.loginScroll}>
         <FlatList
           data={LOOP_SLIDES}
-          getItemLayout={(_, index) => ({ index, length: width, offset: width * index })}
+          getItemLayout={(_, index) => ({ index, length: slideWidth, offset: slideWidth * index })}
           horizontal
           initialScrollIndex={1}
           keyExtractor={(item, index) => `${item.id}-${index}`}
+          onLayout={(event) => setSlideWidth(event.nativeEvent.layout.width)}
           onMomentumScrollEnd={(event) => {
-            const index = Math.round(event.nativeEvent.contentOffset.x / width);
+            const index = Math.round(event.nativeEvent.contentOffset.x / slideWidth);
             if (index === 0) {
               listRef.current?.scrollToIndex({ animated: false, index: 3 });
               setPage(2);
@@ -117,8 +119,9 @@ export function LoginScreen() {
           }}
           pagingEnabled
           ref={listRef}
+          style={styles.introCarousel}
           renderItem={({ item }) => (
-            <View style={[styles.introSlide, { width }]}>
+            <View style={[styles.introSlide, { width: slideWidth }]}>
               <Image
                 accessibilityLabel={`${item.title} 미리보기`}
                 contentFit="cover"

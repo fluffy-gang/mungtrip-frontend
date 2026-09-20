@@ -20,6 +20,9 @@ export const styles = StyleSheet.create({
     aspectRatio: 750 / 624,
     width: '100%',
   },
+  introCarousel: {
+    width: '100%',
+  },
   introSlide: {
     alignItems: 'center',
   },

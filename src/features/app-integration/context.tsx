@@ -54,8 +54,12 @@ function FeatureSession({ providers, children }: { providers: FeatureProviders; 
   const openTrip = useCallback(async (input: TripFlowInput) => {
     if (input.source !== source || visitRequest.getSnapshot()) return 'cancelled' as const;
     const result = await tripRequest.open(input);
+    // The sheet keeps its submit button disabled after delivering a result, so pushing here cannot
+    // race a second submit. `added` only asks the detail route for its confirmation toast.
+    if (result.status === 'completed')
+      router.push({ pathname: '/trips/[id]', params: { id: String(result.tripId), added: '1' } });
     return result.status;
-  }, [source, tripRequest, visitRequest]);
+  }, [router, source, tripRequest, visitRequest]);
   const openVisit = useCallback((input: PlaceVisitFlowInput) => {
     if (input.source !== source || tripRequest.getSnapshot()) return Promise.resolve<PlaceVisitFlowResult>({ status: 'cancelled', source: input.source });
     return visitRequest.open(input);

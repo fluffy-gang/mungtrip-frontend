@@ -42,9 +42,9 @@ export function usePlaceActions(place: Place | undefined, source: PlaceSource, i
     toggle: () => run(async () => { if (place && saved && canSave) await saved.togglePlaceLike(place.id); }),
     trip: () => run(async () => {
       if (!place || !integration.onAddToTrip) return;
-      const result = await integration.onAddToTrip({ mode: 'add', source,
+      // Success navigates to the trip detail, which shows its own toast; only failures notice here.
+      await integration.onAddToTrip({ mode: 'add', source,
         selection: { kind: 'place', places: [{ id: place.id, name: place.name, thumbnailUrl: place.imageUrl }] } });
-      if (result === 'completed') return '내 여행에 추가했어요.';
     }),
     share: () => run(async () => { if (place) await Share.share({ message: `${place.name}\n${place.address}` }); }),
   };

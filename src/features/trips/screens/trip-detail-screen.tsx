@@ -8,6 +8,7 @@ import { LikeButton } from '@/components/ui/like-button';
 import { Button } from '@/components/ui/button';
 import { CourseOrderPin } from '@/components/ui/course-order-pin';
 import { Text } from '@/components/ui/text';
+import { Toast } from '@/components/ui/toast';
 
 import { tagLabel } from '../categories';
 import { TripMap } from '../components/trip-map';
@@ -51,16 +52,19 @@ function Like({ saved, id }: {
 }
 export interface TripDetailScreenProps {
   tripId: number;
+  /** One-shot confirmation shown on arrival, e.g. after the trip flow sheet added a place. */
+  notice?: string;
   onBack: () => void;
   onEdit: () => void;
   onAdd: (day: number) => void;
   onReplace: (item: TripItem) => void;
 }
-export function TripDetailScreen({ tripId, onBack, onEdit, onAdd, onReplace }: TripDetailScreenProps) {
+export function TripDetailScreen({ tripId, notice, onBack, onEdit, onAdd, onReplace }: TripDetailScreenProps) {
   const { provider, saved, callbacks } = useTripEnvironment();
   const snapshot = useTripSnapshot(provider);
   const trip = snapshot.details[tripId];
   const [error, setError] = useState('');
+  const [toast, setToast] = useState(notice ?? '');
   const [places, setPlaces] = useState<TripPlaceSelection[]>([]);
   const [visitBusy, setVisitBusy] = useState<number>();
   const visitLock = useRef(false);
@@ -148,5 +152,6 @@ export function TripDetailScreen({ tripId, onBack, onEdit, onAdd, onReplace }: T
         </>}
       </Content>
     </ScrollView>
+    <Toast message={toast} onDismiss={() => setToast('')} />
   </Page>;
 }

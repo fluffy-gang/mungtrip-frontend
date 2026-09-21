@@ -32,7 +32,6 @@ export const styles = StyleSheet.create({
     paddingHorizontal: tokens.spacing[20],
     paddingTop: tokens.spacing[24],
   },
-  kakaoButton: { backgroundColor: tokens.colors.semantic.light.socialKakao },
   loginActions: {
     gap: tokens.spacing[12],
     paddingBottom: tokens.spacing[8],

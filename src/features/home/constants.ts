@@ -76,6 +76,9 @@ export function getPlaceCategoryMeta(category: string): PlaceCategoryMeta {
   return PLACE_CATEGORY_META.DEFAULT;
 }
 
+/** 홈 상단 검색 버튼과 검색 화면 입력창이 같은 문구를 보여야 화면 전환이 자연스럽다. */
+export const SEARCH_PLACEHOLDER = '강아지 동반 장소 검색';
+
 export const BOTTOM_TAB_HEIGHT = 56;
 export const MAP_COLLAPSED_SHEET_HEIGHT = 214;
 // 검색바 + 카테고리 칩 헤더의 고정 높이(안전영역 제외). 헤더가 더 이상 지도 위에

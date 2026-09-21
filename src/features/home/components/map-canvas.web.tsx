@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
+import { resolveAssetUri } from '@/utils/asset';
 import { getPlaceCategoryMeta } from '../constants';
 import { styles as homeStyles } from '../styles';
+import { colors } from '../styles/style-primitives';
 import { hasPlaceCoordinate } from '../utils/place-utils';
 
 import type { MapCanvasProps } from './map-canvas.types';
@@ -74,8 +76,8 @@ function boundsFromMap(map: NaverMap): MapBounds {
 
 function markerIcon(place: Place, selected: boolean, dimmed: boolean, api: NaverNamespace) {
   const meta = getPlaceCategoryMeta(place.category);
-  const icon = meta.kind === 'image' ? Image.resolveAssetSource(meta.icon)?.uri : undefined;
-  const content = `<div style="width:32px;height:32px;border-radius:50%;border:2px solid white;background:${selected ? '#000' : dimmed ? '#F1F5F9' : '#1C7CFE'};box-shadow:0 1px 6px #0005;display:grid;place-items:center">${icon ? `<img src="${icon}" style="width:20px;height:20px;object-fit:contain;${dimmed ? 'opacity:.5;' : ''}" />` : `<span style="color:white;font-size:18px">•</span>`}</div>`;
+  const icon = meta.kind === 'image' ? resolveAssetUri(meta.icon) : undefined;
+  const content = `<div style="width:32px;height:32px;border-radius:50%;border:2px solid white;background:${selected ? '#000' : dimmed ? '#F1F5F9' : colors.primary};box-shadow:0 1px 6px #0005;display:grid;place-items:center">${icon ? `<img src="${icon}" style="width:20px;height:20px;object-fit:contain;${dimmed ? 'opacity:.5;' : ''}" />` : `<span style="color:white;font-size:18px">•</span>`}</div>`;
   return { content, anchor: new api.maps.Point(18, 36) };
 }
 

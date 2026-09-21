@@ -38,6 +38,7 @@ export const topcontrolsStyles = {
     minWidth: 28,
   },
   stackedDogAvatar: {
+    backgroundColor: colors.surfaceSubtle,
     borderColor: colors.inverse,
     borderRadius: radius.full,
     borderWidth: borderWidth[1],

@@ -190,11 +190,11 @@ test('category chips follow taxonomy order regardless of item insertion order', 
 });
 test('userVerifiedLabel hides without verifiedCount and formats relative day suffix', () => {
   assert.equal(userVerifiedLabel(place(1, { verifiedCount: 0 })), null);
-  assert.equal(userVerifiedLabel(place(1, { verifiedCount: 24 })), '유저인증 24');
+  assert.deepEqual(userVerifiedLabel(place(1, { verifiedCount: 24 })), { count: '유저인증 24', relative: null });
   const today = new Date().toISOString();
-  assert.equal(userVerifiedLabel(place(1, { verifiedCount: 24, lastVerifiedAt: today })), '유저인증 24 · 오늘');
+  assert.deepEqual(userVerifiedLabel(place(1, { verifiedCount: 24, lastVerifiedAt: today })), { count: '유저인증 24', relative: '· 오늘' });
   const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString();
-  assert.equal(userVerifiedLabel(place(1, { verifiedCount: 24, lastVerifiedAt: threeDaysAgo })), '유저인증 24 · 3일전');
+  assert.deepEqual(userVerifiedLabel(place(1, { verifiedCount: 24, lastVerifiedAt: threeDaysAgo })), { count: '유저인증 24', relative: '· 3일전' });
 });
 
 test('unknown auth identities reset on credential replacement rather than retaining private data', async t => {

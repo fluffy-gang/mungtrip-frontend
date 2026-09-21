@@ -3,7 +3,7 @@ import { Image } from 'expo-image';
 import { SymbolView } from 'expo-symbols';
 
 import { PlaceLikeButton, usePlaceActions } from '@/features/app-integration/place-actions';
-import { styles } from '../styles';
+import { colors, styles } from '../styles';
 import { getVerifiedDiffDays } from '../utils/place-utils';
 import { PlaceThumbnail } from './place-thumbnail';
 
@@ -11,6 +11,11 @@ import type { HomeDogProfile } from '../types';
 import type { Place } from '@/features/places/types';
 
 const DOG_SIZE_TAG_CODES = new Set(['SMALL_DOG', 'MEDIUM_DOG', 'LARGE_DOG']);
+const MAX_TAGS = 3;
+
+const officialIcon = require('../assets/icons/official.svg');
+const userIcon = require('../assets/icons/user.svg');
+const starIcon = require('../assets/icons/star.svg');
 
 const getCompatibleDogs = (
   place: Place,
@@ -54,15 +59,18 @@ export function PlaceListRow({
 }) {
   const actions = usePlaceActions(place);
   const compatibleDogs = getCompatibleDogs(place, dogs);
-  const displayTags = place.tags.slice(0, compact ? 2 : 3);
+  const displayTags = [...new Set(place.tags)].slice(0, MAX_TAGS);
   const relativeVerifiedTime = formatRelativeVerifiedTime(
     getVerifiedDiffDays(place.lastVerifiedAt),
   );
-  const userVerifiedText = place.verifiedCount
-    ? `유저인증 ${place.verifiedCount}${
-        relativeVerifiedTime ? ` · ${relativeVerifiedTime}` : ''
-      }`
+  // TODO(#26): /api/v1/places가 돌려주는 PlaceMapResponse에는 averageRating/visitCount/lastVisitedAt이
+  // 없어 평점·유저인증 줄은 실데이터로 채울 수 없다. 계약이 추가되기 전까지 값이 없으면 줄을 숨긴다.
+  const userVerifiedCount = place.verifiedCount
+    ? `유저인증 ${place.verifiedCount}`
     : null;
+  const hasProof = place.isOfficial || userVerifiedCount !== null;
+  const hasRating = place.rating !== undefined;
+  const hasRatingRow = hasRating || Boolean(place.address);
 
   return (
     <Pressable
@@ -90,20 +98,9 @@ export function PlaceListRow({
         ) : null}
       </View>
       <View style={styles.placeRowBody}>
-        <View style={styles.placeRowHeader}>
-          <Text numberOfLines={1} style={styles.placeRowTitle}>
-            {place.name}
-          </Text>
-          <Pressable accessibilityRole="button" style={styles.addTripButton}
-            onPress={event => { event.stopPropagation(); void actions.addToTrip(); }}>
-            <SymbolView
-              name={{ android: 'add', ios: 'plus', web: 'add' }}
-              size={13}
-              tintColor="#4E5968"
-            />
-            <Text style={styles.addTripText}>내 여행</Text>
-          </Pressable>
-        </View>
+        <Text numberOfLines={1} style={styles.placeRowTitle}>
+          {place.name}
+        </Text>
         {displayTags.length > 0 ? (
           <View style={styles.placeTagRow}>
             {displayTags.map(tag => (
@@ -115,44 +112,59 @@ export function PlaceListRow({
             ))}
           </View>
         ) : null}
-        <View style={styles.placeProofRow}>
-          {place.isOfficial ? (
-            <View style={styles.placeOfficialBadge}>
-              <SymbolView
-                name={{ android: 'verified', ios: 'checkmark.seal.fill', web: 'verified' }}
-                size={15}
-                tintColor="#1C7CFE"
-              />
-              <Text style={styles.placeOfficialText}>공식인증</Text>
-            </View>
-          ) : null}
-          {userVerifiedText ? (
-            <View style={styles.placeUserProof}>
-              <SymbolView
-                name={{ android: 'person', ios: 'person.fill', web: 'person' }}
-                size={15}
-                tintColor="#B0B8C1"
-              />
-              <Text numberOfLines={1} style={styles.placeUserProofText}>
-                {userVerifiedText}
+        {hasProof ? (
+          <View style={styles.placeProofRow}>
+            {place.isOfficial ? (
+              <View style={styles.placeOfficialBadge}>
+                <Image source={officialIcon} style={styles.placeProofIcon} />
+                <Text style={styles.placeOfficialText}>공식인증</Text>
+              </View>
+            ) : null}
+            {userVerifiedCount ? (
+              <View style={styles.placeUserProof}>
+                <Image source={userIcon} style={styles.placeProofIcon} />
+                <Text numberOfLines={1} style={styles.placeUserProofText}>
+                  {userVerifiedCount}
+                  {relativeVerifiedTime ? (
+                    <Text style={styles.placeUserProofRelative}>
+                      {` · ${relativeVerifiedTime}`}
+                    </Text>
+                  ) : null}
+                </Text>
+              </View>
+            ) : null}
+          </View>
+        ) : null}
+        {hasRatingRow ? (
+          <View style={styles.placeRatingRow}>
+            {hasRating ? (
+              <>
+                <Image source={starIcon} style={styles.placeStarIcon} />
+                <Text style={styles.placeRatingText}>
+                  {place.rating?.toFixed(1)}
+                </Text>
+              </>
+            ) : null}
+            {place.address ? (
+              <Text
+                numberOfLines={1}
+                style={[styles.placeAddressText, !hasRating && { marginLeft: 0 }]}
+              >
+                {place.address}
               </Text>
-            </View>
-          ) : null}
-        </View>
-        <View style={styles.placeRatingRow}>
-          <SymbolView
-            name={{ android: 'star', ios: 'star.fill', web: 'star' }}
-            size={13}
-            tintColor="#6B7684"
-          />
-          <Text style={styles.placeRatingText}>
-            {place.rating?.toFixed(1) ?? '-'}
-          </Text>
-          <Text numberOfLines={1} style={styles.placeAddressText}>
-            {place.address}
-          </Text>
-        </View>
+            ) : null}
+          </View>
+        ) : null}
       </View>
+      <Pressable accessibilityRole="button" style={styles.addTripButton}
+        onPress={event => { event.stopPropagation(); void actions.addToTrip(); }}>
+        <SymbolView
+          name={{ android: 'add', ios: 'plus', web: 'add' }}
+          size={16}
+          tintColor={colors.textSecondary}
+        />
+        <Text style={styles.addTripText}>내 여행</Text>
+      </Pressable>
     </Pressable>
   );
 }

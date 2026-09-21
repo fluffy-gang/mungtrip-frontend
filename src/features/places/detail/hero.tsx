@@ -9,9 +9,10 @@ import { colors, placeStyles as s } from './styles';
 import type { PhotoSource } from './media';
 
 export function DetailHero({ images, onImage }: { images: PhotoSource[]; onImage(index: number): void }) {
-  const { width } = useWindowDimensions();
+  const { width: viewportWidth } = useWindowDimensions();
+  const [width, setWidth] = useState(viewportWidth);
   const [page, setPage] = useState(0);
-  return <View style={{ height: 311, backgroundColor: colors.surfaceSubtle }}>
+  return <View onLayout={event => setWidth(event.nativeEvent.layout.width)} style={{ height: 311, backgroundColor: colors.surfaceSubtle }}>
     {images.length ? <ScrollView horizontal pagingEnabled showsHorizontalScrollIndicator={false}
       onMomentumScrollEnd={event => setPage(Math.round(event.nativeEvent.contentOffset.x / width))}>
       {images.map((source, index) => <Pressable key={index} accessibilityRole="button" accessibilityLabel={`장소 사진 ${index + 1} 크게 보기`} onPress={() => onImage(index)}>

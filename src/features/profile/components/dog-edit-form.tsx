@@ -18,6 +18,11 @@ import type { CreateDogRequest, DogSize, ProfileDog } from '@/features/dogs/type
 import type { DogEditableField, DogEditableFieldAction } from './dog-edit-form-types';
 import type { NeuteredStatus } from './neutered-status-selector';
 
+/** GET 응답은 서명된 표시용 URL(쿼리스트링 포함, API의 255자 제한을 넘길 수 있음)이라 쓰기 API에는 순수 S3 키만 돌려보내야 한다. */
+function toStorageKey(url: string): string {
+  return url.split('?')[0].replace(/^https?:\/\/[^/]+\//, '');
+}
+
 interface DogEditFormProps {
   dog: ProfileDog;
   onBack: () => void;
@@ -96,7 +101,7 @@ export function DogEditForm({ dog, onBack, onDeleted }: DogEditFormProps) {
     isNeutered: neuteredStatus === 'unknown' ? undefined : neuteredStatus === 'yes',
     name: name.trim(),
     personalityIds: personalityIds.map(Number),
-    profileImageUrl: profileImageKey ?? dog.imageUrl,
+    profileImageUrl: profileImageKey ?? toStorageKey(dog.imageUrl),
     size,
     weight: weight.trim() ? Number(weight) : undefined,
     ...patch,

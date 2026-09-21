@@ -4,7 +4,6 @@ import { PanResponder } from 'react-native';
 import {
   BOTTOM_TAB_HEIGHT,
   MAP_COLLAPSED_SHEET_HEIGHT,
-  MAP_EXPANDED_TOP_GAP,
   MAP_FLOATING_ACTION_GAP,
 } from '../constants';
 
@@ -25,7 +24,7 @@ export function useMapSheetController({
   const sheetBottomOffset = bottomInset + BOTTOM_TAB_HEIGHT;
   const expandedHeight = Math.max(
     MAP_COLLAPSED_SHEET_HEIGHT,
-    areaHeight - sheetBottomOffset - MAP_EXPANDED_TOP_GAP,
+    areaHeight - sheetBottomOffset,
   );
   const height = {
     collapsed: MAP_COLLAPSED_SHEET_HEIGHT,
@@ -97,6 +96,7 @@ export function useMapSheetController({
   }, []);
 
   return {
+    expand,
     floatingActionBottom,
     floatingActionIcon,
     floatingActionText,

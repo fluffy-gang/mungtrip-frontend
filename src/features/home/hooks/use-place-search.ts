@@ -33,7 +33,7 @@ export function usePlaceSearch(options: UsePlaceSearchOptions) {
         return;
       }
       if (mockPlaces) {
-        setResults(mockPlaces.filter(place => place.name.includes(keyword) || place.address.includes(keyword)));
+        setResults(mockPlaces.filter(place => place.name.includes(keyword) || place.address?.includes(keyword)));
         setHasError(false);
         return;
       }

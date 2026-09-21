@@ -46,6 +46,6 @@ export function usePlaceActions(place: Place | undefined, source: PlaceSource, i
         selection: { kind: 'place', places: [{ id: place.id, name: place.name, thumbnailUrl: place.imageUrl }] } });
       if (result === 'completed') return '내 여행에 추가했어요.';
     }),
-    share: () => run(async () => { if (place) await Share.share({ message: `${place.name}\n${place.address}` }); }),
+    share: () => run(async () => { if (place) await Share.share({ message: [place.name, place.address].filter(Boolean).join('\n') }); }),
   };
 }

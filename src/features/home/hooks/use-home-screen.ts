@@ -272,6 +272,8 @@ export function useHomeScreen(initialMode: HomeMode = 'map') {
     homeViewer,
     insets,
     isDogSheetVisible,
+    expandMapSheet: mapSheet.expand,
+    isMapSheetExpanded: mapSheet.isExpanded,
     isMapSheetPlaceList: mapSheet.isPlaceList,
     mapCamera,
     mapPlaces,

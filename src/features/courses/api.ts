@@ -16,5 +16,5 @@ export const getCourses = async (limit = 10): Promise<Course[]> => {
     { params: { size: limit } },
   );
 
-  return data.courses;
+  return data?.courses ?? [];
 };

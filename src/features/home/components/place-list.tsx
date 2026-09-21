@@ -4,6 +4,7 @@ import { Pressable, ScrollView, Text, View } from "react-native";
 import { styles } from "../styles";
 import { PlaceListRow } from "./place-list-row";
 
+import type { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
 import type { Place } from "@/features/places/types";
 import type { HomeDogProfile } from "../types";
 
@@ -12,6 +13,7 @@ interface PlaceListProps {
   dogs?: HomeDogProfile[];
   emptyText?: string;
   emptyTitle?: string;
+  onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
   onSelectPlace?: (place: Place) => void;
   onShowMap: () => void;
   onClearFilters?: () => void;
@@ -23,6 +25,7 @@ export function PlaceList({
   dogs = [],
   emptyText = "다른 검색어나 필터로 다시 찾아보세요.",
   emptyTitle = "조건에 맞는 장소가 없어요",
+  onScroll,
   onSelectPlace,
   onShowMap,
   onClearFilters,
@@ -31,7 +34,11 @@ export function PlaceList({
 }: PlaceListProps) {
   return (
     <View style={styles.listWrapper}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView
+        onScroll={onScroll}
+        scrollEventThrottle={16}
+        showsVerticalScrollIndicator={false}
+      >
         {places.length > 0 ? (
           places.map((place) => (
             <PlaceListRow

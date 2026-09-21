@@ -1,6 +1,7 @@
 import { Pressable, Text, View } from 'react-native';
 import { SymbolView } from 'expo-symbols';
 
+import { SEARCH_PLACEHOLDER } from '../constants';
 import { styles } from '../styles';
 
 interface HomeTopControlsProps {
@@ -16,7 +17,7 @@ export function HomeTopControls({ onOpenSearch }: HomeTopControlsProps) {
         style={styles.searchButton}
       >
         <SymbolView name={{ android: 'search', ios: 'magnifyingglass', web: 'search' }} size={18} tintColor="#8B95A1" />
-        <Text style={styles.searchPlaceholder}>제주도 강아지 장소 검색</Text>
+        <Text style={styles.searchPlaceholder}>{SEARCH_PLACEHOLDER}</Text>
       </Pressable>
     </View>
   );

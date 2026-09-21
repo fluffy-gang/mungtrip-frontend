@@ -1,10 +1,12 @@
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useMemo, useSyncExternalStore } from 'react';
 import { ActivityIndicator, BackHandler, FlatList, Pressable, RefreshControl } from 'react-native';
+import { Image } from 'expo-image';
 import { SymbolView } from 'expo-symbols';
 
 import { LikeButton } from '@/components/ui/like-button';
 import { Button } from '@/components/ui/button';
+import { Icon } from '@/components/ui/icon';
 import { Text } from '@/components/ui/text';
 
 import { tokens } from '@/constants/tokens';
@@ -21,7 +23,12 @@ import type { SavedCallbacks, SavedProvider } from '../types';
 
 const colors = tokens.colors.semantic.light;
 const listStyle = { paddingHorizontal: 20, paddingTop: 8, paddingBottom: 20, gap: 12, flexGrow: 1 };
-const imageStyle = { width: 88, height: 88, borderRadius: 12 };
+const imageStyle = { width: 88, height: 88, borderRadius: 12, backgroundColor: colors.surfaceMuted };
+const proofIconStyle = { width: 16, height: 16 };
+const starIconStyle = { width: 8, height: 8 };
+const officialIcon = require('../assets/official.svg');
+const userIcon = require('../assets/user.svg');
+const starIcon = require('../assets/star.svg');
 interface Props extends SavedCallbacks { provider?: SavedProvider; }
 
 export function SavedScreen({ provider = savedProvider, ...callbacks }: Props) {
@@ -151,26 +158,35 @@ function PlaceRow({ place, selecting, selected, disabled, onPress, onLike }: {
   return (
     <S.Row $selecting={selecting} $selected={selected}>
       <S.RowMain accessibilityRole={selecting ? 'checkbox' : 'button'} accessibilityLabel={place.name} accessibilityState={{ checked: selecting ? selected : undefined, disabled }} disabled={disabled} onPress={onPress}>
-        {selecting && <S.Check $selected={selected}><SymbolView name={{ ios: 'checkmark', android: 'check', web: 'check' }} size={14} tintColor={selected ? colors.onPrimary : colors.surfaceMuted} /></S.Check>}
+        {selecting && <S.Check $selected={selected}>{selected && <Icon name="check" size={16} tintColor={colors.onPrimary} />}</S.Check>}
+        {/* TODO(#26): Figma(481:1489)는 썸네일 좌하단에 동행 가능 반려견 아바타를 그리지만 저장 목록 응답에 반려견 데이터가 없다. */}
         <SavedThumbnail imageUrl={place.imageUrl} style={imageStyle} />
         <S.PlaceInfo>
-          <Text numberOfLines={1} fontSize={14} fontWeight="bold" lineHeight={20}>{place.name}</Text>
-          <S.Tags>{[...new Set(place.tags)].slice(0, 2).map(tag => <S.Tag key={tag}><Text fontSize={11} color="textTertiary" lineHeight={14}>{tag}</Text></S.Tag>)}</S.Tags>
+          <Text numberOfLines={1} fontSize={14} fontWeight="bold" lineHeight={20} color="textSecondary">{place.name}</Text>
+          <S.Tags>{[...new Set(place.tags)].slice(0, 2).map(tag => <S.Tag key={tag}><Text fontSize={11} fontWeight="semibold" color="textTertiary" lineHeight={16.5}>{tag}</Text></S.Tag>)}</S.Tags>
           {(place.isOfficial || userVerified) && (
             <S.Proof>
-              {place.isOfficial && <S.ProofItem><SymbolView name={{ ios: 'checkmark.seal.fill', android: 'verified', web: 'verified' }} size={12} tintColor={colors.accentBlue} /><Text fontSize={11} color="accentBlue" lineHeight={14}>공식인증</Text></S.ProofItem>}
-              {userVerified && <S.ProofItem><SymbolView name={{ ios: 'person.fill', android: 'person', web: 'person' }} size={12} tintColor={colors.textPlaceholder} /><Text fontSize={11} color="textTertiary" lineHeight={14}>{userVerified}</Text></S.ProofItem>}
+              {place.isOfficial && <S.ProofItem><Image source={officialIcon} style={proofIconStyle} /><Text fontSize={11} fontWeight="semibold" color="accentBlue" lineHeight={16.5}>공식인증</Text></S.ProofItem>}
+              {userVerified && (
+                <S.ProofItem>
+                  <Image source={userIcon} style={proofIconStyle} />
+                  <Text fontSize={11} fontWeight="semibold" color="textPlaceholder" lineHeight={16.5}>
+                    {userVerified.count}
+                    {userVerified.relative && <Text fontSize={11} fontWeight="regular" color="textDisabled" lineHeight={16.5}>{` ${userVerified.relative}`}</Text>}
+                  </Text>
+                </S.ProofItem>
+              )}
             </S.Proof>
           )}
           {place.rating !== undefined && (
             <S.Rating>
-              <SymbolView name={{ ios: 'star.fill', android: 'star', web: 'star' }} size={12} tintColor={colors.textTertiary} />
-              <Text fontSize={11} color="textTertiary" lineHeight={14}>{place.rating.toFixed(1)}</Text>
+              <Image source={starIcon} style={starIconStyle} />
+              <Text fontSize={10} fontWeight="medium" color="textTertiary" lineHeight={12}>{place.rating.toFixed(1)}</Text>
             </S.Rating>
           )}
         </S.PlaceInfo>
       </S.RowMain>
-      {!selecting && <LikeButton liked size={24} accessibilityLabel={`${place.name} 찜 해제`} busy={disabled} onPress={onLike} style={{ width: 36, height: 44 }} />}
+      {!selecting && <LikeButton liked size={28} accessibilityLabel={`${place.name} 찜 해제`} busy={disabled} onPress={onLike} />}
     </S.Row>
   );
 }

@@ -87,6 +87,11 @@ export const mapStyles = {
     right: 0,
     zIndex: 15,
   },
+  mapBottomSheetExpanded: {
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+    paddingTop: spacing[16],
+  },
   mapSheetFeedScroll: {
     flex: 1,
   },

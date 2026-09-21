@@ -16,7 +16,7 @@ export interface Place {
   name: string;
   category: string;
   categoryName: string;
-  address: string;
+  address?: string;
   detailAddress?: string;
   zip?: string;
   description?: string;

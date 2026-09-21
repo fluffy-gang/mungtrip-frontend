@@ -31,9 +31,9 @@ export function TripListRoute() {
   return <TripListScreen onOpenTrip={id => router.push({ pathname: '/trips/[id]', params: { id } })} />;
 }
 export function TripDetailRoute() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, added } = useLocalSearchParams<{ id: string; added?: string }>();
   const { back } = useTripNavigation();
-  return <TripDetailScreen tripId={Number(id)} onBack={back}
+  return <TripDetailScreen tripId={Number(id)} notice={added ? '여행에 추가했어요.' : undefined} onBack={back}
     onEdit={() => router.push({ pathname: '/trips/[id]/edit', params: { id } })}
     onAdd={day => router.push({ pathname: '/trips/[id]/add', params: { id, day } })}
     onReplace={item => router.push({ pathname: '/trips/[id]/replace', params: { id, itemId: item.tripItemId } })} />;

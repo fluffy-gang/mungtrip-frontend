@@ -2,7 +2,7 @@ import { tokens } from '@/constants/tokens';
 
 export const colors = tokens.colors.semantic.light;
 export { tokens };
-export const { borderWidth, radius, spacing } = tokens;
+export const { borderWidth, radius, shadow, spacing } = tokens;
 
 export const text = (
   fontSize: keyof typeof tokens.typography.fontSize,

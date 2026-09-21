@@ -29,6 +29,7 @@ interface NaverNamespace {
     Event: {
       addListener(target: object, name: string, callback: () => void): object;
       removeListener(listener: object): void;
+      trigger(target: object, name: string): void;
     };
     LatLng: new (latitude: number, longitude: number) => LatLng;
     Map: new (element: HTMLElement, options: { center: LatLng; zoom: number; scaleControl: boolean; zoomControl: boolean }) => NaverMap;
@@ -134,6 +135,21 @@ export function MapCanvas({
       setApi(null);
     };
   }, [clientId]);
+
+  /** 지도는 생성 시점의 컨테이너 크기로 타일을 그린다. 시트가 닫히며 컨테이너 크기가 바뀌어도 브라우저 resize 이벤트가 안 뜨므로 SDK에 직접 알려줘야 한다. */
+  useEffect(() => {
+    const map = mapRef.current;
+    const naver = api;
+    const container = elementRef.current;
+    if (!map || !naver || !container || typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(() => {
+      const center = map.getCenter();
+      naver.maps.Event.trigger(map, 'resize');
+      map.setCenter(center);
+    });
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [api]);
 
   useEffect(() => {
     const map = mapRef.current;

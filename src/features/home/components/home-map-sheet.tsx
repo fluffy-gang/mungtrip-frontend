@@ -2,6 +2,8 @@ import { useEffect } from 'react';
 import {
   ActivityIndicator,
   type GestureResponderHandlers,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
   Pressable,
   ScrollView,
   Text,
@@ -29,10 +31,12 @@ interface HomeMapSheetProps {
   dogs: HomeDogProfile[];
   hasError: boolean;
   height: number;
+  isExpanded: boolean;
   isPlaceList: boolean;
   loading: boolean;
   onRetry: () => void;
   onClearFilters?: () => void;
+  onExpand: () => void;
   onSelectPlace: (place: Place) => void;
   onShowCategoryPlaces: (categoryCode: string) => void;
   onShowMap: () => void;
@@ -50,10 +54,12 @@ export function HomeMapSheet({
   dogs,
   hasError,
   height,
+  isExpanded,
   isPlaceList,
   loading,
   onRetry,
   onClearFilters,
+  onExpand,
   onSelectPlace,
   onShowCategoryPlaces,
   onShowMap,
@@ -65,6 +71,16 @@ export function HomeMapSheet({
   topRestaurantPlaces,
 }: HomeMapSheetProps) {
   const animatedHeight = useSharedValue(height);
+  const handleContentScroll = ({ nativeEvent }: NativeSyntheticEvent<NativeScrollEvent>) => {
+    if (!isExpanded && nativeEvent.contentOffset.y > 8) {
+      onExpand();
+    }
+  };
+  const hasFeedItems =
+    courses.length > 0 ||
+    recentlyVerified.length > 0 ||
+    topCafePlaces.length > 0 ||
+    topRestaurantPlaces.length > 0;
 
   useEffect(() => {
     animatedHeight.value = withTiming(height, {
@@ -78,10 +94,19 @@ export function HomeMapSheet({
   }));
 
   return (
-    <Animated.View style={[styles.mapBottomSheet, { bottom }, sheetHeightStyle]}>
-      <View style={styles.sheetDragArea} {...panHandlers}>
-        <View style={styles.sheetHandle} />
-      </View>
+    <Animated.View
+      style={[
+        styles.mapBottomSheet,
+        { bottom },
+        isExpanded ? styles.mapBottomSheetExpanded : null,
+        sheetHeightStyle,
+      ]}
+    >
+      {isExpanded ? null : (
+        <View style={styles.sheetDragArea} {...panHandlers}>
+          <View style={styles.sheetHandle} />
+        </View>
+      )}
       {loading ? (
         <View style={styles.sheetLoadingRow}>
           <ActivityIndicator color={colors.primary} />
@@ -112,11 +137,24 @@ export function HomeMapSheet({
             showMapSwitchButton={false}
             emptyText={dogs.length ? '선택한 반려견의 동행 조건이 확인된 장소가 없어요. 필터를 해제하면 전체 장소를 볼 수 있어요.' : undefined}
             onClearFilters={onClearFilters}
+            onScroll={handleContentScroll}
           />
         </>
+      ) : !hasFeedItems ? (
+        <PlaceList
+          dogs={dogs}
+          places={places}
+          onSelectPlace={onSelectPlace}
+          onShowMap={onShowMap}
+          showMapSwitchButton={false}
+          onClearFilters={onClearFilters}
+          onScroll={handleContentScroll}
+        />
       ) : (
         <ScrollView
           contentContainerStyle={styles.mapSheetFeedContent}
+          onScroll={handleContentScroll}
+          scrollEventThrottle={16}
           showsVerticalScrollIndicator={false}
           style={styles.mapSheetFeedScroll}
         >

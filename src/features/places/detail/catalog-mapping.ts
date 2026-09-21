@@ -163,7 +163,7 @@ export const mapPlace = (
     getObjectValue(source, ['address', 'roadAddress', 'region']),
   );
 
-  if (id === undefined || !name || !category || !address) {
+  if (id === undefined || !name || !category) {
     return null;
   }
 

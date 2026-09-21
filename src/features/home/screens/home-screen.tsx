@@ -107,10 +107,12 @@ export function HomeScreen() {
                 dogs={home.homeViewer.selectedDogs}
                 hasError={home.isMapSheetPlaceList ? home.placesHasError : home.feedHasError}
                 height={home.mapSheetHeight}
+                isExpanded={home.isMapSheetExpanded}
                 isPlaceList={home.isMapSheetPlaceList}
                 loading={home.isMapSheetPlaceList ? home.placesLoading : home.feedLoading}
                 onRetry={home.retry}
                 onClearFilters={home.hasPlaceFilters ? home.clearPlaceFilters : undefined}
+                onExpand={home.expandMapSheet}
                 onSelectPlace={home.selectPlace}
                 onShowCategoryPlaces={home.showCategoryPlaces}
                 onShowMap={home.showMapView}

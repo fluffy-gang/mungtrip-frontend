@@ -70,17 +70,19 @@ function getInputShellBorderColor(
 export const InputShell = styled.View<{
   $disabled?: boolean;
   $focused?: boolean;
+  $multiline?: boolean;
   $state?: FieldState;
   $size: InputSize;
 }>`
-  align-items: center;
+  align-items: ${({ $multiline }) => $multiline ? 'stretch' : 'center'};
   border-color: ${({ $focused, $state = 'default', theme }) => getInputShellBorderColor($state, $focused, theme)};
   border-radius: ${({ theme }) => theme.radius[12]}px;
   border-width: ${({ theme }) => theme.borderWidth[1]}px;
   flex-direction: row;
   gap: ${({ theme }) => theme.spacing[8]}px;
-  height: ${({ $size }) => fieldHeight[$size]}px;
+  height: ${({ $multiline, $size }) => $multiline ? 'auto' : `${fieldHeight[$size]}px`};
+  min-height: ${({ $size }) => fieldHeight[$size]}px;
   opacity: ${({ $disabled }) => getDisabledOpacity($disabled)};
-  padding: 0 ${({ theme }) => theme.spacing[16]}px;
+  padding: ${({ $multiline, theme }) => $multiline ? theme.spacing[12] : 0}px ${({ theme }) => theme.spacing[16]}px;
   width: 100%;
 `;

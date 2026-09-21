@@ -12,6 +12,7 @@ export function TextInputField({
   errorText,
   helperText,
   label,
+  multiline,
   onBlur,
   onFocus,
   onChange,
@@ -35,10 +36,11 @@ export function TextInputField({
       required={required}
       state={resolvedState}
     >
-      <InputShell $disabled={disabled} $focused={focused} $size={size} $state={resolvedState}>
+      <InputShell $disabled={disabled} $focused={focused} $multiline={multiline} $size={size} $state={resolvedState}>
         <StyledTextInput
           {...textInputProps}
           editable={!disabled}
+          multiline={multiline}
           onBlur={() => {
             setFocused(false);
             onBlur?.();
@@ -49,6 +51,7 @@ export function TextInputField({
             onFocus?.(event);
           }}
           placeholderTextColor={theme.colors.semantic.light.inputPlaceholder}
+          textAlignVertical={multiline ? 'top' : undefined}
           value={value}
         />
         {rightAccessory}

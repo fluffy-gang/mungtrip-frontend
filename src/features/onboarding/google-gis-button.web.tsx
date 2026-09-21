@@ -81,8 +81,10 @@ function loadGoogleGIS() {
 }
 
 export function GoogleGISButton({ disabled, onCredential, onError }: Props) {
-  const clientId = Constants.expoConfig?.extra?.oauth?.googleWebClientId as string | undefined;
+  const clientId = (Constants.expoConfig?.extra?.oauth?.googleWebClientId as string | undefined)
+    ?? process.env.EXPO_PUBLIC_OAUTH_GOOGLE_WEB_CLIENT_ID?.trim();
   const [ready, setReady] = useState(false);
+  const [selectingAccount, setSelectingAccount] = useState(false);
 
   useEffect(() => {
     if (!clientId) return;
@@ -98,6 +100,7 @@ export function GoogleGISButton({ disabled, onCredential, onError }: Props) {
         client_id: clientId,
         callback: ({ credential }) => {
           if (!credential) {
+            setSelectingAccount(false);
             onError(new Error('Google에서 ID token을 받지 못했어요. 다시 시도해주세요.'));
             return;
           }
@@ -117,11 +120,18 @@ export function GoogleGISButton({ disabled, onCredential, onError }: Props) {
       onError(new Error('Google 로그인 라이브러리가 초기화되지 않았어요.'));
       return;
     }
-    gis.accounts.id.prompt((notification) => {
-      if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-        onError(new Error('Google 로그인 창이 표시되지 않았어요. 팝업 차단을 해제하고 다시 시도해주세요.'));
-      }
-    });
+    setSelectingAccount(true);
+    try {
+      gis.accounts.id.prompt((notification) => {
+        if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+          setSelectingAccount(false);
+          onError(new Error('Google 로그인 창이 표시되지 않았어요. 팝업 차단을 해제하고 다시 시도해주세요.'));
+        }
+      });
+    } catch (error) {
+      setSelectingAccount(false);
+      onError(error);
+    }
   };
 
   if (!clientId) return <Text color="textTertiary" fontSize={12}>Google 로그인을 사용할 수 없어요. OAuth Client ID 설정이 필요해요.</Text>;
@@ -129,7 +139,7 @@ export function GoogleGISButton({ disabled, onCredential, onError }: Props) {
   return (
     <Pressable
       accessibilityRole="button"
-      disabled={disabled || !ready}
+      disabled={disabled || !ready || selectingAccount}
       onPress={handlePress}
       style={({ pressed }) => [styles.socialButton, styles.googleButton, pressed && styles.pressed]}
     >

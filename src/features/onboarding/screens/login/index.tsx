@@ -107,16 +107,22 @@ export function LoginScreen() {
             const index = Math.round(event.nativeEvent.contentOffset.x / slideWidth);
             if (index === 0) {
               listRef.current?.scrollToIndex({ animated: false, index: 3 });
-              setPage(2);
             } else if (index === LOOP_SLIDES.length - 1) {
               listRef.current?.scrollToIndex({ animated: false, index: 1 });
-              setPage(0);
-            } else {
-              setPage(index - 1);
             }
+          }}
+          onScroll={(event) => {
+            const index = Math.round(event.nativeEvent.contentOffset.x / slideWidth);
+            const nextPage = index <= 0
+              ? INTRO_SLIDES.length - 1
+              : index >= LOOP_SLIDES.length - 1
+                ? 0
+                : index - 1;
+            setPage(nextPage);
           }}
           pagingEnabled
           ref={listRef}
+          scrollEventThrottle={16}
           style={styles.introCarousel}
           renderItem={({ item }) => (
             <View style={[styles.introSlide, { width: slideWidth }]}>

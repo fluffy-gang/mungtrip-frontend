@@ -1,5 +1,8 @@
 import { colors, text, radius, borderWidth, shadow, spacing } from './style-primitives';
 
+const PLACE_ROW_IMAGE_SIZE = 88;
+const LIKE_BADGE_SIZE = 24;
+
 export const listStyles = {
   sheetHandle: {
     alignSelf: 'center',
@@ -94,21 +97,33 @@ export const listStyles = {
   placeRowCompact: {
     paddingBottom: 0,
   },
+  placeRowMain: {
+    alignItems: 'flex-start',
+    flex: 1,
+    flexDirection: 'row',
+    gap: spacing[12],
+    minWidth: 0,
+  },
   placeRowImageFrame: {
     backgroundColor: colors.surfaceMuted,
     borderRadius: radius[12],
-    height: 88,
+    height: PLACE_ROW_IMAGE_SIZE,
     overflow: 'hidden',
     position: 'relative',
-    width: 88,
+    width: PLACE_ROW_IMAGE_SIZE,
   },
   placeRowImage: {
     backgroundColor: colors.surfaceMuted,
     borderRadius: radius[12],
-    height: 88,
-    width: 88,
+    height: PLACE_ROW_IMAGE_SIZE,
+    width: PLACE_ROW_IMAGE_SIZE,
   },
-  placeLikeBadge: { position: 'absolute', right: spacing[6], top: spacing[6] },
+  // 찜 버튼은 행 루트를 기준으로 썸네일 오른쪽 위에 겹친다.
+  placeLikeBadge: {
+    left: PLACE_ROW_IMAGE_SIZE - LIKE_BADGE_SIZE - spacing[6],
+    position: 'absolute',
+    top: spacing[6],
+  },
   compatibleDogStack: {
     alignItems: 'center',
     bottom: spacing[6],

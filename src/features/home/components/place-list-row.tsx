@@ -73,91 +73,93 @@ export function PlaceListRow({
   const hasRatingRow = hasRating || Boolean(place.address);
 
   return (
-    <Pressable
-      accessibilityRole={onPress ? 'button' : undefined}
-      onPress={onPress ? () => onPress(place) : undefined}
-      style={[styles.placeRow, compact && styles.placeRowCompact]}
-    >
-      <View style={styles.placeRowImageFrame}>
-        <PlaceThumbnail imageUrl={place.imageUrl} style={styles.placeRowImage} />
-        <PlaceLikeButton place={place} style={styles.placeLikeBadge} />
-        {compatibleDogs.length > 0 ? (
-          <View style={styles.compatibleDogStack}>
-            {compatibleDogs.slice(0, 2).map((dog, index) => (
-              <Image
-                key={dog.id}
-                contentFit="cover"
-                source={{ uri: dog.imageUrl }}
-                style={[
-                  styles.compatibleDogAvatar,
-                  { marginLeft: index === 0 ? 0 : -8 },
-                ]}
-              />
-            ))}
-          </View>
-        ) : null}
-      </View>
-      <View style={styles.placeRowBody}>
-        <Text numberOfLines={1} style={styles.placeRowTitle}>
-          {place.name}
-        </Text>
-        {displayTags.length > 0 ? (
-          <View style={styles.placeTagRow}>
-            {displayTags.map(tag => (
-              <View key={tag} style={styles.placeTagChip}>
-                <Text numberOfLines={1} style={styles.placeTagText}>
-                  {tag}
+    <View style={[styles.placeRow, compact && styles.placeRowCompact]}>
+      <Pressable
+        accessibilityRole={onPress ? 'button' : undefined}
+        onPress={onPress ? () => onPress(place) : undefined}
+        style={styles.placeRowMain}
+      >
+        <View style={styles.placeRowImageFrame}>
+          <PlaceThumbnail imageUrl={place.imageUrl} style={styles.placeRowImage} />
+          {compatibleDogs.length > 0 ? (
+            <View style={styles.compatibleDogStack}>
+              {compatibleDogs.slice(0, 2).map((dog, index) => (
+                <Image
+                  key={dog.id}
+                  contentFit="cover"
+                  source={{ uri: dog.imageUrl }}
+                  style={[
+                    styles.compatibleDogAvatar,
+                    { marginLeft: index === 0 ? 0 : -8 },
+                  ]}
+                />
+              ))}
+            </View>
+          ) : null}
+        </View>
+        <View style={styles.placeRowBody}>
+          <Text numberOfLines={1} style={styles.placeRowTitle}>
+            {place.name}
+          </Text>
+          {displayTags.length > 0 ? (
+            <View style={styles.placeTagRow}>
+              {displayTags.map(tag => (
+                <View key={tag} style={styles.placeTagChip}>
+                  <Text numberOfLines={1} style={styles.placeTagText}>
+                    {tag}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          ) : null}
+          {hasProof ? (
+            <View style={styles.placeProofRow}>
+              {place.isOfficial ? (
+                <View style={styles.placeOfficialBadge}>
+                  <Image source={officialIcon} style={styles.placeProofIcon} />
+                  <Text style={styles.placeOfficialText}>공식인증</Text>
+                </View>
+              ) : null}
+              {userVerifiedCount ? (
+                <View style={styles.placeUserProof}>
+                  <Image source={userIcon} style={styles.placeProofIcon} />
+                  <Text numberOfLines={1} style={styles.placeUserProofText}>
+                    {userVerifiedCount}
+                    {relativeVerifiedTime ? (
+                      <Text style={styles.placeUserProofRelative}>
+                        {` · ${relativeVerifiedTime}`}
+                      </Text>
+                    ) : null}
+                  </Text>
+                </View>
+              ) : null}
+            </View>
+          ) : null}
+          {hasRatingRow ? (
+            <View style={styles.placeRatingRow}>
+              {hasRating ? (
+                <>
+                  <Image source={starIcon} style={styles.placeStarIcon} />
+                  <Text style={styles.placeRatingText}>
+                    {place.rating?.toFixed(1)}
+                  </Text>
+                </>
+              ) : null}
+              {place.address ? (
+                <Text
+                  numberOfLines={1}
+                  style={[styles.placeAddressText, !hasRating && { marginLeft: 0 }]}
+                >
+                  {place.address}
                 </Text>
-              </View>
-            ))}
-          </View>
-        ) : null}
-        {hasProof ? (
-          <View style={styles.placeProofRow}>
-            {place.isOfficial ? (
-              <View style={styles.placeOfficialBadge}>
-                <Image source={officialIcon} style={styles.placeProofIcon} />
-                <Text style={styles.placeOfficialText}>공식인증</Text>
-              </View>
-            ) : null}
-            {userVerifiedCount ? (
-              <View style={styles.placeUserProof}>
-                <Image source={userIcon} style={styles.placeProofIcon} />
-                <Text numberOfLines={1} style={styles.placeUserProofText}>
-                  {userVerifiedCount}
-                  {relativeVerifiedTime ? (
-                    <Text style={styles.placeUserProofRelative}>
-                      {` · ${relativeVerifiedTime}`}
-                    </Text>
-                  ) : null}
-                </Text>
-              </View>
-            ) : null}
-          </View>
-        ) : null}
-        {hasRatingRow ? (
-          <View style={styles.placeRatingRow}>
-            {hasRating ? (
-              <>
-                <Image source={starIcon} style={styles.placeStarIcon} />
-                <Text style={styles.placeRatingText}>
-                  {place.rating?.toFixed(1)}
-                </Text>
-              </>
-            ) : null}
-            {place.address ? (
-              <Text
-                numberOfLines={1}
-                style={[styles.placeAddressText, !hasRating && { marginLeft: 0 }]}
-              >
-                {place.address}
-              </Text>
-            ) : null}
-          </View>
-        ) : null}
-      </View>
+              ) : null}
+            </View>
+          ) : null}
+        </View>
+      </Pressable>
+      <PlaceLikeButton place={place} style={styles.placeLikeBadge} />
       <Pressable accessibilityRole="button" style={styles.addTripButton}
-        onPress={event => { event.stopPropagation(); void actions.addToTrip(); }}>
+        onPress={() => { void actions.addToTrip(); }}>
         <SymbolView
           name={{ android: 'add', ios: 'plus', web: 'add' }}
           size={16}
@@ -165,6 +167,6 @@ export function PlaceListRow({
         />
         <Text style={styles.addTripText}>내 여행</Text>
       </Pressable>
-    </Pressable>
+    </View>
   );
 }

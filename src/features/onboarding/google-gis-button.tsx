@@ -1,4 +1,5 @@
 import { Image } from 'expo-image';
+import { useState } from 'react';
 import { Pressable } from 'react-native';
 
 import { Text } from '@/components/ui/text';
@@ -15,11 +16,21 @@ interface Props {
 const googleIcon = require('../../../assets/images/onboarding/google-icon.png');
 
 export function GoogleGISButton({ disabled, onCredential, onError }: Props) {
+  const [selectingAccount, setSelectingAccount] = useState(false);
+
+  const handlePress = () => {
+    setSelectingAccount(true);
+    void getProviderToken('GOOGLE').then(onCredential, (error: unknown) => {
+      setSelectingAccount(false);
+      onError(error);
+    });
+  };
+
   return (
     <Pressable
       accessibilityRole="button"
-      disabled={disabled}
-      onPress={() => void getProviderToken('GOOGLE').then(onCredential, onError)}
+      disabled={disabled || selectingAccount}
+      onPress={handlePress}
       style={({ pressed }) => [styles.socialButton, styles.googleButton, pressed && styles.pressed]}
     >
       <Image contentFit="contain" source={googleIcon} style={styles.socialIcon} />

@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { getPlaces } from "@/features/places/api";
+import { getCachedMapPlaces } from "@/features/places/map-places-cache";
 import { useAsyncEffect } from "./use-async-effect";
 
 import type { Place, PlaceCategory, PlaceTag } from "@/features/places/types";
@@ -21,7 +21,7 @@ export function useMapPlaces(options: UseMapPlacesOptions) {
 
   const { hasError, loading } = useAsyncEffect(
     async (isMounted) => {
-      const nextPlaces = await getPlaces(
+      const nextPlaces = await getCachedMapPlaces(
         {
           ...bounds,
           dogIds: dogIds.length > 0 ? dogIds : undefined,

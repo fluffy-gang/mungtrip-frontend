@@ -1,7 +1,7 @@
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { FlatList, Pressable, ScrollView, useWindowDimensions, View } from 'react-native';
+import { FlatList, ScrollView, useWindowDimensions, View } from 'react-native';
 
 import { Text } from '@/components/ui/text';
 import { Toast } from '@/components/ui/toast';
@@ -24,8 +24,6 @@ const INTRO_SLIDE_IMAGES: Record<(typeof INTRO_SLIDES)[number]['id'], number> = 
   places: require('../../../../../assets/images/onboarding/onboard-1.png'),
   verified: require('../../../../../assets/images/onboarding/onboard-3.png'),
 };
-const kakaoIcon = require('../../../../../assets/images/onboarding/kakao-icon.png');
-
 export function LoginScreen() {
   const router = useRouter();
   const { width } = useWindowDimensions();
@@ -145,17 +143,6 @@ export function LoginScreen() {
         </View>
       </ScrollView>
       <View style={styles.loginActions}>
-        <Pressable
-          accessibilityRole="button"
-          disabled={Boolean(pending)}
-          onPress={() => void handleLogin('KAKAO')}
-          style={({ pressed }) => [styles.socialButton, styles.kakaoButton, pressed && styles.pressed]}
-        >
-          <Image contentFit="contain" source={kakaoIcon} style={styles.socialIcon} />
-          <Text fontSize={16} fontWeight="bold" lineHeight={24}>
-            {pending === 'KAKAO' ? '로그인 중...' : '카카오로 시작하기'}
-          </Text>
-        </Pressable>
         <GoogleGISButton
           disabled={Boolean(pending)}
           onCredential={handleGoogleCredential}

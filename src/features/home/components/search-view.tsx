@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { SymbolView } from 'expo-symbols';
 
+import { SEARCH_PLACEHOLDER } from '../constants';
 import { styles } from '../styles';
 
 import type { Place } from '@/features/places/types';
@@ -81,7 +82,7 @@ export function SearchView({
                 onSelectKeyword(query.trim());
               }
             }}
-            placeholder="제주도 강아지 장소 검색"
+            placeholder={SEARCH_PLACEHOLDER}
             returnKeyType="search"
             style={styles.searchTextInput}
             value={query}

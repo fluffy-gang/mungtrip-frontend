@@ -1,9 +1,10 @@
 import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Image, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 
 import { Button } from '@/components/ui/button';
 
+import { resolveAssetUri } from '@/utils/asset';
 import { PlaceTextArea } from '../detail/text-area';
 import { MOCK_REVIEW_PHOTO, PlaceIcon, PlacePhoto } from '../detail/media';
 import { placeStyles as s } from '../detail/styles';
@@ -52,7 +53,7 @@ export function ReviewComposer({ provider, placeId, defaultDogId, onDone, onBusy
     lock(true); setError(undefined);
     try {
       if (provider.source === 'mock') {
-        setPhotos([{ uri: Image.resolveAssetSource(MOCK_REVIEW_PHOTO).uri, mimeType: 'image/webp' }]);
+        setPhotos([{ uri: resolveAssetUri(MOCK_REVIEW_PHOTO), mimeType: 'image/webp' }]);
         return;
       }
       const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], allowsMultipleSelection: true, selectionLimit: 5 });
